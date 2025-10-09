@@ -7,9 +7,57 @@
 import type { MakeTuyauRequest, MakeTuyauResponse } from '@tuyau/utils/types'
 import type { InferInput } from '@vinejs/vine/types'
 
+type LoginPost = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/auth/validators/login.ts')['loginValidator']>>
+  response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['login'], true>
+}
+type MeGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['me'], false>
+}
+type LogoutPost = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['logout'], false>
+}
 export interface ApiDefinition {
+  'login': {
+    '$url': {
+    };
+    '$post': LoginPost;
+  };
+  'me': {
+    '$url': {
+    };
+    '$get': MeGet;
+  };
+  'logout': {
+    '$url': {
+    };
+    '$post': LogoutPost;
+  };
 }
 const routes = [
+  {
+    params: [],
+    name: 'auth.login',
+    path: '/login',
+    method: ["POST"],
+    types: {} as LoginPost,
+  },
+  {
+    params: [],
+    name: 'auth.me',
+    path: '/me',
+    method: ["GET"],
+    types: {} as MeGet,
+  },
+  {
+    params: [],
+    name: 'auth.logout',
+    path: '/logout',
+    method: ["POST"],
+    types: {} as LogoutPost,
+  },
 ] as const;
 export const api = {
   routes,
