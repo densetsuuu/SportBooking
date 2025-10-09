@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "@sport-booking/backend",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,6 +12,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./api": "./.adonisjs/index.ts"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
@@ -29,7 +32,11 @@
     "#database/*": "./database/*.js",
     "#start/*": "./start/*.js",
     "#tests/*": "./tests/*.js",
-    "#config/*": "./config/*.js"
+    "#config/*": "./config/*.js",
+    "#users/*": "./app/users/*.js",
+    "#core/*": "./app/core/*.js",
+    "#auth/*": "./app/auth/*.js",
+    "#common/*": "./app/common/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
@@ -41,6 +48,7 @@
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
     "@swc/core": "1.11.24",
+    "@tuyau/utils": "^0.0.9",
     "@types/luxon": "^3.7.1",
     "@types/node": "^22.15.18",
     "eslint": "^9.26.0",
@@ -51,15 +59,25 @@
     "typescript": "~5.8"
   },
   "dependencies": {
+    "@adocasts.com/dto": "^0.0.10",
+    "@adonisjs-community/girouette": "^0.1.5",
+    "@adonisjs-community/modules": "^1.1.0",
     "@adonisjs/auth": "^9.4.0",
     "@adonisjs/core": "^6.18.0",
     "@adonisjs/cors": "^2.2.1",
+    "@adonisjs/drive": "^3.4.1",
     "@adonisjs/lucid": "^21.6.1",
     "@adonisjs/session": "^7.5.1",
+    "@aws-sdk/client-s3": "^3.906.0",
+    "@aws-sdk/s3-request-presigner": "^3.906.0",
+    "@jrmc/adonis-attachment": "^5.0.1",
+    "@tuyau/core": "^0.4.2",
     "@vinejs/vine": "^3.0.1",
+    "adonis-attachment": "link:@jrmc/adonis-attachment",
     "luxon": "^3.7.2",
     "pg": "^8.16.3",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "uuid": "^13.0.0"
   },
   "hotHook": {
     "boundaries": [
