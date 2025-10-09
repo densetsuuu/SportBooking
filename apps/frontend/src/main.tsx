@@ -1,6 +1,7 @@
 import {createRoot} from "react-dom/client";
 import {App} from "~/app";
 import reportWebVitals from "~/reportWebVitals";
+import "~/styles.css";
 
 declare global {
     interface Window {

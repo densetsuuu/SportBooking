@@ -154,11 +154,11 @@ importers:
         specifier: ^1.132.0
         version: 1.132.51(@tanstack/react-router@1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.1.9(@types/node@22.18.8)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.6))
       '@tuyau/client':
-        specifier: ^0.2.10
-        version: 0.2.10
+        specifier: 0.2.11-next.2
+        version: 0.2.11-next.2
       '@tuyau/react-query':
         specifier: 0.0.1-next.2
-        version: 0.0.1-next.2(@tanstack/react-query@5.90.2(react@19.2.0))(@tuyau/client@0.2.10)
+        version: 0.0.1-next.2(@tanstack/react-query@5.90.2(react@19.2.0))(@tuyau/client@0.2.11-next.2)
       lucide-react:
         specifier: ^0.545.0
         version: 0.545.0(react@19.2.0)
@@ -177,6 +177,9 @@ importers:
       tailwindcss:
         specifier: ^4.0.6
         version: 4.1.14
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
       zod:
         specifier: ^4.1.12
         version: 4.1.12
@@ -2153,8 +2156,8 @@ packages:
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
 
-  '@tuyau/client@0.2.10':
-    resolution: {integrity: sha512-sVp4JX9uvvV3BSPgZNogJWYp0oleqi2Zy0gyBLFjFz6KWtTVPqNKBA74n0UsnaeZB8y3xxXkYSeWf19z+7yhmg==}
+  '@tuyau/client@0.2.11-next.2':
+    resolution: {integrity: sha512-sTwa/QVFnTHh/NtFmMknPi4ckoOc+ztcTByu8gwUPBuTjaP282g4vymRLaE/GQLRgeRvnF56obs6m/ibqeRd6w==}
 
   '@tuyau/core@0.4.2':
     resolution: {integrity: sha512-thobRIBW+fQGt9gXQ9zdvhVUyZE5qLZorBeDqxJ2SF07igZAqm0+fyvMTQbOH/vIcpwK2ob9ev3bBhqW4E2hWw==}
@@ -5015,6 +5018,9 @@ packages:
   turbo@2.5.8:
     resolution: {integrity: sha512-5c9Fdsr9qfpT3hA0EyYSFRZj1dVVsb6KIWubA9JBYZ/9ZEAijgUEae0BBR/Xl/wekt4w65/lYLTFaP3JmwSO8w==}
     hasBin: true
+
+  tw-animate-css@1.4.0:
+    resolution: {integrity: sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -7892,7 +7898,7 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
-  '@tuyau/client@0.2.10':
+  '@tuyau/client@0.2.11-next.2':
     dependencies:
       '@tuyau/utils': 0.0.9
       ky: 1.11.0
@@ -7904,10 +7910,10 @@ snapshots:
       '@tuyau/utils': 0.0.9
       ts-morph: 26.0.0
 
-  '@tuyau/react-query@0.0.1-next.2(@tanstack/react-query@5.90.2(react@19.2.0))(@tuyau/client@0.2.10)':
+  '@tuyau/react-query@0.0.1-next.2(@tanstack/react-query@5.90.2(react@19.2.0))(@tuyau/client@0.2.11-next.2)':
     dependencies:
       '@tanstack/react-query': 5.90.2(react@19.2.0)
-      '@tuyau/client': 0.2.10
+      '@tuyau/client': 0.2.11-next.2
       '@tuyau/utils': 0.0.9
 
   '@tuyau/utils@0.0.9': {}
@@ -10797,6 +10803,8 @@ snapshots:
       turbo-linux-arm64: 2.5.8
       turbo-windows-64: 2.5.8
       turbo-windows-arm64: 2.5.8
+
+  tw-animate-css@1.4.0: {}
 
   type-check@0.4.0:
     dependencies:
