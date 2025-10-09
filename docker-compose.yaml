@@ -1,0 +1,4 @@
+name: sport_booking
+
+include:
+  - ./apps/backend/docker-compose.yaml

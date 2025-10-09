@@ -14,7 +14,7 @@ RUN apk update
 WORKDIR /app
 RUN pnpm add --global turbo@2.3.3
 COPY . .
-RUN turbo prune @tatoo/backend --docker
+RUN turbo prune @sport_booking/backend --docker
 
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
@@ -26,7 +26,7 @@ RUN pnpm install
 # Build the project
 COPY --from=builder /app/out/full .
 COPY turbo.json turbo.json
-RUN pnpm turbo build --filter=@tatoo/backend
+RUN pnpm turbo build --filter=@sport_booking/backend
 
 FROM base AS runner
 WORKDIR /app
