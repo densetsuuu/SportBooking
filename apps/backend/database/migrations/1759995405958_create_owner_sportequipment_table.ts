@@ -1,17 +1,17 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'users'
+  protected tableName = 'owner_sportequipment'
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').notNullable().primary()
-      table.string('email', 254).notNullable().unique()
-      table.string('password').notNullable()
-      table.string('name').notNullable()
-      table.string('surname').notNullable()
-      table.enum('role', ['admin', 'owner', 'user']).notNullable().defaultTo('user')
+      table.uuid('owner_id').references('id').inTable('users').onDelete('CASCADE')
+      table.string('sport_equipment_id').notNullable()
       table.timestamp('created_at').notNullable()
+
+      // Ensure a proprietaire can't be assigned to the same terrain multiple times
+      table.unique(['owner_id', 'sport_equipment_id'])
     })
   }
 
