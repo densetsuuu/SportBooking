@@ -1,0 +1,20 @@
+{
+  "name": "sport-booking",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "docker compose up -d && turbo dev",
+    "back": "docker compose up --build",
+    "lint": "turbo lint",
+    "typecheck": "cd apps/backend && pnpm typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "tsp": "pnpm run -C docs/tsp tsp",
+    "test": "turbo run test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.1"
+}
