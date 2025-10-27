@@ -36,7 +36,8 @@
     "#users/*": "./app/users/*.js",
     "#core/*": "./app/core/*.js",
     "#auth/*": "./app/auth/*.js",
-    "#common/*": "./app/common/*.js"
+    "#common/*": "./app/common/*.js",
+    "#sport_equipments/*": "./app/sport_equipments/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
