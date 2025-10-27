@@ -25,7 +25,14 @@ export default defineConfig({
   | will be scanned automatically from the "./commands" directory.
   |
   */
-  commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/lucid/commands'), () => import('@adonisjs-community/modules/commands'), () => import('@jrmc/adonis-attachment/commands'), () => import('@adocasts.com/dto/commands'), () => import('@tuyau/core/commands')],
+  commands: [
+    () => import('@adonisjs/core/commands'),
+    () => import('@adonisjs/lucid/commands'),
+    () => import('@adonisjs-community/modules/commands'),
+    () => import('@jrmc/adonis-attachment/commands'),
+    () => import('@adocasts.com/dto/commands'),
+    () => import('@tuyau/core/commands'),
+  ],
 
   /*
   |--------------------------------------------------------------------------
@@ -51,7 +58,7 @@ export default defineConfig({
     () => import('@jrmc/adonis-attachment/attachment_provider'),
     () => import('@adonisjs-community/girouette/girouette_provider'),
     () => import('@tuyau/core/tuyau_provider'),
-    () => import('@adonisjs/drive/drive_provider')
+    () => import('@adonisjs/drive/drive_provider'),
   ],
 
   /*
