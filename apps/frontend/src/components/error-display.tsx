@@ -1,13 +1,13 @@
-import { Button } from "@tatoo/design-system/components/ui/button";
-import { TriangleAlertIcon } from "lucide-react";
+import { Button } from '@tatoo/design-system/components/ui/button'
+import { TriangleAlertIcon } from 'lucide-react'
 
 interface ErrorDisplayProps {
   error: {
-    status: number;
+    status: number
     value: {
-      message: string;
-    };
-  };
+      message: string
+    }
+  }
 }
 
 export function ErrorDisplay({ error }: ErrorDisplayProps) {
@@ -28,5 +28,5 @@ export function ErrorDisplay({ error }: ErrorDisplayProps) {
         </Button>
       </div>
     </div>
-  );
+  )
 }

@@ -7,7 +7,7 @@ import { middleware } from '#start/kernel'
 import { inject } from '@adonisjs/core'
 
 @inject()
-@Group({ name: 'auth' })
+@Group({ name: 'auth', prefix: '' })
 export default class AuthController {
   @Post('/login', 'login')
   async login({ auth, request }: HttpContext) {
