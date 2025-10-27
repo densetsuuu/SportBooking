@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg']
+
 export const loginFormSchema = z.object({
   email: z.email('Email invalide'),
   password: z.string(),

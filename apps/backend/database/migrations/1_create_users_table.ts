@@ -8,11 +8,8 @@ export default class extends BaseSchema {
       table.uuid('id').notNullable().primary()
       table.string('email', 254).notNullable().unique()
       table.string('password').notNullable()
-      table.string('first_name').notNullable()
-      table.string('last_name').notNullable()
-      table.enum('role', ['admin', 'owner', 'user']).notNullable().defaultTo('user')
+      table.string('full_name').notNullable()
       table.timestamp('created_at').notNullable()
-      table.timestamp('updated_at').nullable()
     })
   }
 

@@ -19,21 +19,9 @@ type LogoutPost = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['logout'], false>
 }
-type EditPut = {
-  request: unknown
-  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['me_edit'], false>
-}
-type UserIdGetHead = {
-  request: unknown
-  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['show'], false>
-}
-type SportEquipmentsGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/sport_equipment.ts')['indexSportEquipmentsValidator']>>
-  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['index'], true>
-}
-type SportequipmentsIdGetHead = {
-  request: unknown
-  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['show'], false>
+type AuthRegisterPost = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/auth/validators/register.ts')['registerValidator']>>
+  response: MakeTuyauResponse<import('../app/auth/controllers/register_controller.ts').default['register'], true>
 }
 export interface ApiDefinition {
   'login': {
@@ -51,29 +39,11 @@ export interface ApiDefinition {
     };
     '$post': LogoutPost;
   };
-  'edit': {
-    '$url': {
-    };
-    '$put': EditPut;
-  };
-  'user': {
-    ':userId': {
+  'auth': {
+    'register': {
       '$url': {
       };
-      '$get': UserIdGetHead;
-      '$head': UserIdGetHead;
-    };
-  };
-  'sport-equipments': {
-    '$url': {
-    };
-    '$get': SportEquipmentsGetHead;
-    '$head': SportEquipmentsGetHead;
-    ':equip_numero': {
-      '$url': {
-      };
-      '$get': SportequipmentsIdGetHead;
-      '$head': SportequipmentsIdGetHead;
+      '$post': AuthRegisterPost;
     };
   };
 }
@@ -101,59 +71,10 @@ const routes = [
   },
   {
     params: [],
-    name: 'edit',
-    path: '/edit',
-    method: ["PUT"],
-    types: {} as EditPut,
-  },
-  {
-    params: [],
-    name: 'user.index',
-    path: '/user',
-    method: ["GET","HEAD"],
-    types: {} as unknown,
-  },
-  {
-    params: [],
-    name: 'user.create',
-    path: '/user/create',
-    method: ["GET","HEAD"],
-    types: {} as unknown,
-  },
-  {
-    params: [],
-    name: 'user.store',
-    path: '/user',
+    name: 'auth.register',
+    path: '/auth/register',
     method: ["POST"],
-    types: {} as unknown,
-  },
-  {
-    params: ["userId"],
-    name: 'user.show',
-    path: '/user/:userId',
-    method: ["GET","HEAD"],
-    types: {} as UserIdGetHead,
-  },
-  {
-    params: ["userId"],
-    name: 'user.edit',
-    path: '/user/:userId/edit',
-    method: ["GET","HEAD"],
-    types: {} as unknown,
-  },
-  {
-    params: ["userId"],
-    name: 'user.update',
-    path: '/user/:userId',
-    method: ["PUT","PATCH"],
-    types: {} as unknown,
-  },
-  {
-    params: ["userId"],
-    name: 'user.destroy',
-    path: '/user/:userId',
-    method: ["DELETE"],
-    types: {} as unknown,
+    types: {} as AuthRegisterPost,
   },
 ] as const;
 export const api = {
