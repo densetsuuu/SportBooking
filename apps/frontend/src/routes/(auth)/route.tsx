@@ -5,9 +5,5 @@ export const Route = createFileRoute('/(auth)')({
 })
 
 function RouteComponent() {
-  return (
-    <div className="h-screen w-full inline-flex items-center justify-center">
-      <Outlet />
-    </div>
-  )
+  return <Outlet />
 }
