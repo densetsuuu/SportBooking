@@ -1,7 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
-import { inject } from '@adonisjs/core'
 import { SportEquipmentService } from '#sport_equipments/services/sport_equipment_service'
+import { indexSportEquipmentsValidator } from '#sport_equipments/validators/sport_equipment'
+import { inject } from '@adonisjs/core'
 
 @inject()
 export default class SportEquipmentsController {
@@ -12,19 +13,11 @@ export default class SportEquipmentsController {
    * Query params: type_sport, ville
    */
   public async index({ request, response }: HttpContext) {
-    try {
-      const typeSport = request.qs().type_sport || null
-      const ville = request.qs().ville || null
+    const payload = await request.validateUsing(indexSportEquipmentsValidator)
 
-      const data = await this.sportEquipmentService.getSportsEquipments(typeSport, ville)
+    const data = await this.sportEquipmentService.getSportsEquipments(payload)
 
-      return response.ok(data)
-    } catch (error) {
-      return response.internalServerError({
-        message: 'Failed to fetch sport equipments',
-        error: error.message,
-      })
-    }
+    return response.ok(data)
   }
 
   /**
@@ -36,10 +29,8 @@ export default class SportEquipmentsController {
 
       const data = await this.sportEquipmentService.getSportEquipmentById(equipNumero)
 
-      if (data.total_count === 0) {
-        return response.notFound({
-          message: 'Sport equipment not found',
-        })
+      if (data === undefined) {
+        return response.notFound({ message: 'Sport equipment not found' })
       }
 
       return response.ok(data)
