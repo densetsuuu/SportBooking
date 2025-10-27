@@ -1,0 +1,137 @@
+import Reservation, { ReservationStatus } from '#models/reservation'
+import {
+  createReservationValidator,
+  indexReservationsValidator,
+} from '#reservation/validators/reservation'
+import { Exception } from '@adonisjs/core/exceptions'
+import { Infer } from '@vinejs/vine/types'
+
+export class ReservationService {
+  /**
+   * Create a new reservation
+   */
+  async createReservation(
+    userId: string,
+    data: Infer<typeof createReservationValidator>
+  ): Promise<Reservation> {
+    // Validate that end date is after start date
+    if (data.endDate <= data.startDate) {
+      throw new Exception('End date must be after start date', { status: 400 })
+    }
+
+    // Check for overlapping reservations
+    const overlappingReservation = await Reservation.query()
+      .where('sport_equipment_id', data.sportEquipmentId)
+      .whereNot('status', 'cancelled')
+      .where((query) => {
+        query
+          .where((subQuery) => {
+            subQuery
+              .where('start_date', '<=', data.startDate.toSQL())
+              .where('end_date', '>', data.startDate.toSQL())
+          })
+          .orWhere((subQuery) => {
+            subQuery
+              .where('start_date', '<', data.endDate.toSQL())
+              .where('end_date', '>=', data.endDate.toSQL())
+          })
+          .orWhere((subQuery) => {
+            subQuery
+              .where('start_date', '>=', data.startDate.toSQL())
+              .where('end_date', '<=', data.endDate.toSQL())
+          })
+      })
+      .first()
+
+    if (overlappingReservation) {
+      throw new Exception('This time slot is already reserved', { status: 409 })
+    }
+
+    const reservation = await Reservation.create({
+      userId,
+      sportEquipmentId: data.sportEquipmentId,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      status: 'waiting',
+    })
+
+    await reservation.load('user')
+    return reservation
+  }
+
+  /**
+   * Get reservations with optional filters
+   */
+  async getReservations(filters: Infer<typeof indexReservationsValidator>): Promise<Reservation[]> {
+    const query = Reservation.query().preload('user')
+
+    if (filters.sportEquipmentId) {
+      query.where('sport_equipment_id', filters.sportEquipmentId)
+    }
+
+    if (filters.status) {
+      query.where('status', filters.status)
+    }
+
+    query.orderBy('start_date', 'asc')
+
+    return query
+  }
+
+  /**
+   * Get a specific reservation by ID
+   */
+  async getReservationById(id: string): Promise<Reservation> {
+    const reservation = await Reservation.query().where('id', id).preload('user').first()
+
+    if (!reservation) {
+      throw new Exception('Reservation not found', { status: 404 })
+    }
+
+    return reservation
+  }
+
+  /**
+   * Cancel a reservation
+   */
+  async cancelReservation(id: string, userId: string): Promise<Reservation> {
+    const reservation = await Reservation.find(id)
+
+    if (!reservation) {
+      throw new Exception('Reservation not found', { status: 404 })
+    }
+
+    // Check if user owns the reservation
+    if (reservation.userId !== userId) {
+      throw new Exception('You are not allowed to cancel this reservation', { status: 403 })
+    }
+
+    // Check if reservation is already cancelled
+    if (reservation.status === 'cancelled') {
+      throw new Exception('Reservation is already cancelled', { status: 400 })
+    }
+
+    reservation.status = 'cancelled'
+    await reservation.save()
+    await reservation.load('user')
+
+    return reservation
+  }
+
+  /**
+   * Update reservation status (for admin/owner)
+   */
+  async updateReservationStatus(id: string, status: ReservationStatus): Promise<Reservation> {
+    const reservation = await Reservation.find(id)
+
+    if (!reservation) {
+      throw new Exception('Reservation not found', { status: 404 })
+    }
+
+    reservation.status = status
+    await reservation.save()
+    await reservation.load('user')
+
+    return reservation
+  }
+}
