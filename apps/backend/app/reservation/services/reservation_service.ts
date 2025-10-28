@@ -1,4 +1,4 @@
-import Reservation, { ReservationStatus } from '#models/reservation'
+import Reservation, { InvitationStatus, ReservationStatus } from '#models/reservation'
 import {
   createReservationValidator,
   indexReservationsValidator,
@@ -53,6 +53,10 @@ export class ReservationService {
       startDate: data.startDate,
       endDate: data.endDate,
       status: 'waiting',
+      invitedUsers: (data.invitedUsers || []).map((invitedUserId) => ({
+        userId: invitedUserId,
+        status: 'waiting' as const,
+      })),
     })
 
     await reservation.load('user')
@@ -129,6 +133,37 @@ export class ReservationService {
     }
 
     reservation.status = status
+    await reservation.save()
+    await reservation.load('user')
+
+    return reservation
+  }
+
+  /**
+   * Update invitation status for an invited user
+   */
+  async updateInvitationStatus(
+    reservationId: string,
+    userId: string,
+    invitationStatus: InvitationStatus
+  ): Promise<Reservation> {
+    const reservation = await Reservation.find(reservationId)
+
+    if (!reservation) {
+      throw new Exception('Reservation not found', { status: 404 })
+    }
+
+    // Find the invited user
+    const invitedUserIndex = reservation.invitedUsers.findIndex(
+      (invited) => invited.userId === userId
+    )
+
+    if (invitedUserIndex === -1) {
+      throw new Exception('You are not invited to this reservation', { status: 403 })
+    }
+
+    // Update the invitation status
+    reservation.invitedUsers[invitedUserIndex].status = invitationStatus
     await reservation.save()
     await reservation.load('user')
 

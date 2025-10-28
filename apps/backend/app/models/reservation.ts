@@ -8,6 +8,14 @@ import { DateTime } from 'luxon'
 export const reservationStatus = ['waiting', 'confirmed', 'cancelled'] as const
 export type ReservationStatus = (typeof reservationStatus)[number]
 
+export const invitationStatus = ['waiting', 'confirmed', 'refused'] as const
+export type InvitationStatus = (typeof invitationStatus)[number]
+
+export type InvitedUser = {
+  userId: string
+  status: InvitationStatus
+}
+
 export default class Reservation extends compose(BaseModel, withUUID()) {
   @column.dateTime()
   declare startDate: DateTime
@@ -23,6 +31,23 @@ export default class Reservation extends compose(BaseModel, withUUID()) {
 
   @column()
   declare userId: string
+
+  @column({
+    prepare: (value: InvitedUser[]) => JSON.stringify(value || []),
+    consume: (value: any) => {
+      if (!value) return []
+      if (Array.isArray(value)) return value
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return []
+        }
+      }
+      return []
+    },
+  })
+  declare invitedUsers: InvitedUser[]
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

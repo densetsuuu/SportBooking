@@ -27,6 +27,7 @@ router
   .group(() => {
     router.post('/reservations', [ReservationsController, 'store'])
     router.delete('/reservations/:id', [ReservationsController, 'destroy'])
+    router.patch('/reservations/:id/invitation', [ReservationsController, 'updateInvitationStatus'])
   })
   .use(middleware.auth())
 

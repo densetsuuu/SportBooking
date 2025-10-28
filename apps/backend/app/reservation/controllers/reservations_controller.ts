@@ -2,6 +2,7 @@ import { ReservationService } from '#reservation/services/reservation_service'
 import {
   createReservationValidator,
   indexReservationsValidator,
+  updateInvitationStatusValidator,
   updateReservationStatusValidator,
 } from '#reservation/validators/reservation'
 import { inject } from '@adonisjs/core'
@@ -40,11 +41,8 @@ export default class ReservationsController {
       const user = {
         id: '5b4c20aa-080a-45bf-b806-88f7de743504', // Example user ID
       }
-      console.log('User:', user)
       const payload = await request.validateUsing(createReservationValidator)
-      console.log('Payload:', payload)
       const reservation = await this.reservationService.createReservation(user.id, payload)
-      console.log('Reservation created:', reservation)
       return response.created(reservation)
     } catch (error) {
       if (error.status === 400 || error.status === 409) {
@@ -163,6 +161,37 @@ export default class ReservationsController {
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to fetch reservations for equipment',
+        error: error.message,
+      })
+    }
+  }
+
+  /**
+   * Update invitation status (invited user accepts or refuses)
+   */
+  async updateInvitationStatus({ params, request, response, auth }: HttpContext) {
+    try {
+      await auth.check()
+      const user = auth.user!
+      const { id: reservationId } = params
+      const { status } = await request.validateUsing(updateInvitationStatusValidator)
+
+      const reservation = await this.reservationService.updateInvitationStatus(
+        reservationId,
+        user.id,
+        status
+      )
+
+      return response.ok(reservation)
+    } catch (error) {
+      if (error.status === 404) {
+        return response.notFound({ message: error.message })
+      }
+      if (error.status === 403) {
+        return response.forbidden({ message: error.message })
+      }
+      return response.internalServerError({
+        message: 'Failed to update invitation status',
         error: error.message,
       })
     }
