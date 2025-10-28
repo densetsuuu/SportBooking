@@ -28,12 +28,14 @@ router
     router.post('/reservations', [ReservationsController, 'store'])
     router.delete('/reservations/:id', [ReservationsController, 'destroy'])
     router.patch('/reservations/:id/invitation', [ReservationsController, 'updateInvitationStatus'])
+    router.get('/users/me/reservations', [ReservationsController, 'getUserReservations'])
   })
   .use(middleware.auth())
 
 router.post('/reservationsTest', [ReservationsController, 'storee'])
 router.get('/reservations', [ReservationsController, 'index'])
 router.get('/reservations/:id', [ReservationsController, 'show'])
+router.get('/users/:userId/reservations', [ReservationsController, 'getUserReservationsById'])
 router.get('/sport-equipments/:equip_numero/reservations', [
   ReservationsController,
   'getByEquipment',

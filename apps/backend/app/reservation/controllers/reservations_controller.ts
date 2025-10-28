@@ -113,4 +113,27 @@ export default class ReservationsController {
 
     return response.ok(reservation)
   }
+
+  /**
+   * Get all reservations for the authenticated user (including all invitations: waiting, refused, confirmed)
+   */
+  async getUserReservations({ response, auth }: HttpContext) {
+    await auth.check()
+    const user = auth.user!
+
+    const reservations = await this.reservationService.getUserAllReservations(user.id)
+
+    return response.ok(reservations)
+  }
+
+  /**
+   * Get all reservations for a specific user by ID (public - only created + accepted)
+   */
+  async getUserReservationsById({ params, response }: HttpContext) {
+    const { userId } = params
+
+    const reservations = await this.reservationService.getUserReservations(userId)
+
+    return response.ok(reservations)
+  }
 }

@@ -198,4 +198,79 @@ export class ReservationService {
 
     return reservation
   }
+
+  /**
+   * Get all reservations for a specific user (created by user + accepted invitations)
+   * Public view: only shows created reservations and accepted invitations
+   */
+  async getUserReservations(userId: string): Promise<Reservation[]> {
+    // Get reservations created by the user
+    const createdReservations = await Reservation.query()
+      .where('user_id', userId)
+      .preload('user')
+      .preload('invitations', (invitationQuery) => {
+        invitationQuery.preload('user')
+      })
+      .orderBy('start_date', 'asc')
+
+    // Get reservations where user has ACCEPTED the invitation (confirmed status)
+    const acceptedInvitations = await Invitation.query()
+      .where('user_id', userId)
+      .where('status', 'confirmed')
+      .preload('reservation', (reservationQuery) => {
+        reservationQuery.preload('user').preload('invitations', (invitationQuery) => {
+          invitationQuery.preload('user')
+        })
+      })
+
+    const acceptedReservations = acceptedInvitations.map((invitation) => invitation.reservation)
+
+    // Combine and deduplicate (in case user created and is also invited to same reservation)
+    const allReservations = [...createdReservations, ...acceptedReservations]
+    const uniqueReservations = allReservations.filter(
+      (reservation, index, self) => index === self.findIndex((r) => r.id === reservation.id)
+    )
+
+    // Sort by start date
+    uniqueReservations.sort((a, b) => a.startDate.toMillis() - b.startDate.toMillis())
+
+    return uniqueReservations
+  }
+
+  /**
+   * Get ALL reservations for a specific user (including waiting, refused, etc.)
+   * Private view: shows all reservations regardless of invitation status
+   */
+  async getUserAllReservations(userId: string): Promise<Reservation[]> {
+    // Get reservations created by the user
+    const createdReservations = await Reservation.query()
+      .where('user_id', userId)
+      .preload('user')
+      .preload('invitations', (invitationQuery) => {
+        invitationQuery.preload('user')
+      })
+      .orderBy('start_date', 'asc')
+
+    // Get ALL reservations where user is invited (any status: waiting, confirmed, refused)
+    const allInvitations = await Invitation.query()
+      .where('user_id', userId)
+      .preload('reservation', (reservationQuery) => {
+        reservationQuery.preload('user').preload('invitations', (invitationQuery) => {
+          invitationQuery.preload('user')
+        })
+      })
+
+    const invitedReservations = allInvitations.map((invitation) => invitation.reservation)
+
+    // Combine and deduplicate
+    const allReservations = [...createdReservations, ...invitedReservations]
+    const uniqueReservations = allReservations.filter(
+      (reservation, index, self) => index === self.findIndex((r) => r.id === reservation.id)
+    )
+
+    // Sort by start date
+    uniqueReservations.sort((a, b) => a.startDate.toMillis() - b.startDate.toMillis())
+
+    return uniqueReservations
+  }
 }
