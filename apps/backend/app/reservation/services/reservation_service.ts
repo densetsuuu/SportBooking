@@ -1,4 +1,5 @@
-import Reservation, { InvitationStatus, ReservationStatus } from '#models/reservation'
+import Invitation, { InvitationStatus } from '#models/invitation'
+import Reservation, { ReservationStatus } from '#models/reservation'
 import {
   createReservationValidator,
   indexReservationsValidator,
@@ -23,6 +24,10 @@ export class ReservationService {
     const overlappingReservation = await Reservation.query()
       .where('sport_equipment_id', data.sportEquipmentId)
       .whereNot('status', 'cancelled')
+
+      // Cas 1 : Détecte si le début de la nouvelle réservation tombe dans un créneau occupé
+      // Cas 2 : Détecte si la fin de la nouvelle réservation tombe dans un créneau occupé
+      // Cas 3 : Détecte si la nouvelle réservation recouvre totalement un créneau existant
       .where((query) => {
         query
           .where((subQuery) => {
@@ -53,13 +58,22 @@ export class ReservationService {
       startDate: data.startDate,
       endDate: data.endDate,
       status: 'waiting',
-      invitedUsers: (data.invitedUsers || []).map((invitedUserId) => ({
-        userId: invitedUserId,
-        status: 'waiting' as const,
-      })),
     })
 
+    // Create invitations for invited users
+    if (data.invitedUsers && data.invitedUsers.length > 0) {
+      const invitations = data.invitedUsers.map((invitedUserId) => ({
+        userId: invitedUserId,
+        reservationId: reservation.id,
+        status: 'waiting' as const,
+      }))
+      await Invitation.createMany(invitations)
+    }
+
     await reservation.load('user')
+    await reservation.load('invitations', (query) => {
+      query.preload('user')
+    })
     return reservation
   }
 
@@ -67,7 +81,11 @@ export class ReservationService {
    * Get reservations with optional filters
    */
   async getReservations(filters: Infer<typeof indexReservationsValidator>): Promise<Reservation[]> {
-    const query = Reservation.query().preload('user')
+    const query = Reservation.query()
+      .preload('user')
+      .preload('invitations', (invitationQuery) => {
+        invitationQuery.preload('user')
+      })
 
     if (filters.sportEquipmentId) {
       query.where('sport_equipment_id', filters.sportEquipmentId)
@@ -86,7 +104,13 @@ export class ReservationService {
    * Get a specific reservation by ID
    */
   async getReservationById(id: string): Promise<Reservation> {
-    const reservation = await Reservation.query().where('id', id).preload('user').first()
+    const reservation = await Reservation.query()
+      .where('id', id)
+      .preload('user')
+      .preload('invitations', (invitationQuery) => {
+        invitationQuery.preload('user')
+      })
+      .first()
 
     if (!reservation) {
       throw new Exception('Reservation not found', { status: 404 })
@@ -153,19 +177,24 @@ export class ReservationService {
       throw new Exception('Reservation not found', { status: 404 })
     }
 
-    // Find the invited user
-    const invitedUserIndex = reservation.invitedUsers.findIndex(
-      (invited) => invited.userId === userId
-    )
+    // Find the invitation
+    const invitation = await Invitation.query()
+      .where('reservation_id', reservationId)
+      .where('user_id', userId)
+      .first()
 
-    if (invitedUserIndex === -1) {
+    if (!invitation) {
       throw new Exception('You are not invited to this reservation', { status: 403 })
     }
 
     // Update the invitation status
-    reservation.invitedUsers[invitedUserIndex].status = invitationStatus
-    await reservation.save()
+    invitation.status = invitationStatus
+    await invitation.save()
+
     await reservation.load('user')
+    await reservation.load('invitations', (query) => {
+      query.preload('user')
+    })
 
     return reservation
   }
