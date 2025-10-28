@@ -19,6 +19,22 @@ type LogoutPost = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['logout'], false>
 }
+type EditPut = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['me_edit'], false>
+}
+type UserIdGetHead = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['show'], false>
+}
+type SportEquipmentsGetHead = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/sport_equipment.ts')['indexSportEquipmentsValidator']>>
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['index'], true>
+}
+type SportequipmentsIdGetHead = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['show'], false>
+}
 export interface ApiDefinition {
   'login': {
     '$url': {
@@ -34,6 +50,31 @@ export interface ApiDefinition {
     '$url': {
     };
     '$post': LogoutPost;
+  };
+  'edit': {
+    '$url': {
+    };
+    '$put': EditPut;
+  };
+  'user': {
+    ':userId': {
+      '$url': {
+      };
+      '$get': UserIdGetHead;
+      '$head': UserIdGetHead;
+    };
+  };
+  'sport-equipments': {
+    '$url': {
+    };
+    '$get': SportEquipmentsGetHead;
+    '$head': SportEquipmentsGetHead;
+    ':equip_numero': {
+      '$url': {
+      };
+      '$get': SportequipmentsIdGetHead;
+      '$head': SportequipmentsIdGetHead;
+    };
   };
 }
 const routes = [
@@ -57,6 +98,62 @@ const routes = [
     path: '/logout',
     method: ["POST"],
     types: {} as LogoutPost,
+  },
+  {
+    params: [],
+    name: 'edit',
+    path: '/edit',
+    method: ["PUT"],
+    types: {} as EditPut,
+  },
+  {
+    params: [],
+    name: 'user.index',
+    path: '/user',
+    method: ["GET","HEAD"],
+    types: {} as unknown,
+  },
+  {
+    params: [],
+    name: 'user.create',
+    path: '/user/create',
+    method: ["GET","HEAD"],
+    types: {} as unknown,
+  },
+  {
+    params: [],
+    name: 'user.store',
+    path: '/user',
+    method: ["POST"],
+    types: {} as unknown,
+  },
+  {
+    params: ["userId"],
+    name: 'user.show',
+    path: '/user/:userId',
+    method: ["GET","HEAD"],
+    types: {} as UserIdGetHead,
+  },
+  {
+    params: ["userId"],
+    name: 'user.edit',
+    path: '/user/:userId/edit',
+    method: ["GET","HEAD"],
+    types: {} as unknown,
+  },
+  {
+    params: ["userId"],
+    name: 'user.update',
+    path: '/user/:userId',
+    method: ["PUT","PATCH"],
+    types: {} as unknown,
+  },
+  {
+    params: ["userId"],
+    name: 'user.destroy',
+    path: '/user/:userId',
+    method: ["DELETE"],
+    types: {} as unknown,
   },
 ] as const;
 export const api = {
