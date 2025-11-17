@@ -1,7 +1,7 @@
 import { dateSchema } from '#common/validators/date'
-import { invitationStatus } from '../models/invitation'
-import { reservationStatus } from '../models/reservation'
 import vine from '@vinejs/vine'
+import { reservationStatus } from '#reservation/models/reservation'
+import { invitationStatus } from '#reservation/models/invitation'
 
 export const createReservationValidator = vine.compile(
   vine.object({
