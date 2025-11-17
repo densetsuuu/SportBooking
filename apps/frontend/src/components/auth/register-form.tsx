@@ -26,7 +26,7 @@ export function RegisterForm() {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof createAccountFormSchema>) => {}
+  const onSubmit = async (_: z.infer<typeof createAccountFormSchema>) => {}
 
   return (
     <div className="space-y-6">
