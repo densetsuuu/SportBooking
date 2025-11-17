@@ -1,5 +1,5 @@
-import Invitation, { InvitationStatus } from '#models/invitation'
-import Reservation, { ReservationStatus } from '#models/reservation'
+import Invitation, { InvitationStatus } from '../models/invitation'
+import Reservation, { ReservationStatus } from '../models/reservation'
 import {
   createReservationValidator,
   indexReservationsValidator,
