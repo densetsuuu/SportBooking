@@ -54,7 +54,7 @@ export default function Header() {
                 </Button>
               ) : (
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/auth/login">
+                  <Link to="/login">
                     <User className="w-4 h-4 mr-2" />
                     Connexion
                   </Link>

@@ -5,6 +5,8 @@ import {
   getCurrentUserQueryOptions,
   logoutMutationOptions,
 } from '~/lib/queries/auth'
+import { useEffect } from 'react'
+import { router } from '~/lib/router'
 
 export type User = InferResponseType<typeof tuyau.me.$get>
 
@@ -21,6 +23,10 @@ type AuthData = {
 function useAuth(): AuthData {
   const userQuery = useQuery(getCurrentUserQueryOptions)
   const signOutMutation = useMutation(logoutMutationOptions)
+
+  useEffect(() => {
+    void router.invalidate()
+  }, [userQuery.data])
 
   const utils: AuthUtils = {
     signOut: () => {
