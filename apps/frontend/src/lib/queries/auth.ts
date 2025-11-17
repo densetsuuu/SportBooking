@@ -39,3 +39,13 @@ export const logoutMutationOptions = tuyau.logout.$post.mutationOptions({
     })
   },
 })
+
+export const registerMutationOptions =
+  tuyau.auth.register.$post.mutationOptions({
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: getCurrentUserQueryOptions.queryKey,
+      })
+      toast.success('Compte créé avec succès')
+    },
+  })

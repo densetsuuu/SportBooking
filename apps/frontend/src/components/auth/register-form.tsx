@@ -14,8 +14,13 @@ import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
 import { Link } from '@tanstack/react-router'
 import { PasswordField } from '~/components/ui/password-field'
+import { PasswordStrength } from '~/components/ui/password-strength'
+import { useMutation } from '@tanstack/react-query'
+import { registerMutationOptions } from '~/lib/queries/auth'
 
 export function RegisterForm() {
+  const useRegister = useMutation(registerMutationOptions)
+
   const form = useForm<z.infer<typeof createAccountFormSchema>>({
     resolver: zodResolver(createAccountFormSchema),
     defaultValues: {
@@ -26,7 +31,11 @@ export function RegisterForm() {
     },
   })
 
-  const onSubmit = async (_: z.infer<typeof createAccountFormSchema>) => {}
+  const onSubmit = (data: z.infer<typeof createAccountFormSchema>) => {
+    void useRegister.mutateAsync({
+      payload: data,
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -73,6 +82,7 @@ export function RegisterForm() {
                 <FormControl>
                   <PasswordField {...field} />
                 </FormControl>
+                <PasswordStrength password={field.value} />
                 <FormMessage />
               </FormItem>
             )}
@@ -92,7 +102,11 @@ export function RegisterForm() {
             )}
           />
 
-          <Button type="submit" className="w-full mt-2">
+          <Button
+            type="submit"
+            className="w-full mt-2"
+            loading={useRegister.isPending}
+          >
             Créer mon compte
           </Button>
         </form>

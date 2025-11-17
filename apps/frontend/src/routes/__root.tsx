@@ -1,8 +1,10 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { Toaster } from '~/components/ui/sonner'
+import { RouterContext } from '~/lib/router'
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
     <>
       <Outlet />
@@ -17,6 +19,7 @@ export const Route = createRootRoute({
           },
         ]}
       />
+      <Toaster />
     </>
   ),
 })
