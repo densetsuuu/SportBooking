@@ -15,10 +15,11 @@ import { Button } from '~/components/ui/button'
 import { Icons } from '~/components/icons'
 import { Link } from '@tanstack/react-router'
 import { PasswordField } from '~/components/ui/password-field'
-import { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import { loginMutationOptions } from '~/lib/queries/auth'
 
 export function LoginForm() {
-  const [isLoading, setIsLoading] = useState(false)
+  const useLogin = useMutation(loginMutationOptions())
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -28,16 +29,10 @@ export function LoginForm() {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof loginFormSchema>) => {
-    setIsLoading(true)
-    try {
-      console.log(data)
-      // TODO: Connect with authentication API
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setIsLoading(false)
-    }
+  const onSubmit = (data: z.infer<typeof loginFormSchema>) => {
+    void useLogin.mutateAsync({
+      payload: data,
+    })
   }
 
   return (
@@ -76,24 +71,17 @@ export function LoginForm() {
             )}
           />
 
-          <div className="flex items-center justify-between">
+          <div className="flex justify-end w-full">
             <Link
-              to="#"
-              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-primary"
+              to="/"
+              className="text-xs text-muted-foreground underline underline-offset-4 hover:text-primary"
             >
               Mot de passe oublié ?
             </Link>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                Connexion...
-              </>
-            ) : (
-              'Se connecter'
-            )}
+          <Button type="submit" className="w-full" loading={useLogin.isPending}>
+            Se connecter
           </Button>
         </form>
       </Form>
@@ -109,7 +97,7 @@ export function LoginForm() {
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" disabled={isLoading}>
+      <Button variant="outline" className="w-full">
         <Icons.google className="mr-2 h-4 w-4" />
         Google
       </Button>

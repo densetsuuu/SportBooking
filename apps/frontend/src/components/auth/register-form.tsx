@@ -12,7 +12,6 @@ import { createAccountFormSchema } from '~/lib/schemas/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
-import { Icons } from '~/components/icons'
 import { Link } from '@tanstack/react-router'
 import { PasswordField } from '~/components/ui/password-field'
 
@@ -93,38 +92,20 @@ export function RegisterForm() {
             )}
           />
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full mt-2">
             Créer mon compte
           </Button>
         </form>
       </Form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Ou continuer avec
-          </span>
-        </div>
-      </div>
-
-      <Button variant="outline" className="w-full">
-        <Icons.google className="mr-2 h-4 w-4" />
-        Google
-      </Button>
-
-      <div className="space-y-2 text-center">
-        <p className="text-sm text-muted-foreground">
-          Vous avez déjà un compte ?{' '}
-          <Link
-            to="/login"
-            className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
-          >
-            Se connecter
-          </Link>
-        </p>
+      <div className="inline-flex gap-1 justify-center text-sm w-full">
+        <p className="text-muted-foreground">Vous avez déjà un compte ? </p>
+        <Link
+          to="/login"
+          className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+        >
+          Se connecter
+        </Link>
       </div>
     </div>
   )

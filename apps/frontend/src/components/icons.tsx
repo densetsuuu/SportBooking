@@ -1,4 +1,5 @@
-import { LucideProps, User, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Lock, LucideProps, Mail, User } from 'lucide-react'
+import { Spinner } from '~/components/ui/spinner'
 
 export const Icons = {
   google: (props: LucideProps) => (
@@ -31,5 +32,5 @@ export const Icons = {
   lock: Lock,
   eye: Eye,
   eyeOff: EyeOff,
-  spinner: Loader2,
+  spinner: Spinner,
 }
