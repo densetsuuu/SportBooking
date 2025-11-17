@@ -10,28 +10,30 @@ export const getCurrentUserQueryOptions = tuyau.me.$get.queryOptions(
   }
 )
 
-export const loginMutationOptions = tuyau.login.$post.mutationOptions({
-  onSuccess: async () => {
-    void queryClient.invalidateQueries({
-      queryKey: getCurrentUserQueryOptions.queryKey,
-    })
-    void router.invalidate()
-  },
-  onError: async error => {
-    if (error instanceof Error) {
-      toast.error('Identifiants incorrects', {
-        description: 'Veuillez vérifier vos identifiants ou créer un compte',
+export const loginMutationOptions = (redirectTo?: string) =>
+  tuyau.login.$post.mutationOptions({
+    onSuccess: async () => {
+      void queryClient.invalidateQueries({
+        queryKey: getCurrentUserQueryOptions.queryKey,
       })
-    } else {
-      toast.error('Une erreur est survenue')
-    }
-  },
-})
+      void router.invalidate()
+      void router.navigate({ to: redirectTo || '/', replace: true })
+    },
+    onError: async error => {
+      if (error instanceof Error) {
+        toast.error('Identifiants incorrects', {
+          description: 'Veuillez vérifier vos identifiants ou créer un compte',
+        })
+      } else {
+        toast.error('Une erreur est survenue')
+      }
+    },
+  })
 
 export const logoutMutationOptions = tuyau.logout.$post.mutationOptions({
   onSettled: () => {
     toast.success('Déconnexion réussie')
-    void router.navigate({ to: '/auth/login' })
+    void router.navigate({ to: '/login' })
     queryClient.removeQueries({
       queryKey: getCurrentUserQueryOptions.queryKey,
     })

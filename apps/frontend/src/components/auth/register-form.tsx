@@ -12,67 +12,101 @@ import { createAccountFormSchema } from '~/lib/schemas/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
-import { Icons } from '~/components/icons'
+import { Link } from '@tanstack/react-router'
+import { PasswordField } from '~/components/ui/password-field'
 
 export function RegisterForm() {
   const form = useForm<z.infer<typeof createAccountFormSchema>>({
     resolver: zodResolver(createAccountFormSchema),
+    defaultValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
   })
 
-  const onSubmit = (data: z.infer<typeof createAccountFormSchema>) => {
-    console.log(data)
-  }
+  const onSubmit = async (_: z.infer<typeof createAccountFormSchema>) => {}
 
   return (
-    <Form {...form}>
-      <form className="grid w-full max-w-sm items-center gap-5">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="fullName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom complet</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="button" className="w-full">
-          Sign up
-        </Button>
-      </form>
+    <div className="space-y-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nom complet</FormLabel>
+                <FormControl>
+                  <Input placeholder="Jean Dupont" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <div className="before:bg-border after:bg-border flex items-center gap-3 before:h-px before:flex-1 after:h-px after:flex-1">
-        <span className="text-muted-foreground text-xs">Or</span>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Adresse email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="exemple@email.com"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mot de passe</FormLabel>
+                <FormControl>
+                  <PasswordField {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirmer le mot de passe</FormLabel>
+                <FormControl>
+                  <PasswordField {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="w-full mt-2">
+            Créer mon compte
+          </Button>
+        </form>
+      </Form>
+
+      <div className="inline-flex gap-1 justify-center text-sm w-full">
+        <p className="text-muted-foreground">Vous avez déjà un compte ? </p>
+        <Link
+          to="/login"
+          className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+        >
+          Se connecter
+        </Link>
       </div>
-
-      <Button variant="outline" className="w-full">
-        <Icons.google className="size-4" />
-        S&#39;inscrire avec Google
-      </Button>
-
-      <p className="text-muted-foreground text-center text-xs">
-        By signing up you agree to our{' '}
-        <a className="underline hover:no-underline" href="#">
-          Terms
-        </a>
-        .
-      </p>
-    </Form>
+    </div>
   )
 }

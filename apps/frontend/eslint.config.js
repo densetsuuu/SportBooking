@@ -9,7 +9,14 @@ import prettier from 'eslint-plugin-prettier'
 import prettierConfig from 'eslint-config-prettier'
 
 export default [
-  { ignores: ['dist', 'node_modules', 'routeTree.gen.ts'] },
+  {
+    ignores: [
+      'dist',
+      'node_modules',
+      'routeTree.gen.ts',
+      'src/components/ui/**/*.{ts,tsx}',
+    ],
+  },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -41,14 +48,17 @@ export default [
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       ...prettierConfig.rules,
-      
+
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       'prettier/prettier': 'error',
