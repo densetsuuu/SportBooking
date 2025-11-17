@@ -136,4 +136,17 @@ export default class ReservationsController {
 
     return response.ok(reservations)
   }
+
+  /**
+   * Cancel waiting invitations for reservations that have started (can be called manually or by a cron job)
+   */
+  async cleanupStartedReservations({ response }: HttpContext) {
+    const cancelledCount =
+      await this.reservationService.cancelWaitingInvitationsForStartedReservations()
+
+    return response.ok({
+      message: `${cancelledCount} waiting invitation(s) cancelled for started reservations`,
+      cancelledCount,
+    })
+  }
 }

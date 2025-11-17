@@ -41,3 +41,4 @@ router.get('/sport-equipments/:equip_numero/reservations', [
   'getByEquipment',
 ])
 router.patch('  ', [ReservationsController, 'updateStatus'])
+router.post('/reservations/cleanup-started', [ReservationsController, 'cleanupStartedReservations'])
