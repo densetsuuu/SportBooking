@@ -1,10 +1,12 @@
-import Reservation, { InvitationStatus, ReservationStatus } from '#models/reservation'
+import Invitation, { InvitationStatus } from '#models/invitation'
+import Reservation, { ReservationStatus } from '#models/reservation'
 import {
   createReservationValidator,
   indexReservationsValidator,
 } from '#reservation/validators/reservation'
 import { Exception } from '@adonisjs/core/exceptions'
 import { Infer } from '@vinejs/vine/types'
+import { DateTime } from 'luxon'
 
 export class ReservationService {
   /**
@@ -23,6 +25,10 @@ export class ReservationService {
     const overlappingReservation = await Reservation.query()
       .where('sport_equipment_id', data.sportEquipmentId)
       .whereNot('status', 'cancelled')
+
+      // Cas 1 : Détecte si le début de la nouvelle réservation tombe dans un créneau occupé
+      // Cas 2 : Détecte si la fin de la nouvelle réservation tombe dans un créneau occupé
+      // Cas 3 : Détecte si la nouvelle réservation recouvre totalement un créneau existant
       .where((query) => {
         query
           .where((subQuery) => {
@@ -47,19 +53,32 @@ export class ReservationService {
       throw new Exception('This time slot is already reserved', { status: 409 })
     }
 
+    // Determine initial status: 'confirmed' if no invited users, 'waiting' otherwise
+    const hasInvitedUsers = data.invitedUsers && data.invitedUsers.length > 0
+    const initialStatus = hasInvitedUsers ? 'waiting' : 'confirmed'
+
     const reservation = await Reservation.create({
       userId,
       sportEquipmentId: data.sportEquipmentId,
       startDate: data.startDate,
       endDate: data.endDate,
-      status: 'waiting',
-      invitedUsers: (data.invitedUsers || []).map((invitedUserId) => ({
-        userId: invitedUserId,
-        status: 'waiting' as const,
-      })),
+      status: initialStatus,
     })
 
+    // Create invitations for invited users
+    if (hasInvitedUsers) {
+      const invitations = data.invitedUsers!.map((invitedUserId) => ({
+        userId: invitedUserId,
+        reservationId: reservation.id,
+        status: 'waiting' as const,
+      }))
+      await Invitation.createMany(invitations)
+    }
+
     await reservation.load('user')
+    await reservation.load('invitations', (query) => {
+      query.preload('user')
+    })
     return reservation
   }
 
@@ -67,7 +86,11 @@ export class ReservationService {
    * Get reservations with optional filters
    */
   async getReservations(filters: Infer<typeof indexReservationsValidator>): Promise<Reservation[]> {
-    const query = Reservation.query().preload('user')
+    const query = Reservation.query()
+      .preload('user')
+      .preload('invitations', (invitationQuery) => {
+        invitationQuery.preload('user')
+      })
 
     if (filters.sportEquipmentId) {
       query.where('sport_equipment_id', filters.sportEquipmentId)
@@ -86,7 +109,13 @@ export class ReservationService {
    * Get a specific reservation by ID
    */
   async getReservationById(id: string): Promise<Reservation> {
-    const reservation = await Reservation.query().where('id', id).preload('user').first()
+    const reservation = await Reservation.query()
+      .where('id', id)
+      .preload('user')
+      .preload('invitations', (invitationQuery) => {
+        invitationQuery.preload('user')
+      })
+      .first()
 
     if (!reservation) {
       throw new Exception('Reservation not found', { status: 404 })
@@ -153,20 +182,162 @@ export class ReservationService {
       throw new Exception('Reservation not found', { status: 404 })
     }
 
-    // Find the invited user
-    const invitedUserIndex = reservation.invitedUsers.findIndex(
-      (invited) => invited.userId === userId
-    )
+    // Find the invitation
+    const invitation = await Invitation.query()
+      .where('reservation_id', reservationId)
+      .where('user_id', userId)
+      .first()
 
-    if (invitedUserIndex === -1) {
+    if (!invitation) {
       throw new Exception('You are not invited to this reservation', { status: 403 })
     }
 
     // Update the invitation status
-    reservation.invitedUsers[invitedUserIndex].status = invitationStatus
-    await reservation.save()
+    invitation.status = invitationStatus
+    await invitation.save()
+
+    // Check if all invitations have been answered and auto-validate reservation
+    await this.checkAndAutoValidateReservation(reservationId)
+
     await reservation.load('user')
+    await reservation.load('invitations', (query) => {
+      query.preload('user')
+    })
 
     return reservation
+  }
+
+  /**
+   * Check if all invited users have responded and auto-validate the reservation
+   * Only validates if ALL users have answered (confirmed or refused)
+   */
+  private async checkAndAutoValidateReservation(reservationId: string): Promise<void> {
+    const reservation = await Reservation.find(reservationId)
+
+    if (!reservation || reservation.status !== 'waiting') {
+      return
+    }
+
+    // Get all invitations for this reservation
+    const invitations = await Invitation.query().where('reservation_id', reservationId)
+
+    // Check if all invitations have been answered (no more 'waiting' status)
+    const allAnswered = invitations.every((inv) => inv.status !== 'waiting')
+
+    if (allAnswered && invitations.length > 0) {
+      // Auto-validate the reservation to 'confirmed'
+      reservation.status = 'confirmed'
+      await reservation.save()
+    }
+  }
+
+  /**
+   * Get all reservations for a specific user (created by user + accepted invitations)
+   * Public view: only shows created reservations and accepted invitations
+   */
+  async getUserReservations(userId: string): Promise<Reservation[]> {
+    // Get reservations created by the user
+    const createdReservations = await Reservation.query()
+      .where('user_id', userId)
+      .preload('user')
+      .preload('invitations', (invitationQuery) => {
+        invitationQuery.preload('user')
+      })
+      .orderBy('start_date', 'asc')
+
+    // Get reservations where user has ACCEPTED the invitation (confirmed status)
+    const acceptedInvitations = await Invitation.query()
+      .where('user_id', userId)
+      .where('status', 'confirmed')
+      .preload('reservation', (reservationQuery) => {
+        reservationQuery.preload('user').preload('invitations', (invitationQuery) => {
+          invitationQuery.preload('user')
+        })
+      })
+
+    const acceptedReservations = acceptedInvitations.map((invitation) => invitation.reservation)
+
+    // Combine and deduplicate (in case user created and is also invited to same reservation)
+    const allReservations = [...createdReservations, ...acceptedReservations]
+    const uniqueReservations = allReservations.filter(
+      (reservation, index, self) => index === self.findIndex((r) => r.id === reservation.id)
+    )
+
+    // Sort by start date
+    uniqueReservations.sort((a, b) => a.startDate.toMillis() - b.startDate.toMillis())
+
+    return uniqueReservations
+  }
+
+  /**
+   * Get ALL reservations for a specific user (including waiting, refused, etc.)
+   * Private view: shows all reservations regardless of invitation status
+   */
+  async getUserAllReservations(userId: string): Promise<Reservation[]> {
+    // Get reservations created by the user
+    const createdReservations = await Reservation.query()
+      .where('user_id', userId)
+      .preload('user')
+      .preload('invitations', (invitationQuery) => {
+        invitationQuery.preload('user')
+      })
+      .orderBy('start_date', 'asc')
+
+    // Get ALL reservations where user is invited (any status: waiting, confirmed, refused)
+    const allInvitations = await Invitation.query()
+      .where('user_id', userId)
+      .preload('reservation', (reservationQuery) => {
+        reservationQuery.preload('user').preload('invitations', (invitationQuery) => {
+          invitationQuery.preload('user')
+        })
+      })
+
+    const invitedReservations = allInvitations.map((invitation) => invitation.reservation)
+
+    // Combine and deduplicate
+    const allReservations = [...createdReservations, ...invitedReservations]
+    const uniqueReservations = allReservations.filter(
+      (reservation, index, self) => index === self.findIndex((r) => r.id === reservation.id)
+    )
+
+    // Sort by start date
+    uniqueReservations.sort((a, b) => a.startDate.toMillis() - b.startDate.toMillis())
+
+    return uniqueReservations
+  }
+
+  /**
+   * Cancel waiting invitations for reservations that have already started
+   * This runs when the reservation start_date has passed
+   */
+  async cancelWaitingInvitationsForStartedReservations(): Promise<number> {
+    const now = DateTime.now()
+
+    // Find all reservations that have started (start_date <= now)
+    const startedReservations = await Reservation.query()
+      .where('start_date', '<=', now.toSQL())
+      .whereHas('invitations', (query) => {
+        query.where('status', 'waiting')
+      })
+
+    let cancelledCount = 0
+
+    for (const reservation of startedReservations) {
+      // Get waiting invitations for this reservation
+      const waitingInvitations = await Invitation.query()
+        .where('reservation_id', reservation.id)
+        .where('status', 'waiting')
+
+      for (const invitation of waitingInvitations) {
+        invitation.status = 'refused'
+        await invitation.save()
+        cancelledCount++
+      }
+
+      // Check if this triggers auto-validation of the reservation
+      await this.checkAndAutoValidateReservation(reservation.id)
+    }
+
+    return cancelledCount
   }
 }
