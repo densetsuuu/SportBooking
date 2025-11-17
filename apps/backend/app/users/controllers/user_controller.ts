@@ -1,24 +1,16 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
-import { Get, Group, Middleware, Put, Resource } from '@adonisjs-community/girouette'
-import { middleware } from '#start/kernel'
+import { Get } from '@adonisjs-community/girouette'
 import { inject } from '@adonisjs/core'
 import User from '#users/models/user'
-import UserDto from '#users/dtos/userDto'
+import UserDto from '#users/dtos/user_dto'
 
 @inject()
-@Resource({ name: 'user', params: {user:'userId'} })
 export default class UserController {
-  @Put('/edit', 'edit')
-  @Middleware([middleware.auth()])
-  async me_edit({ auth }: HttpContext) {
-    // TODO
-  }
-
+  @Get('/users/:userId', 'users.show')
   async show({ params, response }: HttpContext) {
-    const {userId} = params
+    const { userId } = params
     const user = await User.findOrFail(userId)
-    console.log(user)
 
     return response.ok(new UserDto(user))
   }

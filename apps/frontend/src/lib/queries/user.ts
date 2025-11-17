@@ -1,3 +1,4 @@
-import { tuyau } from "../tuyau";
+import { tuyau } from '../tuyau'
 
-export const getUserQueryOptions = (userId:string) => tuyau.user({userId}).$get.queryOptions();
+export const getUserQueryOptions = (userId: string) =>
+  tuyau.users({ userId }).$get.queryOptions()
