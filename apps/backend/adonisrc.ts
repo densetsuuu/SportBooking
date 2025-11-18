@@ -32,6 +32,7 @@ export default defineConfig({
     () => import('@jrmc/adonis-attachment/commands'),
     () => import('@adocasts.com/dto/commands'),
     () => import('@tuyau/core/commands'),
+    () => import('@adonisjs/bouncer/commands')
   ],
 
   /*
@@ -59,6 +60,8 @@ export default defineConfig({
     () => import('@adonisjs-community/girouette/girouette_provider'),
     () => import('@tuyau/core/tuyau_provider'),
     () => import('@adonisjs/drive/drive_provider'),
+    () => import('@adonisjs/bouncer/bouncer_provider'),
+    () => import('@adonisjs/ally/ally_provider')
   ],
 
   /*

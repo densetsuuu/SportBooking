@@ -4,6 +4,7 @@ import { ComponentProps } from 'react'
 type UserAvatarProps = {
   user: {
     fullName: string
+    avatar: { url?: string } | null
   }
 } & ComponentProps<typeof Avatar>
 
@@ -13,9 +14,9 @@ export function UserAvatar({ user, ...props }: UserAvatarProps) {
   }`.toUpperCase()
 
   return (
-    <Avatar {...props}>
-      <AvatarFallback className="rounded-lg text-xs">{initials}</AvatarFallback>
-      <AvatarImage alt={initials} />
+    <Avatar className="rounded-full" {...props}>
+      <AvatarFallback className="border-0">{initials}</AvatarFallback>
+      <AvatarImage className="border-0" alt={initials} src={user.avatar?.url} />
     </Avatar>
   )
 }

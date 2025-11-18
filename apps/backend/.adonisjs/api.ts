@@ -7,15 +7,15 @@
 import type { MakeTuyauRequest, MakeTuyauResponse } from '@tuyau/utils/types'
 import type { InferInput } from '@vinejs/vine/types'
 
-type LoginPost = {
+type AuthLoginPost = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/auth/validators/login.ts')['loginValidator']>>
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['login'], true>
 }
-type MeGet = {
+type AuthMeGet = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['me'], false>
 }
-type LogoutPost = {
+type AuthLogoutPost = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['logout'], false>
 }
@@ -23,120 +23,79 @@ type AuthRegisterPost = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/auth/validators/register.ts')['registerValidator']>>
   response: MakeTuyauResponse<import('../app/auth/controllers/register_controller.ts').default['register'], true>
 }
-type UsersIdGet = {
+type AuthSocialIdRedirectGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/auth/controllers/social_controller.ts').default['redirect'], false>
+}
+type AuthSocialIdCallbackGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/auth/controllers/social_controller.ts').default['callback'], false>
+}
+type AuthSocialIdDelete = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/auth/controllers/social_controller.ts').default['disconnect'], false>
+}
+type UsersIdGetHead = {
   request: unknown
   response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['show'], false>
 }
-type SportEquipmentsGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/sport_equipment.ts')['indexSportEquipmentsValidator']>>
-  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['index'], true>
+type UsersIdPutPatch = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/users/validators/user.ts')['updateUserValidator']>>
+  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['update'], true>
 }
-type SportequipmentsIdGetHead = {
+type UsersIdDelete = {
   request: unknown
-  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['show'], false>
-}
-type ReservationsIdDelete = {
-  request: unknown
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['destroy'], false>
-}
-type ReservationsIdInvitationPatch = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateInvitationStatusValidator']>>
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['updateInvitationStatus'], true>
-}
-type ReservationsPost = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['createReservationValidator']>>
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['store'], true>
-}
-type ReservationsGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['indexReservationsValidator']>>
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['index'], true>
-}
-type ReservationsIdGetHead = {
-  request: unknown
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['show'], false>
-}
-type SportequipmentsIdReservationsGetHead = {
-  request: unknown
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['getByEquipment'], false>
-}
-type Patch = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateReservationStatusValidator']>>
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['updateStatus'], true>
+  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['destroy'], false>
 }
 export interface ApiDefinition {
-  'login': {
-    '$url': {
-    };
-    '$post': LoginPost;
-  };
-  'me': {
-    '$url': {
-    };
-    '$get': MeGet;
-  };
-  'logout': {
-    '$url': {
-    };
-    '$post': LogoutPost;
-  };
-  'sport_equipments': {
-    '$url': {
-    };
-    '$get': SportEquipmentsGetHead;
-    '$head': SportEquipmentsGetHead;
-    ':equip_numero': {
-      '$url': {
-      };
-      '$get': SportequipmentsIdGetHead;
-      '$head': SportequipmentsIdGetHead;
-    };
-  };
-  'reservations': {
-    ':id': {
-      '$url': {
-      };
-      '$delete': ReservationsIdDelete;
-      'invitation': {
-        '$url': {
-        };
-        '$patch': ReservationsIdInvitationPatch;
-      };
-      '$get': ReservationsIdGetHead;
-      '$head': ReservationsIdGetHead;
-    };
-    '$url': {
-    };
-    '$post': ReservationsPost;
-    '$get': ReservationsGetHead;
-    '$head': ReservationsGetHead;
-  };
-  'sport-equipments': {
-    ':equip_numero': {
-      'reservations': {
-        '$url': {
-        };
-        '$get': SportequipmentsIdReservationsGetHead;
-        '$head': SportequipmentsIdReservationsGetHead;
-      };
-    };
-  };
-  '  ': {
-    '$url': {
-    };
-    '$patch': Patch;
-  };
   'auth': {
+    'login': {
+      '$url': {
+      };
+      '$post': AuthLoginPost;
+    };
+    'me': {
+      '$url': {
+      };
+      '$get': AuthMeGet;
+    };
+    'logout': {
+      '$url': {
+      };
+      '$post': AuthLogoutPost;
+    };
     'register': {
       '$url': {
       };
       '$post': AuthRegisterPost;
+    };
+    'social': {
+      ':provider': {
+        'redirect': {
+          '$url': {
+          };
+          '$get': AuthSocialIdRedirectGet;
+        };
+        'callback': {
+          '$url': {
+          };
+          '$get': AuthSocialIdCallbackGet;
+        };
+        '$url': {
+        };
+        '$delete': AuthSocialIdDelete;
+      };
     };
   };
   'users': {
     ':userId': {
       '$url': {
       };
-      '$get': UsersIdGet;
+      '$get': UsersIdGetHead;
+      '$head': UsersIdGetHead;
+      '$put': UsersIdPutPatch;
+      '$patch': UsersIdPutPatch;
+      '$delete': UsersIdDelete;
     };
   };
 }
@@ -144,23 +103,23 @@ const routes = [
   {
     params: [],
     name: 'auth.login',
-    path: '/login',
+    path: '/auth/login',
     method: ["POST"],
-    types: {} as LoginPost,
+    types: {} as AuthLoginPost,
   },
   {
     params: [],
     name: 'auth.me',
-    path: '/me',
+    path: '/auth/me',
     method: ["GET"],
-    types: {} as MeGet,
+    types: {} as AuthMeGet,
   },
   {
     params: [],
     name: 'auth.logout',
-    path: '/logout',
+    path: '/auth/logout',
     method: ["POST"],
-    types: {} as LogoutPost,
+    types: {} as AuthLogoutPost,
   },
   {
     params: [],
@@ -170,11 +129,53 @@ const routes = [
     types: {} as AuthRegisterPost,
   },
   {
+    params: ["provider"],
+    name: 'auth.social.create',
+    path: '/auth/social/:provider/redirect',
+    method: ["GET"],
+    types: {} as AuthSocialIdRedirectGet,
+  },
+  {
+    params: ["provider"],
+    name: 'auth.social.callback',
+    path: '/auth/social/:provider/callback',
+    method: ["GET"],
+    types: {} as AuthSocialIdCallbackGet,
+  },
+  {
+    params: ["provider"],
+    name: 'auth.social.disconnect',
+    path: '/auth/social/:provider',
+    method: ["DELETE"],
+    types: {} as AuthSocialIdDelete,
+  },
+  {
     params: ["userId"],
     name: 'users.show',
     path: '/users/:userId',
-    method: ["GET"],
-    types: {} as UsersIdGet,
+    method: ["GET","HEAD"],
+    types: {} as UsersIdGetHead,
+  },
+  {
+    params: ["userId"],
+    name: 'users.update',
+    path: '/users/:userId',
+    method: ["PUT","PATCH"],
+    types: {} as UsersIdPutPatch,
+  },
+  {
+    params: ["userId"],
+    name: 'users.destroy',
+    path: '/users/:userId',
+    method: ["DELETE"],
+    types: {} as UsersIdDelete,
+  },
+  {
+    params: ["key","name"],
+    name: 'attachments',
+    path: '/attachments/:key/:name?',
+    method: ["GET","HEAD"],
+    types: {} as unknown,
   },
 ] as const;
 export const api = {

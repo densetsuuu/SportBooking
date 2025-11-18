@@ -6,10 +6,11 @@ import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
 import { Link } from '@tanstack/react-router'
 import { useAuth } from '~/hooks/use-auth'
+import { UserDropdown } from '~/components/user/user-dropdown'
 
 export default function Header() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
-  const auth = useAuth()
+  const { user } = useAuth()
 
   return (
     <>
@@ -45,13 +46,8 @@ export default function Header() {
 
             {/* User Actions */}
             <div className="hidden sm:flex items-center space-x-4">
-              {auth.user ? (
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/account">
-                    <User className="w-4 h-4 mr-2" />
-                    Mon compte
-                  </Link>
-                </Button>
+              {user ? (
+                <UserDropdown user={user} />
               ) : (
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/login">
