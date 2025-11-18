@@ -45,14 +45,6 @@ export class SportEquipmentService {
   private url =
     'https://equipements.sports.gouv.fr/api/explore/v2.1/catalog/datasets/data-es/records?refine=inst_part_type_filter%3A%22Complexe%20sportif%22'
 
-  async getAllSportEquipments(): Promise<SportEquipmentResponse> {
-    const response = await fetch(this.url + '&limit=100')
-    if (!response.ok) {
-      throw new Error('Failed to fetch sport equipments')
-    }
-    return response.json() as Promise<SportEquipmentResponse>
-  }
-
   async getSportEquipmentById(equip_numero: string): Promise<SportEquipment> {
     const response = await fetch(this.url + `&where=equip_numero="${equip_numero}"`)
     if (!response.ok) {
@@ -65,8 +57,12 @@ export class SportEquipmentService {
   async getSportsEquipments({
     typeSport,
     ville,
+    page,
+    limit = 20,
   }: Infer<typeof indexSportEquipmentsValidator>): Promise<SportEquipmentResponse> {
     let whereClauses: string[] = []
+    let offset = page && limit ? (page - 1) * limit : 0
+
     if (typeSport) {
       whereClauses.push(`equip_type_name='${typeSport}'`)
     }
@@ -74,7 +70,7 @@ export class SportEquipmentService {
       whereClauses.push(`lib_bdv='${ville}'`)
     }
     const whereQuery = whereClauses.length > 0 ? `&where=${whereClauses.join(' AND ')}` : ''
-    const response = await fetch(this.url + whereQuery + '&limit=100')
+    const response = await fetch(this.url + whereQuery + `&limit=${limit}&offset=${offset}`)
     if (!response.ok) {
       throw new Error('Failed to fetch sport equipments by type and city')
     }

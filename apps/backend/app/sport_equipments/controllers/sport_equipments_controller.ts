@@ -6,6 +6,7 @@ import { indexSportEquipmentsValidator } from '#sport_equipments/validators/spor
 import { middleware } from '#start/kernel'
 import { Delete, Get, Group, Middleware, Patch, Post } from '@adonisjs-community/girouette'
 import { inject } from '@adonisjs/core'
+import SportEquipmentDto from '#sport_equipments/dtos/sport_equipment_dto'
 
 @inject()
 @Group({ prefix: '/sport_equipments', name: 'sport_equipments' })
@@ -18,7 +19,12 @@ export default class SportEquipmentsController {
 
     const data = await this.sportEquipmentService.getSportsEquipments(payload)
 
-    return response.ok(data)
+    return response.ok({
+      data: SportEquipmentDto.fromArray(data.results),
+      total: data.total_count,
+      page: payload.page,
+      limit: payload.limit,
+    })
   }
 
   @Get('/:equip_numero', 'show')

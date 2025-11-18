@@ -2,6 +2,8 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useAuth } from '~/hooks/use-auth'
 import { Button } from '~/components/ui/button'
 import { UserAvatar } from '~/components/user-avatar'
+import { useEasterEgg } from "~/hooks/useEasterEgg";
+import CardWithClose from "~/components/easter-egg";
 
 export const Route = createFileRoute('/(app)/')({
   component: App,
@@ -9,6 +11,7 @@ export const Route = createFileRoute('/(app)/')({
 
 function App() {
   const { user, signOut } = useAuth()
+  const { visible, close } = useEasterEgg();
 
   return (
     <div className="text-center h-screen flex flex-col justify-center items-center">
@@ -31,6 +34,16 @@ function App() {
           <Button asChild>
             <Link to={'/login'}>Se connecter</Link>
           </Button>
+        </div>
+      )}
+      {visible && (
+        <div className="fixed top-4 right-4 z-[9999]">
+          <CardWithClose
+            imageSrc="\gagawanoeuf.jpg"
+            text="Linkedin"
+            text2="Interpol"
+            onClose={close}
+          />
         </div>
       )}
     </div>
