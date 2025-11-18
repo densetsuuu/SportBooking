@@ -1,4 +1,6 @@
+import OwnerSportEquipment from '#sport_equipments/models/owner_sport_equipment'
 import { indexSportEquipmentsValidator } from '#sport_equipments/validators/sport_equipment'
+import User from '#users/models/user'
 import { Exception } from '@adonisjs/core/exceptions'
 import { Infer } from '@vinejs/vine/types'
 
@@ -81,5 +83,107 @@ export class SportEquipmentService {
       total_count: data.total_count,
       results: data.results.map((item) => this.mapToSportEquipment(item)),
     }
+  }
+
+  /**
+   * Assign an owner to a sport equipment
+   */
+  async assignOwner(sportEquipmentId: string, userId: string): Promise<OwnerSportEquipment> {
+    // Verify user exists
+    const user = await User.find(userId)
+    if (!user) {
+      throw new Exception('User not found', { status: 404 })
+    }
+
+    // Verify sport equipment exists in the external API
+    const sportEquipment = await this.getSportEquipmentById(sportEquipmentId)
+    if (!sportEquipment) {
+      throw new Exception('Sport equipment not found', { status: 404 })
+    }
+
+    // Check if ownership already exists
+    const existingOwnership = await OwnerSportEquipment.query()
+      .where('sportEquipmentId', sportEquipmentId)
+      .first()
+
+    if (existingOwnership) {
+      throw new Exception('This sport equipment already has an owner', { status: 409 })
+    }
+
+    // Create ownership
+    const ownership = await OwnerSportEquipment.create({
+      ownerId: userId,
+      sportEquipmentId,
+    })
+
+    await ownership.load('owner')
+    return ownership
+  }
+
+  /**
+   * Remove owner from a sport equipment
+   */
+  async removeOwner(sportEquipmentId: string, currentUserId: string): Promise<void> {
+    const ownership = await OwnerSportEquipment.query()
+      .where('sportEquipmentId', sportEquipmentId)
+      .first()
+
+    if (!ownership) {
+      throw new Exception('No owner found for this sport equipment', { status: 404 })
+    }
+
+    // Verify that the current user is the owner
+    if (ownership.ownerId !== currentUserId) {
+      throw new Exception('You are not authorized to remove this ownership', { status: 403 })
+    }
+
+    await ownership.delete()
+  }
+
+  /**
+   * Update the owner of a sport equipment
+   */
+  async updateOwner(
+    sportEquipmentId: string,
+    newUserId: string,
+    currentUserId: string
+  ): Promise<OwnerSportEquipment> {
+    // Verify new user exists
+    const user = await User.find(newUserId)
+    if (!user) {
+      throw new Exception('User not found', { status: 404 })
+    }
+
+    const ownership = await OwnerSportEquipment.query()
+      .where('sportEquipmentId', sportEquipmentId)
+      .first()
+
+    if (!ownership) {
+      throw new Exception('No owner found for this sport equipment', { status: 404 })
+    }
+
+    // Verify that the current user is the owner
+    if (ownership.ownerId !== currentUserId) {
+      throw new Exception('You are not authorized to update this ownership', { status: 403 })
+    }
+
+    // Update owner
+    ownership.ownerId = newUserId
+    await ownership.save()
+    await ownership.load('owner')
+
+    return ownership
+  }
+
+  /**
+   * Get owner of a sport equipment
+   */
+  async getOwner(sportEquipmentId: string): Promise<OwnerSportEquipment | null> {
+    const ownership = await OwnerSportEquipment.query()
+      .where('sportEquipmentId', sportEquipmentId)
+      .preload('owner')
+      .first()
+
+    return ownership
   }
 }

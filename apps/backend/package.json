@@ -38,7 +38,8 @@
     "#auth/*": "./app/auth/*.js",
     "#common/*": "./app/common/*.js",
     "#sport_equipments/*": "./app/sport_equipments/*.js",
-    "#reservation/*": "./app/reservation/*.js"
+    "#reservation/*": "./app/reservation/*.js",
+    "#owner/*": "./app/owner/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
