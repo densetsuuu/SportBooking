@@ -5,9 +5,10 @@ import { loginValidator } from '#auth/validators/login'
 import User from '#users/models/user'
 import { middleware } from '#start/kernel'
 import { inject } from '@adonisjs/core'
+import UserDto from '#users/dtos/user_dto'
 
 @inject()
-@Group({ name: 'auth' })
+@Group({ name: 'auth', prefix: '' })
 export default class AuthController {
   @Post('/login', 'login')
   async login({ auth, request }: HttpContext) {
@@ -23,7 +24,8 @@ export default class AuthController {
   @Get('/me', 'me')
   @Middleware([middleware.auth()])
   async me({ auth }: HttpContext) {
-    return auth.getUserOrFail()
+    const user = auth.getUserOrFail()
+    return new UserDto(user)
   }
 
   @Post('/logout', 'logout')

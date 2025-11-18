@@ -1,5 +1,5 @@
 import { withUUID } from '#common/mixins/with_uuid'
-import Reservation from '#models/reservation'
+import Reservation from '#reservation/models/reservation'
 import User from '#users/models/user'
 import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'

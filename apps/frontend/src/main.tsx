@@ -1,15 +1,15 @@
-import {createRoot} from "react-dom/client";
-import {App} from "~/app";
-import reportWebVitals from "~/reportWebVitals";
-import "~/styles.css";
+import { createRoot } from 'react-dom/client'
+import { App } from '~/app'
+import reportWebVitals from '~/reportWebVitals'
+import '~/styles.css'
 
 declare global {
-    interface Window {
-        readonly app: HTMLElement
-    }
+  interface Window {
+    readonly app: HTMLElement
+  }
 }
 
-createRoot(window.app).render(<App/>)
+createRoot(window.app).render(<App />)
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

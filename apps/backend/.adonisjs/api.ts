@@ -19,6 +19,14 @@ type LogoutPost = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['logout'], false>
 }
+type AuthRegisterPost = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/auth/validators/register.ts')['registerValidator']>>
+  response: MakeTuyauResponse<import('../app/auth/controllers/register_controller.ts').default['register'], true>
+}
+type UsersIdGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['show'], false>
+}
 export interface ApiDefinition {
   'login': {
     '$url': {
@@ -34,6 +42,20 @@ export interface ApiDefinition {
     '$url': {
     };
     '$post': LogoutPost;
+  };
+  'auth': {
+    'register': {
+      '$url': {
+      };
+      '$post': AuthRegisterPost;
+    };
+  };
+  'users': {
+    ':userId': {
+      '$url': {
+      };
+      '$get': UsersIdGet;
+    };
   };
 }
 const routes = [
@@ -57,6 +79,20 @@ const routes = [
     path: '/logout',
     method: ["POST"],
     types: {} as LogoutPost,
+  },
+  {
+    params: [],
+    name: 'auth.register',
+    path: '/auth/register',
+    method: ["POST"],
+    types: {} as AuthRegisterPost,
+  },
+  {
+    params: ["userId"],
+    name: 'users.show',
+    path: '/users/:userId',
+    method: ["GET"],
+    types: {} as UsersIdGet,
   },
 ] as const;
 export const api = {
