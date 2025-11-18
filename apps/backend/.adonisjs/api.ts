@@ -27,6 +27,42 @@ type UsersIdGet = {
   request: unknown
   response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['show'], false>
 }
+type SportEquipmentsGetHead = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/sport_equipment.ts')['indexSportEquipmentsValidator']>>
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['index'], true>
+}
+type SportequipmentsIdGetHead = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['show'], false>
+}
+type ReservationsIdDelete = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['destroy'], false>
+}
+type ReservationsIdInvitationPatch = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateInvitationStatusValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['updateInvitationStatus'], true>
+}
+type ReservationsPost = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['createReservationValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['store'], true>
+}
+type ReservationsGetHead = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['indexReservationsValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['index'], true>
+}
+type ReservationsIdGetHead = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['show'], false>
+}
+type SportequipmentsIdReservationsGetHead = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['getByEquipment'], false>
+}
+type Patch = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateReservationStatusValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['updateStatus'], true>
+}
 export interface ApiDefinition {
   'login': {
     '$url': {
@@ -42,6 +78,52 @@ export interface ApiDefinition {
     '$url': {
     };
     '$post': LogoutPost;
+  };
+  'sport_equipments': {
+    '$url': {
+    };
+    '$get': SportEquipmentsGetHead;
+    '$head': SportEquipmentsGetHead;
+    ':equip_numero': {
+      '$url': {
+      };
+      '$get': SportequipmentsIdGetHead;
+      '$head': SportequipmentsIdGetHead;
+    };
+  };
+  'reservations': {
+    ':id': {
+      '$url': {
+      };
+      '$delete': ReservationsIdDelete;
+      'invitation': {
+        '$url': {
+        };
+        '$patch': ReservationsIdInvitationPatch;
+      };
+      '$get': ReservationsIdGetHead;
+      '$head': ReservationsIdGetHead;
+    };
+    '$url': {
+    };
+    '$post': ReservationsPost;
+    '$get': ReservationsGetHead;
+    '$head': ReservationsGetHead;
+  };
+  'sport-equipments': {
+    ':equip_numero': {
+      'reservations': {
+        '$url': {
+        };
+        '$get': SportequipmentsIdReservationsGetHead;
+        '$head': SportequipmentsIdReservationsGetHead;
+      };
+    };
+  };
+  '  ': {
+    '$url': {
+    };
+    '$patch': Patch;
   };
   'auth': {
     'register': {

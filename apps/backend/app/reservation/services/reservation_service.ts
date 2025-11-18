@@ -17,7 +17,7 @@ export class ReservationService {
     data: Infer<typeof createReservationValidator>
   ): Promise<Reservation> {
     // Validate that end date is after start date
-    if (data.endDate <= data.startDate) {
+    if (data.endDate < data.startDate) {
       throw new Exception('End date must be after start date', { status: 400 })
     }
 
