@@ -6,6 +6,8 @@ import CardWithClose from '~/components/easter-egg'
 import { ListView } from '~/components/list-view'
 import { useEasterEgg } from '~/hooks/useEasterEgg'
 import { getSportEquipmentQueryOptions } from '~/lib/queries/sport-equipments'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { MapView } from '~/components/map-view'
 
 export const Route = createFileRoute('/(app)/')({
   component: App,
@@ -38,34 +40,49 @@ function App() {
   }
 
   return (
-    <div className="text-center">
-      <header className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
-        {data?.data && (
-          <>
-            <ListView results={data?.data ?? []} />
-            {/* PAGINATION */}
-            <div className="flex gap-4 mt-6 items-center justify-center">
-              <button
-                onClick={handlePreviousPage}
-                disabled={page === 1}
-                className="px-4 py-2 bg-gray-700 rounded disabled:opacity-40"
-              >
-                ◀ Précédent
-              </button>
-              <span>
-                Page {page} / {(data && data.total) || 1}
-              </span>
-              <button
-                onClick={handleNextPage}
-                disabled={data && page === data.total}
-                className="px-4 py-2 bg-gray-700 rounded disabled:opacity-40"
-              >
-                Suivant ▶
-              </button>
-            </div>
-          </>
-        )}
-      </header>
+    <div className="bg-[#282c34]">
+      <Tabs defaultValue="list" className="flex items-center">
+        <TabsList className="mt-5 w-3/4">
+          <TabsTrigger value="list">Liste</TabsTrigger>
+          <TabsTrigger value="map">Carte</TabsTrigger>
+        </TabsList>
+        <TabsContent value="list">
+          <div className="text-center">
+            <header className="min-h-screen flex flex-col items-center justify-center text-white text-[calc(10px+2vmin)] mt-6">
+              {data?.data && (
+                <>
+                  <ListView results={data?.data ?? []} />
+                  {/* PAGINATION */}
+                  <div className="flex gap-4 mt-6 items-center justify-center">
+                    <button
+                      onClick={handlePreviousPage}
+                      disabled={page === 1}
+                      className="px-4 py-2 bg-gray-700 rounded disabled:opacity-40"
+                    >
+                      ◀ Précédent
+                    </button>
+                    <span>
+                      Page {page} / {(data && data.total) || 1}
+                    </span>
+                    <button
+                      onClick={handleNextPage}
+                      disabled={data && page === data.total}
+                      className="px-4 py-2 bg-gray-700 rounded disabled:opacity-40"
+                    >
+                      Suivant ▶
+                    </button>
+                  </div>
+                </>
+              )}
+            </header>
+          </div>
+        </TabsContent>
+        <TabsContent value="map">
+          <div className="min-h-screen flex items-center justify-center">
+            <p className="text-white text-[calc(10px+2vmin)] mt-6">Map a venir</p>
+          </div>
+        </TabsContent>
+      </Tabs>
       {visible && (
         <div className="fixed top-4 right-4 z-[9999]">
           <CardWithClose

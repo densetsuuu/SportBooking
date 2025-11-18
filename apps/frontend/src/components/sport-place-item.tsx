@@ -65,7 +65,7 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
 
 	return (
 		<Card
-			className="overflow-hidden justify-items-start flex flex-col sm:flex-row shadow-sm hover:shadow-md transition">
+			className="overflow-hidden justify-items-start flex flex-col sm:flex-row shadow-sm hover:shadow-md transition p-4">
 			{/* Image */}
 			<div className="sm:w-1/3 relative">
 				<img
