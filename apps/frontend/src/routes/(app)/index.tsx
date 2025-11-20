@@ -77,10 +77,8 @@ function App() {
             </header>
           </div>
         </TabsContent>
-        <TabsContent value="map">
-          <div className="min-h-screen flex items-center justify-center">
-            <p className="text-white text-[calc(10px+2vmin)] mt-6">Map a venir</p>
-          </div>
+        <TabsContent value="map" className="w-full h-screen flex items-center justify-center">
+          <MapView results={data?.data ?? []} />
         </TabsContent>
       </Tabs>
       {visible && (
