@@ -1,0 +1,22 @@
+services:
+  frontend:
+    build:
+      context: ../..
+      dockerfile: apps/frontend/Dockerfile
+    container_name: '${COMPOSE_PROJECT_NAME}_frontend'
+    ports:
+      - '3000:80'
+    environment:
+      - NODE_ENV=production
+    networks:
+      - sail
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O- http://localhost/ || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  sail:
+    driver: bridge
+

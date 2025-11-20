@@ -64,4 +64,12 @@ export default [
       'prettier/prettier': 'error',
     },
   },
+  {
+    files: ['vite.config.ts', 'vite.config.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
 ]
