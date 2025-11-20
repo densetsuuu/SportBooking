@@ -6,5 +6,6 @@ export const indexSportEquipmentsValidator = vine.compile(
     ville: vine.string().optional(),
     page: vine.number().optional(),
     limit: vine.number().optional(),
+    nom: vine.string().optional(),
   })
 )

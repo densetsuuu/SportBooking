@@ -57,15 +57,19 @@ export class SportEquipmentService {
     ville,
     page,
     limit = 20,
+    nom,
   }: Infer<typeof indexSportEquipmentsValidator>): Promise<SportEquipmentResponse> {
     let whereClauses: string[] = []
     let offset = page && limit ? (page - 1) * limit : 0
 
     if (typeSport) {
-      whereClauses.push(`equip_type_name='${typeSport}'`)
+      whereClauses.push(`equip_type_name LIKE '%${typeSport}%'`)
     }
     if (ville) {
-      whereClauses.push(`lib_bdv='${ville}'`)
+      whereClauses.push(`lib_bdv LIKE '%${ville}%'`)
+    }
+    if (nom) {
+      whereClauses.push(`equip_nom LIKE '%${nom}%'`)
     }
     const whereQuery = whereClauses.length > 0 ? `&where=${whereClauses.join(' AND ')}` : ''
     const response = await fetch(this.url + whereQuery + `&limit=${limit}&offset=${offset}`)
