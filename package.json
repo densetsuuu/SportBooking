@@ -9,7 +9,7 @@
     "back": "docker compose up --build",
     "lint": "turbo lint",
     "typecheck": "cd apps/backend && pnpm typecheck",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "turbo format",
     "tsp": "pnpm run -C docs/tsp tsp",
     "test": "turbo run test",
     "prepare": "husky"

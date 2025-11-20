@@ -1,38 +1,38 @@
-import React from "react";
-import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { X } from "lucide-react";
+import React from 'react'
+import { Card, CardContent } from '~/components/ui/card'
+import { Button } from '~/components/ui/button'
+import { X } from 'lucide-react'
 
 interface CardWithCloseProps {
-  imageSrc: string;
-  imageAlt?: string;
-  text?: string;
-  text2?: string;
-  onClose?: () => void;
-  className?: string;
+  imageSrc: string
+  imageAlt?: string
+  text?: string
+  text2?: string
+  onClose?: () => void
+  className?: string
 }
 
 export default function CardWithClose({
   imageSrc,
-  imageAlt = "image",
-  text = "",
-  text2 = "",
+  imageAlt = 'image',
+  text = '',
+  text2 = '',
   onClose,
-  className = "",
+  className = '',
 }: CardWithCloseProps) {
-
-  const [result, setResult] = React.useState<string | null>(null);
+  const [result, setResult] = React.useState<string | null>(null)
 
   function handleClick() {
-    const outcomes = ["Bravo !", "Raté..."];
-    const random = outcomes[Math.floor(Math.random() * outcomes.length)];
-    setResult(random);
+    const outcomes = ['Bravo !', 'Raté...']
+    const random = outcomes[Math.floor(Math.random() * outcomes.length)]
+    setResult(random)
   }
 
   return (
-    <Card className={`relative w-72 rounded-2xl shadow-lg bg-white overflow-hidden ${className}`}>
+    <Card
+      className={`relative w-72 rounded-2xl shadow-lg bg-white overflow-hidden ${className}`}
+    >
       <CardContent className="p-0">
-        
         <Button
           size="icon"
           variant="ghost"
@@ -53,11 +53,19 @@ export default function CardWithClose({
         </div>
 
         <div className="p-4 flex items-center justify-center gap-4">
-          <Button onClick={handleClick} variant="outline" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+          <Button
+            onClick={handleClick}
+            variant="outline"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+          >
             {text}
           </Button>
           <p className="text-lg text-gray-700 font-semibold">ou</p>
-          <Button onClick={handleClick} variant="outline" className="flex-1 bg-red-600 hover:bg-red-700 text-white">
+          <Button
+            onClick={handleClick}
+            variant="outline"
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+          >
             {text2}
           </Button>
         </div>
@@ -67,8 +75,7 @@ export default function CardWithClose({
             {result}
           </div>
         )}
-
       </CardContent>
     </Card>
-  );
+  )
 }

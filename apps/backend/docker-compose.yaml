@@ -16,7 +16,7 @@ services:
     networks:
       - sail
     healthcheck:
-      test: [ 'CMD', 'pg_isready', '-q', '-d', '${DB_DATABASE:-default}', '-U', '${DB_USER}' ]
+      test: ['CMD', 'pg_isready', '-q', '-d', '${DB_DATABASE:-default}', '-U', '${DB_USER}']
       retries: 3
       timeout: 5s
 
@@ -29,7 +29,7 @@ services:
       - '9000:9000'
       - '9001:9001'
     healthcheck:
-      test: [ 'CMD', 'mc', 'ready', 'local' ]
+      test: ['CMD', 'mc', 'ready', 'local']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -42,7 +42,7 @@ services:
     networks:
       - sail
     healthcheck:
-      test: [ 'CMD', 'redis-cli', 'ping' ]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -53,4 +53,4 @@ networks:
 
 volumes:
   sailpgsql:
-  minio_data: { }
+  minio_data: {}
