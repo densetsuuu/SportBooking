@@ -35,6 +35,54 @@ type AuthSocialIdDelete = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/social_controller.ts').default['disconnect'], false>
 }
+type ReservationsPost = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['createReservationValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['store'], true>
+}
+type ReservationsGet = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['indexReservationsValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['index'], true>
+}
+type ReservationsIdGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['show'], false>
+}
+type ReservationsIdDelete = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['destroy'], false>
+}
+type ReservationsUpdatestatusIdPatch = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateReservationStatusValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['updateStatus'], true>
+}
+type ReservationsCleanupstartedPatch = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['cleanupStartedReservations'], false>
+}
+type SportequipmentsIdReservationsGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/sport_equipments_reservations_controller.ts').default['getByEquipment'], false>
+}
+type ReservationsIdInvitationPatch = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateInvitationStatusValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/users_reservations_controller.ts').default['updateInvitationStatus'], true>
+}
+type UsersMeReservationsGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/users_reservations_controller.ts').default['getUserReservations'], false>
+}
+type UsersIdReservationsGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/users_reservations_controller.ts').default['getUserReservationsById'], false>
+}
+type SportEquipmentsGet = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/sport_equipment.ts')['indexSportEquipmentsValidator']>>
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['index'], true>
+}
+type SportequipmentsIdGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['show'], false>
+}
 type UsersIdGetHead = {
   request: unknown
   response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['show'], false>
@@ -87,7 +135,59 @@ export interface ApiDefinition {
       };
     };
   };
+  'reservations': {
+    '$url': {
+    };
+    '$post': ReservationsPost;
+    '$get': ReservationsGet;
+    ':id': {
+      '$url': {
+      };
+      '$get': ReservationsIdGet;
+      '$delete': ReservationsIdDelete;
+      'invitation': {
+        '$url': {
+        };
+        '$patch': ReservationsIdInvitationPatch;
+      };
+    };
+    'update-status': {
+      ':id': {
+        '$url': {
+        };
+        '$patch': ReservationsUpdatestatusIdPatch;
+      };
+    };
+    'cleanup-started': {
+      '$url': {
+      };
+      '$patch': ReservationsCleanupstartedPatch;
+    };
+  };
+  'sport-equipments': {
+    ':equip_numero': {
+      'reservations': {
+        '$url': {
+        };
+        '$get': SportequipmentsIdReservationsGet;
+      };
+    };
+  };
   'users': {
+    'me': {
+      'reservations': {
+        '$url': {
+        };
+        '$get': UsersMeReservationsGet;
+      };
+    };
+    ':id': {
+      'reservations': {
+        '$url': {
+        };
+        '$get': UsersIdReservationsGet;
+      };
+    };
     ':userId': {
       '$url': {
       };
@@ -96,6 +196,16 @@ export interface ApiDefinition {
       '$put': UsersIdPutPatch;
       '$patch': UsersIdPutPatch;
       '$delete': UsersIdDelete;
+    };
+  };
+  'sport_equipments': {
+    '$url': {
+    };
+    '$get': SportEquipmentsGet;
+    ':equip_numero': {
+      '$url': {
+      };
+      '$get': SportequipmentsIdGet;
     };
   };
 }
@@ -148,6 +258,90 @@ const routes = [
     path: '/auth/social/:provider',
     method: ["DELETE"],
     types: {} as AuthSocialIdDelete,
+  },
+  {
+    params: [],
+    name: 'reservations.store',
+    path: '/reservations',
+    method: ["POST"],
+    types: {} as ReservationsPost,
+  },
+  {
+    params: [],
+    name: 'reservations.index',
+    path: '/reservations',
+    method: ["GET"],
+    types: {} as ReservationsGet,
+  },
+  {
+    params: ["id"],
+    name: 'reservations.show',
+    path: '/reservations/:id',
+    method: ["GET"],
+    types: {} as ReservationsIdGet,
+  },
+  {
+    params: ["id"],
+    name: 'reservations.destroy',
+    path: '/reservations/:id',
+    method: ["DELETE"],
+    types: {} as ReservationsIdDelete,
+  },
+  {
+    params: ["id"],
+    name: 'reservations.updateStatus',
+    path: '/reservations/update-status/:id',
+    method: ["PATCH"],
+    types: {} as ReservationsUpdatestatusIdPatch,
+  },
+  {
+    params: [],
+    name: 'reservations.cleanupStartedReservations',
+    path: '/reservations/cleanup-started',
+    method: ["PATCH"],
+    types: {} as ReservationsCleanupstartedPatch,
+  },
+  {
+    params: ["equip_numero"],
+    name: 'getByEquipment',
+    path: '/sport-equipments/:equip_numero/reservations',
+    method: ["GET"],
+    types: {} as SportequipmentsIdReservationsGet,
+  },
+  {
+    params: ["id"],
+    name: 'invitation.update.status',
+    path: '/reservations/:id/invitation',
+    method: ["PATCH"],
+    types: {} as ReservationsIdInvitationPatch,
+  },
+  {
+    params: [],
+    name: 'getUserReservations',
+    path: '/users/me/reservations',
+    method: ["GET"],
+    types: {} as UsersMeReservationsGet,
+  },
+  {
+    params: ["id"],
+    name: 'getUserReservationsById',
+    path: '/users/:id/reservations',
+    method: ["GET"],
+    types: {} as UsersIdReservationsGet,
+  },
+  {
+    params: [],
+    name: 'sport_equipments.index',
+    path: '/sport_equipments',
+    method: ["GET"],
+    types: {} as SportEquipmentsGet,
+  },
+  {
+    params: ["equip_numero"],
+    name: 'sport_equipments.show',
+    path: '/sport_equipments/:equip_numero',
+    method: ["GET"],
+    types: {} as SportequipmentsIdGet,
   },
   {
     params: ["userId"],

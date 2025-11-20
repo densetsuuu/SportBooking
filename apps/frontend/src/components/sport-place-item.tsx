@@ -3,21 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '~/components/ui/dialog'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '~/components/ui/select'
 import { Calendar, Clock, Users } from 'lucide-react'
 import { SportEquipment } from '~/lib/queries/sport-equipments'
@@ -32,35 +32,23 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
   const [date, setDate] = useState<string>('')
   const [timeSlot, setTimeSlot] = useState<string>('')
   const [participants, setParticipants] = useState<number>(1)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [success, setSuccess] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
 
-  const mutation = useMutation(createReservationMutationOptions())
+  const useReservation = useMutation(createReservationMutationOptions)
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setError(null)
-    setSuccess(null)
 
-    try {
-      await mutation.mutateAsync({
-        payload: {
-          sportEquipmentId: equipment.id, // adapte à ton backend
-          startDate: date,
-          endDate: date, // ou autre selon ton API
-          timeSlot,
-          participants,
-        },
-      })
-
-      setSuccess('Réservation confirmée !')
-    } catch (err: any) {
-      setError('Erreur lors de la réservation.' + (err.message || ''))
-    } finally {
-      setLoading(false)
-    }
+    void useReservation.mutateAsync({
+      payload: {
+        sportEquipmentId: equipment.id,
+        startDate: date,
+        endDate: date,
+        invitedUsers: Array.from(
+          { length: participants - 1 },
+          (_, i) => `user${i + 1}`
+        ),
+      },
+    })
   }
 
   return (
@@ -193,9 +181,6 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
                   />
                 </div>
 
-                {error && <p className="text-sm text-red-600">{error}</p>}
-                {success && <p className="text-sm text-green-600">{success}</p>}
-
                 <DialogFooter className="mt-6 flex justify-end gap-2">
                   <DialogTrigger asChild>
                     <Button variant="outline">Annuler</Button>
@@ -203,9 +188,9 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
                   <Button
                     type="submit"
                     className="bg-black hover:bg-gray-700"
-                    disabled={loading}
+                    loading={useReservation.isPending}
                   >
-                    {loading ? 'Envoi...' : 'Confirmer la réservation'}
+                    Confirmer la réservation
                   </Button>
                 </DialogFooter>
               </form>

@@ -14,16 +14,16 @@ export type SportEquipment = {
 }
 
 export default class SportEquipmentDto extends BaseModelDto {
-  id?: string
-  nom?: string
-  coordonnees?: { lon: number; lat: number }
-  type?: string
-  postalCode?: string
-  address?: string
-  libBdv?: string
-  image?: string
-  description?: string
-  capacite?: number
+  declare id: string
+  declare nom: string
+  declare coordonnees?: { lon: number; lat: number }
+  declare type?: string
+  declare postalCode?: string
+  declare address?: string
+  declare libBdv?: string
+  declare image?: string
+  declare description?: string
+  declare capacite?: number
 
   constructor(input: SportEquipment) {
     super()
