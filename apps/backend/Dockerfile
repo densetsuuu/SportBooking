@@ -14,7 +14,7 @@ RUN apk update
 WORKDIR /app
 RUN pnpm add --global turbo@2.3.3
 COPY . .
-RUN turbo prune @sport_booking/backend --docker
+RUN turbo prune @sport-booking/backend --docker
 
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
@@ -25,8 +25,7 @@ RUN pnpm install
 
 # Build the project
 COPY --from=builder /app/out/full .
-COPY turbo.json turbo.json
-RUN pnpm turbo build --filter=@sport_booking/backend
+RUN pnpm turbo build --filter=@sport-booking/backend
 
 FROM base AS runner
 WORKDIR /app
@@ -35,4 +34,4 @@ RUN mkdir /app/tmp
 COPY --from=installer /app .
 
 EXPOSE 3333
-CMD ["sh", "-c", "cd apps/backend/build && node bin/server.js"]
+CMD ["node", "apps/backend/build/bin/server.js"]

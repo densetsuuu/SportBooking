@@ -47,6 +47,28 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      context: ../..
+      dockerfile: ./apps/backend/Dockerfile
+    container_name: '${COMPOSE_PROJECT_NAME}_backend'
+    ports:
+      - '${APP_PORT:-3333}:3333'
+    env_file:
+      - .env
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - sail
+
 networks:
   sail:
     driver: bridge
