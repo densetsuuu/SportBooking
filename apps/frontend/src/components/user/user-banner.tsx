@@ -8,7 +8,14 @@ type UserBannerProps = {
 export function UserBanner({ user }: UserBannerProps) {
   return (
     <div className="relative">
-      <div className="bg-primary rounded-xl h-25"></div>
+      <div
+        className="rounded-xl h-25 overflow-hidden bg-cover bg-primary/30"
+        style={{
+          backgroundImage: `url(${user.avatar?.url})`,
+        }}
+      >
+        <div className="backdrop-blur-xl h-full w-full"></div>
+      </div>
       <div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-8/10">
         <UserAvatar
           user={user}

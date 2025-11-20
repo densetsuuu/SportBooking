@@ -36,19 +36,19 @@ export default class SocialController {
     if (social.accessDenied()) {
       session.flash('errors', 'auth.social.error.access_denied')
 
-      return response.redirect().toRoute('auth.sign_up.show')
+      return response.redirect().toPath(`${env.get('FRONTEND_URL')}/register`)
     }
 
     if (social.stateMisMatch()) {
       session.flash('errors', 'auth.social.error.state_mismatch')
 
-      return response.redirect().toRoute('auth.sign_up.show')
+      return response.redirect().toPath(`${env.get('FRONTEND_URL')}/register`)
     }
 
     if (social.hasError()) {
       session.flash('errors', 'auth.social.error.uknown')
 
-      return response.redirect().toRoute('auth.sign_up.show')
+      return response.redirect().toPath(`${env.get('FRONTEND_URL')}/register`)
     }
 
     const socialUser = await social.user()

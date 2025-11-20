@@ -10,6 +10,7 @@ import { useAuth } from '~/hooks/use-auth'
 import { UserBanner } from '~/components/user/user-banner'
 import { DeleteAccountButton } from '~/components/user/delete-account-button'
 import { ProtectedContent } from '~/components/protected-content'
+import { Pill, PillIndicator } from '~/components/kibo-ui/pill'
 
 export const Route = createFileRoute('/(app)/users/$userId')({
   component: RouteComponent,
@@ -50,7 +51,15 @@ function RouteComponent() {
       <UserBanner user={user} />
 
       <div className="flex flex-col gap-2 items-center mb-10">
-        <p className="text-md font-semibold">{user.fullName}</p>
+        <div className="inline-flex items-center gap-2">
+          <p className="text-md font-semibold">{user.fullName}</p>
+          <ProtectedContent predicate={isCurrentUser}>
+            <Pill className="bg-accent text-accent-foreground py-0.4 px-1.5 rounded-sm text-xs">
+              <PillIndicator pulse variant="success" />
+              Moi
+            </Pill>
+          </ProtectedContent>
+        </div>
         <div className="inline-flex items-center gap-3 text-muted-foreground *:inline-flex *:items-center *:gap-1 text-xs">
           <div>
             <MapPinIcon className="size-3" />
