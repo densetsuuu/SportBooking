@@ -2,7 +2,6 @@ import { ReservationService } from '#reservation/services/reservation_service'
 import {
   createReservationValidator,
   indexReservationsValidator,
-  updateInvitationStatusValidator,
   updateReservationStatusValidator,
 } from '#reservation/validators/reservation'
 import { middleware } from '#start/kernel'
