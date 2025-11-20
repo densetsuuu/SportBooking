@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import {
@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog'
 import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -23,28 +22,59 @@ import { Calendar, Clock, Users } from 'lucide-react'
 import { SportEquipment } from '~/lib/queries/sport-equipments'
 import { useMutation } from '@tanstack/react-query'
 import { createReservationMutationOptions } from '~/lib/queries/reservation'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/form'
+import { reservationSchema } from '~/lib/schemas/common'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 type SportPlaceItemProps = {
   equipment: SportEquipment
 }
 
 export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
-  const [date, setDate] = useState<string>('')
-  const [timeSlot, setTimeSlot] = useState<string>('')
-  const [participants, setParticipants] = useState<number>(1)
-
   const useReservation = useMutation(createReservationMutationOptions)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm({
+    resolver: zodResolver(reservationSchema),
+    defaultValues: {
+      date: '',
+      timeSlot: '',
+      participants: 1,
+    },
+  })
+  const parseTimeSlot = (date: string, timeSlot: string) => {
+    const [start, end] = timeSlot.split('-') // "10h" / "12h"
+
+    const startHour = start.replace('h', '')
+    const endHour = end.replace('h', '')
+
+    const startDate = `${date}T${startHour.padStart(2, '0')}:00:00`
+    const endDate = `${date}T${endHour.padStart(2, '0')}:00:00`
+
+    return { startDate, endDate }
+  }
+
+  const handleSubmit = (data: {
+    date: string
+    timeSlot: string
+    participants: number
+  }) => {
+    const { startDate, endDate } = parseTimeSlot(data.date, data.timeSlot)
 
     void useReservation.mutateAsync({
       payload: {
         sportEquipmentId: equipment.id,
-        startDate: date,
-        endDate: date,
+        startDate,
+        endDate,
         invitedUsers: Array.from(
-          { length: participants - 1 },
+          { length: data.participants - 1 },
           (_, i) => `user${i + 1}`
         ),
       },
@@ -134,66 +164,96 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
                   réservation.
                 </DialogDescription>
               </DialogHeader>
-              <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
-                <div className="grid gap-2">
-                  <div className="flex gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <Label htmlFor="date">Date</Label>
-                  </div>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={date}
-                    onChange={e => setDate(e.target.value)}
-                    required
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(handleSubmit)}
+                  className="space-y-4 mt-4"
+                >
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem className="grid gap-2">
+                        <div className="flex gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <FormLabel>Date</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
 
-                <div className="grid gap-2">
-                  <div className="flex gap-2">
-                    <Clock className="w-4 h-4" />
-                    <Label htmlFor="time">Créneau horaire</Label>
-                  </div>
-                  <Select onValueChange={v => setTimeSlot(v)} value={timeSlot}>
-                    <SelectTrigger id="time">
-                      <SelectValue placeholder="Choisir un créneau" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="10h-12h">10h - 12h</SelectItem>
-                      <SelectItem value="12h-14h">12h - 14h</SelectItem>
-                      <SelectItem value="14h-16h">14h - 16h</SelectItem>
-                      <SelectItem value="16h-18h">16h - 18h</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid gap-2">
-                  <div className="flex gap-2">
-                    <Users className="w-4 h-4" />
-                    <Label htmlFor="participants">Nombre de participants</Label>
-                  </div>
-                  <Input
-                    id="participants"
-                    type="number"
-                    min={1}
-                    value={participants}
-                    onChange={e => setParticipants(Number(e.target.value))}
+                  <FormField
+                    control={form.control}
+                    name="timeSlot"
+                    render={({ field }) => (
+                      <FormItem className="grid gap-2">
+                        <div className="flex gap-2">
+                          <Clock className="w-4 h-4" />
+                          <FormLabel>Créneau horaire</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choisir un créneau" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="10h-12h">10h - 12h</SelectItem>
+                              <SelectItem value="12h-14h">12h - 14h</SelectItem>
+                              <SelectItem value="14h-16h">14h - 16h</SelectItem>
+                              <SelectItem value="16h-18h">16h - 18h</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
 
-                <DialogFooter className="mt-6 flex justify-end gap-2">
-                  <DialogTrigger asChild>
-                    <Button variant="outline">Annuler</Button>
-                  </DialogTrigger>
-                  <Button
-                    type="submit"
-                    className="bg-black hover:bg-gray-700"
-                    loading={useReservation.isPending}
-                  >
-                    Confirmer la réservation
-                  </Button>
-                </DialogFooter>
-              </form>
+                  <FormField
+                    control={form.control}
+                    name="participants"
+                    render={({ field }) => (
+                      <FormItem className="grid gap-2">
+                        <div className="flex gap-2">
+                          <Users className="w-4 h-4" />
+                          <FormLabel>Nombre de participants</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={1}
+                            {...field}
+                            onChange={e =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <DialogFooter className="mt-6 flex justify-end gap-2">
+                    <DialogTrigger asChild>
+                      <Button variant="outline">Annuler</Button>
+                    </DialogTrigger>
+                    <Button
+                      type="submit"
+                      className="bg-black hover:bg-gray-700"
+                      disabled={useReservation.isPending}
+                    >
+                      Confirmer la réservation
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
             </DialogContent>
           </Dialog>
         </div>
