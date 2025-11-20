@@ -8,7 +8,7 @@
     "dev": "docker compose up -d && turbo dev",
     "back": "docker compose up --build",
     "lint": "turbo lint",
-    "typecheck": "cd apps/backend && pnpm typecheck",
+    "typecheck": "turbo typecheck",
     "format": "turbo format",
     "tsp": "pnpm run -C docs/tsp tsp",
     "test": "turbo run test",
