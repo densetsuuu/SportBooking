@@ -20,15 +20,24 @@
         "^lint"
       ]
     },
-    "check-types": {
+    "format": {
       "dependsOn": [
-        "^check-types"
+        "^format"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^typecheck"
       ]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "test": {}
+    "test": {
+      "dependsOn": [
+        "^test"
+      ]
+    }
   }
 }

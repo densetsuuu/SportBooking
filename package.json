@@ -8,16 +8,29 @@
     "dev": "docker compose up -d && turbo dev",
     "back": "docker compose up --build",
     "lint": "turbo lint",
-    "typecheck": "cd apps/backend && pnpm typecheck",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "typecheck": "turbo typecheck",
+    "format": "turbo format",
     "tsp": "pnpm run -C docs/tsp tsp",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.12.1",
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "turbo": "^2.5.8"
+  },
+  "lint-staged": {
+    "apps/backend/**/*.{ts,js}": [
+      "cd apps/backend && pnpm format",
+      "cd apps/backend && pnpm lint"
+    ],
+    "apps/frontend/**/*.{ts,tsx,js,jsx}": [
+      "cd apps/frontend && pnpm format",
+      "cd apps/frontend && pnpm lint:fix"
+    ]
   }
 }

@@ -80,7 +80,11 @@ export function LoginForm() {
             </Link>
           </div>
 
-          <Button type="submit" className="w-full" loading={useLogin.isPending}>
+          <Button
+            type="submit"
+            className="w-full active:scale-98 transition-transform duration-75"
+            loading={useLogin.isPending}
+          >
             Se connecter
           </Button>
         </form>
@@ -97,9 +101,11 @@ export function LoginForm() {
         </div>
       </div>
 
-      <Button variant="outline" className="w-full">
-        <Icons.google className="mr-2 h-4 w-4" />
-        Google
+      <Button variant="outline" className="w-full" asChild>
+        <a href={`${import.meta.env.VITE_API_URL}/auth/social/google/redirect`}>
+          <Icons.google className="mr-2 h-4 w-4" />
+          Google
+        </a>
       </Button>
 
       <div className="space-y-2 text-center">

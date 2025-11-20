@@ -2,7 +2,7 @@ import { queryClient, tuyau } from '~/lib/tuyau'
 import { toast } from 'sonner'
 import { router } from '~/lib/router'
 
-export const getCurrentUserQueryOptions = tuyau.me.$get.queryOptions(
+export const getCurrentUserQueryOptions = tuyau.auth.me.$get.queryOptions(
   {},
   {
     retry: false,
@@ -11,12 +11,11 @@ export const getCurrentUserQueryOptions = tuyau.me.$get.queryOptions(
 )
 
 export const loginMutationOptions = (redirectTo?: string) =>
-  tuyau.login.$post.mutationOptions({
+  tuyau.auth.login.$post.mutationOptions({
     onSuccess: async () => {
       void queryClient.invalidateQueries({
         queryKey: getCurrentUserQueryOptions.queryKey,
       })
-      void router.invalidate()
       void router.navigate({ to: redirectTo || '/', replace: true })
     },
     onError: async error => {
@@ -30,7 +29,7 @@ export const loginMutationOptions = (redirectTo?: string) =>
     },
   })
 
-export const logoutMutationOptions = tuyau.logout.$post.mutationOptions({
+export const logoutMutationOptions = tuyau.auth.logout.$post.mutationOptions({
   onSettled: () => {
     toast.success('Déconnexion réussie')
     void router.navigate({ to: '/login' })
@@ -46,6 +45,18 @@ export const registerMutationOptions =
       void queryClient.invalidateQueries({
         queryKey: getCurrentUserQueryOptions.queryKey,
       })
+      void router.navigate({ to: '/', replace: true })
       toast.success('Compte créé avec succès')
     },
   })
+
+export const disconnectSocialProviderMutationOptions = tuyau.auth.social[
+  ':provider'
+].$delete.mutationOptions({
+  onSuccess: () => {
+    void queryClient.invalidateQueries({
+      queryKey: getCurrentUserQueryOptions.queryKey,
+    })
+    toast.success('Compte déconnecté avec succès')
+  },
+})
