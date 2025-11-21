@@ -17,11 +17,11 @@ function RouteComponent() {
   const { userId } = Route.useParams()
   const { user: currentUser } = useAuth()
 
+  const { data: user, isLoading, error } = useQuery(usersQueries.get(userId))
+
   if (currentUser?.id === userId) {
     return <UserUpdateForm user={currentUser} />
   }
-
-  const { data: user, isLoading, error } = useQuery(usersQueries.get(userId))
 
   if (isLoading) {
     return (
