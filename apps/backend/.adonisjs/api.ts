@@ -67,10 +67,6 @@ type ReservationsIdInvitationPatch = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateInvitationStatusValidator']>>
   response: MakeTuyauResponse<import('../app/reservation/controllers/users_reservations_controller.ts').default['updateInvitationStatus'], true>
 }
-type UsersMeReservationsGet = {
-  request: unknown
-  response: MakeTuyauResponse<import('../app/reservation/controllers/users_reservations_controller.ts').default['getUserReservations'], false>
-}
 type UsersIdReservationsGet = {
   request: unknown
   response: MakeTuyauResponse<import('../app/reservation/controllers/users_reservations_controller.ts').default['getUserReservationsById'], false>
@@ -174,21 +170,12 @@ export interface ApiDefinition {
     };
   };
   'users': {
-    'me': {
-      'reservations': {
-        '$url': {
-        };
-        '$get': UsersMeReservationsGet;
-      };
-    };
-    ':id': {
+    ':userId': {
       'reservations': {
         '$url': {
         };
         '$get': UsersIdReservationsGet;
       };
-    };
-    ':userId': {
       '$url': {
       };
       '$get': UsersIdGetHead;
@@ -316,16 +303,9 @@ const routes = [
     types: {} as ReservationsIdInvitationPatch,
   },
   {
-    params: [],
-    name: 'getUserReservations',
-    path: '/users/me/reservations',
-    method: ["GET"],
-    types: {} as UsersMeReservationsGet,
-  },
-  {
-    params: ["id"],
+    params: ["userId"],
     name: 'getUserReservationsById',
-    path: '/users/:id/reservations',
+    path: '/users/:userId/reservations',
     method: ["GET"],
     types: {} as UsersIdReservationsGet,
   },
