@@ -32,7 +32,7 @@ export default class UserController {
     await bouncer.with(UserPolicy).authorize('update', user)
 
     const result = await this.userService.updateUser(user, payload)
-    return response.ok(result)
+    return response.ok(new UserDto(result))
   }
 
   async destroy({ params, response, bouncer }: HttpContext) {

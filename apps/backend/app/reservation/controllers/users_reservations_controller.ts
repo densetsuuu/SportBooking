@@ -26,18 +26,7 @@ export default class SportEquipmentsReservationsController {
     return response.ok(reservation)
   }
 
-  @Get('/users/me/reservations', 'getUserReservations')
-  @Middleware(middleware.auth())
-  async getUserReservations({ response, auth }: HttpContext) {
-    await auth.check()
-    const user = auth.user!
-
-    const reservations = await this.reservationService.getUserAllReservations(user.id)
-
-    return response.ok(reservations)
-  }
-
-  @Get('/users/:id/reservations', 'getUserReservationsById')
+  @Get('/users/:userId/reservations', 'getUserReservationsById')
   @Middleware(middleware.auth())
   async getUserReservationsById({ params, response }: HttpContext) {
     const { userId } = params

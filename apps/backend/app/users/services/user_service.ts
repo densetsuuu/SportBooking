@@ -18,6 +18,10 @@ export class UserService {
       user.avatar = await this.fileService.uploadFile(payload.avatar)
     }
 
-    return await user.merge(omit(payload, ['avatar'])).save()
+    const updatedUser = await user.merge(omit(payload, ['avatar'])).save()
+
+    await User.preComputeUrls(updatedUser)
+
+    return updatedUser
   }
 }
