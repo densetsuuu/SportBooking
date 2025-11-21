@@ -1,0 +1,87 @@
+{
+    "annotations":  {
+                        "list":  [
+                                     {
+                                         "builtIn":  1,
+                                         "datasource":  {
+                                                            "type":  "grafana",
+                                                            "uid":  "-- Grafana --"
+                                                        },
+                                         "enable":  true,
+                                         "hide":  true,
+                                         "iconColor":  "rgba(0, 211, 255, 1)",
+                                         "name":  "Annotations \u0026 Alerts",
+                                         "type":  "dashboard"
+                                     }
+                                 ]
+                    },
+    "editable":  true,
+    "fiscalYearStartMonth":  0,
+    "graphTooltip":  0,
+    "id":  5,
+    "links":  [
+
+              ],
+    "panels":  [
+                   {
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "bf4p19bopuupse"
+                                      },
+                       "gridPos":  {
+                                       "h":  8,
+                                       "w":  12,
+                                       "x":  0,
+                                       "y":  0
+                                   },
+                       "id":  1,
+                       "options":  {
+                                       "dedupStrategy":  "none",
+                                       "enableInfiniteScrolling":  false,
+                                       "enableLogDetails":  true,
+                                       "showControls":  false,
+                                       "showTime":  false,
+                                       "sortOrder":  "Descending",
+                                       "wrapLogMessage":  false
+                                   },
+                       "pluginVersion":  "12.3.0",
+                       "targets":  [
+                                       {
+                                           "datasource":  {
+                                                              "type":  "loki",
+                                                              "uid":  "bf4p19bopuupse"
+                                                          },
+                                           "direction":  "backward",
+                                           "editorMode":  "code",
+                                           "expr":  "{job=\"logs\"} |= \"error\"",
+                                           "queryType":  "range",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "title":  "Logs Erreurs",
+                       "type":  "logs"
+                   }
+               ],
+    "preload":  false,
+    "schemaVersion":  42,
+    "tags":  [
+
+             ],
+    "templating":  {
+                       "list":  [
+
+                                ]
+                   },
+    "time":  {
+                 "from":  "now-6h",
+                 "to":  "now"
+             },
+    "timepicker":  {
+
+                   },
+    "timezone":  "browser",
+    "title":  "Affiche log erreur",
+    "uid":  "ad48k6q",
+    "version":  2,
+    "weekStart":  ""
+}

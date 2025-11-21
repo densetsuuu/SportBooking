@@ -1,0 +1,230 @@
+{
+    "annotations":  {
+                        "list":  [
+                                     {
+                                         "builtIn":  1,
+                                         "datasource":  {
+                                                            "type":  "grafana",
+                                                            "uid":  "-- Grafana --"
+                                                        },
+                                         "enable":  true,
+                                         "hide":  true,
+                                         "iconColor":  "rgba(0, 211, 255, 1)",
+                                         "name":  "Annotations \u0026 Alerts",
+                                         "type":  "dashboard"
+                                     }
+                                 ]
+                    },
+    "editable":  true,
+    "fiscalYearStartMonth":  0,
+    "graphTooltip":  0,
+    "id":  6,
+    "links":  [
+
+              ],
+    "panels":  [
+                   {
+                       "datasource":  {
+                                          "type":  "loki",
+                                          "uid":  "bf4p19bopuupse"
+                                      },
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      },
+                                                            "custom":  {
+                                                                           "align":  "auto",
+                                                                           "cellOptions":  {
+                                                                                               "type":  "color-text"
+                                                                                           },
+                                                                           "footer":  {
+                                                                                          "reducers":  [
+
+                                                                                                       ]
+                                                                                      },
+                                                                           "inspect":  false
+                                                                       },
+                                                            "mappings":  [
+                                                                             {
+                                                                                 "options":  {
+                                                                                                 "400":  {
+                                                                                                             "color":  "orange",
+                                                                                                             "index":  0,
+                                                                                                             "text":  "400 ( Bad Request )"
+                                                                                                         },
+                                                                                                 "401":  {
+                                                                                                             "color":  "semi-dark-orange",
+                                                                                                             "index":  1,
+                                                                                                             "text":  "401 ( Unauthorized )"
+                                                                                                         },
+                                                                                                 "403":  {
+                                                                                                             "color":  "dark-orange",
+                                                                                                             "index":  2,
+                                                                                                             "text":  "403 ( Forbidden )"
+                                                                                                         },
+                                                                                                 "404":  {
+                                                                                                             "color":  "#a23500",
+                                                                                                             "index":  3,
+                                                                                                             "text":  "404 ( Not Found )"
+                                                                                                         },
+                                                                                                 "500":  {
+                                                                                                             "color":  "dark-red",
+                                                                                                             "index":  4,
+                                                                                                             "text":  "500 ( Server Error )"
+                                                                                                         }
+                                                                                             },
+                                                                                 "type":  "value"
+                                                                             },
+                                                                             {
+                                                                                 "options":  {
+                                                                                                 "pattern":  "^GET.*",
+                                                                                                 "result":  {
+                                                                                                                "color":  "semi-dark-blue",
+                                                                                                                "index":  5
+                                                                                                            }
+                                                                                             },
+                                                                                 "type":  "regex"
+                                                                             },
+                                                                             {
+                                                                                 "options":  {
+                                                                                                 "pattern":  "^POST.*",
+                                                                                                 "result":  {
+                                                                                                                "color":  "dark-green",
+                                                                                                                "index":  6
+                                                                                                            }
+                                                                                             },
+                                                                                 "type":  "regex"
+                                                                             },
+                                                                             {
+                                                                                 "options":  {
+                                                                                                 "pattern":  "^DELETE.*",
+                                                                                                 "result":  {
+                                                                                                                "color":  "dark-red",
+                                                                                                                "index":  7
+                                                                                                            }
+                                                                                             },
+                                                                                 "type":  "regex"
+                                                                             },
+                                                                             {
+                                                                                 "options":  {
+                                                                                                 "pattern":  "^PATCH.*",
+                                                                                                 "result":  {
+                                                                                                                "color":  "dark-purple",
+                                                                                                                "index":  8
+                                                                                                            }
+                                                                                             },
+                                                                                 "type":  "regex"
+                                                                             },
+                                                                             {
+                                                                                 "options":  {
+                                                                                                 "pattern":  "^PUT.*",
+                                                                                                 "result":  {
+                                                                                                                "color":  "dark-yellow",
+                                                                                                                "index":  9
+                                                                                                            }
+                                                                                             },
+                                                                                 "type":  "regex"
+                                                                             }
+                                                                         ],
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "text",
+                                                                                                 "value":  0
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "red",
+                                                                                                 "value":  80
+                                                                                             }
+                                                                                         ]
+                                                                           }
+                                                        },
+                                           "overrides":  [
+
+                                                         ]
+                                       },
+                       "gridPos":  {
+                                       "h":  11,
+                                       "w":  16,
+                                       "x":  0,
+                                       "y":  0
+                                   },
+                       "id":  1,
+                       "options":  {
+                                       "cellHeight":  "sm",
+                                       "frameIndex":  1,
+                                       "showHeader":  true,
+                                       "sortBy":  [
+
+                                                  ]
+                                   },
+                       "pluginVersion":  "12.3.0",
+                       "targets":  [
+                                       {
+                                           "datasource":  {
+                                                              "type":  "loki",
+                                                              "uid":  "bf4p19bopuupse"
+                                                          },
+                                           "direction":  "backward",
+                                           "editorMode":  "code",
+                                           "expr":  "sum by (route, status) (\r\n      count_over_time(\r\n          {job=\"logs\"} \r\n              | json \r\n                  | status \u003e= 400 \r\n                      | label_format route=\"{{.method}} {{.url}}\"\r\n                          [$__range]\r\n                            )\r\n)",
+                                           "queryType":  "instant",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "title":  "New panel",
+                       "transformations":  [
+                                               {
+                                                   "id":  "organize",
+                                                   "options":  {
+                                                                   "excludeByName":  {
+                                                                                         "Time":  true
+                                                                                     },
+                                                                   "includeByName":  {
+
+                                                                                     },
+                                                                   "indexByName":  {
+                                                                                       "Time":  0,
+                                                                                       "Value #A":  3,
+                                                                                       "route":  2,
+                                                                                       "status":  1
+                                                                                   },
+                                                                   "orderByMode":  "manual",
+                                                                   "renameByName":  {
+                                                                                        "Value #A":  "Fail",
+                                                                                        "method":  "",
+                                                                                        "route":  "EndPoint",
+                                                                                        "status":  "Response Status",
+                                                                                        "url":  "EndPoint"
+                                                                                    }
+                                                               }
+                                               }
+                                           ],
+                       "type":  "table"
+                   }
+               ],
+    "preload":  false,
+    "schemaVersion":  42,
+    "tags":  [
+
+             ],
+    "templating":  {
+                       "list":  [
+
+                                ]
+                   },
+    "time":  {
+                 "from":  "now-7d",
+                 "to":  "now"
+             },
+    "timepicker":  {
+
+                   },
+    "timezone":  "browser",
+    "title":  "Fail Request",
+    "uid":  "admtrfz",
+    "version":  4,
+    "weekStart":  ""
+}
