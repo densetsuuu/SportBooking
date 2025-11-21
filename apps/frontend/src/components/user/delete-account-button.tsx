@@ -63,7 +63,7 @@ export function DeleteAccountButton({ user }: DeleteAccountButtonProps) {
                   </p>
                   <div className="space-y-2">
                     <Label htmlFor="confirm-delete" className="sr-only">
-                      Confirmer l'email
+                      Confirmer l&#39;email
                     </Label>
                     <Input
                       id="confirm-delete"
@@ -86,7 +86,7 @@ export function DeleteAccountButton({ user }: DeleteAccountButtonProps) {
               onClick={() => void useDeleteAccount.mutateAsync({})}
               disabled={confirmationText !== user.email}
             >
-              Je comprends, supprimez mon compte
+              Je comprends, supprimer mon compte
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
