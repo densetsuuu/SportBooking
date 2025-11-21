@@ -11,14 +11,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog'
 import { Input } from '~/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select'
-import { Calendar, Clock, Users } from 'lucide-react'
+import { Calendar as CalendarIcon, Clock, Users } from 'lucide-react'
 import { SportEquipment } from '~/lib/queries/sport-equipments'
 import { useMutation } from '@tanstack/react-query'
 import { createReservationMutationOptions } from '~/lib/queries/reservation'
@@ -33,6 +26,10 @@ import {
 import { reservationSchema } from '~/lib/schemas/common'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { DateTimeInput } from '~/components/datetime-input'
+import {DateTimePicker} from "~/components/datetime-picker";
+import {z} from "zod";
+import {loginFormSchema} from "~/lib/schemas/auth";
 
 type SportPlaceItemProps = {
   equipment: SportEquipment
@@ -41,38 +38,26 @@ type SportPlaceItemProps = {
 export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
   const useReservation = useMutation(createReservationMutationOptions)
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof reservationSchema>>({
     resolver: zodResolver(reservationSchema),
     defaultValues: {
-      date: '',
-      timeSlot: '',
+      startDate: undefined,
+      endDate: undefined,
       participants: 1,
     },
   })
-  const parseTimeSlot = (date: string, timeSlot: string) => {
-    const [start, end] = timeSlot.split('-') // "10h" / "12h"
-
-    const startHour = start.replace('h', '')
-    const endHour = end.replace('h', '')
-
-    const startDate = `${date}T${startHour.padStart(2, '0')}:00:00`
-    const endDate = `${date}T${endHour.padStart(2, '0')}:00:00`
-
-    return { startDate, endDate }
-  }
 
   const handleSubmit = (data: {
-    date: string
-    timeSlot: string
+    startDate: Date
+    endDate: Date
     participants: number
   }) => {
-    const { startDate, endDate } = parseTimeSlot(data.date, data.timeSlot)
-
+    console.log(data)
     void useReservation.mutateAsync({
       payload: {
         sportEquipmentId: equipment.id,
-        startDate,
-        endDate,
+        startDate: data.startDate.toISOString(),
+        endDate: data.endDate.toISOString(),
         invitedUsers: Array.from(
           { length: data.participants - 1 },
           (_, i) => `user${i + 1}`
@@ -171,15 +156,28 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
                 >
                   <FormField
                     control={form.control}
-                    name="date"
+                    name="startDate"
                     render={({ field }) => (
                       <FormItem className="grid gap-2">
                         <div className="flex gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <FormLabel>Date</FormLabel>
+                          <CalendarIcon className="w-4 h-4" />
+                          <FormLabel>Date & heure de début</FormLabel>
                         </div>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <DateTimePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            timePicker={{ hour: true, minute: true }}
+                            renderTrigger={({ open, value, setOpen }) => (
+                              <DateTimeInput
+                                value={value}
+                                onChange={x => !open && field.onChange(x)}
+                                format="dd/MM/yyyy HH:mm"
+                                disabled={open}
+                                onCalendarClick={() => setOpen(!open)}
+                              />
+                            )}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -188,28 +186,28 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
 
                   <FormField
                     control={form.control}
-                    name="timeSlot"
+                    name="endDate"
                     render={({ field }) => (
                       <FormItem className="grid gap-2">
                         <div className="flex gap-2">
                           <Clock className="w-4 h-4" />
-                          <FormLabel>Créneau horaire</FormLabel>
+                          <FormLabel>Date & heure de fin</FormLabel>
                         </div>
                         <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
+                          <DateTimePicker
                             value={field.value}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Choisir un créneau" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="10h-12h">10h - 12h</SelectItem>
-                              <SelectItem value="12h-14h">12h - 14h</SelectItem>
-                              <SelectItem value="14h-16h">14h - 16h</SelectItem>
-                              <SelectItem value="16h-18h">16h - 18h</SelectItem>
-                            </SelectContent>
-                          </Select>
+                            onChange={field.onChange}
+                            timePicker={{ hour: true, minute: true }}
+                            renderTrigger={({ open, value, setOpen }) => (
+                              <DateTimeInput
+                                value={value}
+                                onChange={x => !open && field.onChange(x)}
+                                format="dd/MM/yyyy HH:mm"
+                                disabled={open}
+                                onCalendarClick={() => setOpen(!open)}
+                              />
+                            )}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

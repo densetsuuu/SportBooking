@@ -11,11 +11,11 @@ export const passwordSchema = z
   })
 
 export const reservationSchema = z.object({
-  date: z.string().refine(date => !isNaN(Date.parse(date)), {
+  startDate: z.date({
     message: 'Date invalide',
   }),
-  timeSlot: z.string().regex(/^\d{2}h-\d{2}h$/, {
-    message: 'Créneau horaire invalide',
+  endDate: z.date({
+    message: 'Date invalide',
   }),
   participants: z.number().min(1, {
     message: 'Le nombre de participants doit être au moins 1',
