@@ -19,7 +19,7 @@ export default class UserDto extends BaseModelDto {
     this.fullName = user.fullName
     this.email = user.email
     this.createdAt = user.createdAt.toISODate()!
-    this.socialAccounts = SocialAccountDto.fromArray(user.socialAccounts)
+    this.socialAccounts = user.socialAccounts && SocialAccountDto.fromArray(user.socialAccounts)
     this.avatar = user.avatar && new AttachmentDto(user.avatar)
   }
 }

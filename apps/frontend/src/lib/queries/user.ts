@@ -16,6 +16,37 @@ export const usersQueries = {
         userId,
       },
     }),
+  update: (userId: string) =>
+    tuyau.users({ userId }).$put.mutationOptions({
+      onSuccess: async data => {
+        queryClient.setQueryData(usersQueries.get(userId).queryKey, oldData =>
+          oldData
+            ? {
+                ...oldData,
+                ...data,
+              }
+            : data
+        )
+
+        const currentUser = queryClient.getQueryData(
+          getCurrentUserQueryOptions.queryKey
+        )
+        if (currentUser?.id === userId) {
+          queryClient.setQueryData(
+            getCurrentUserQueryOptions.queryKey,
+            oldData =>
+              oldData
+                ? {
+                    ...oldData,
+                    ...data,
+                  }
+                : oldData
+          )
+        }
+
+        toast.success('Profil mis à jour avec succès')
+      },
+    }),
   delete: (userId: string) =>
     tuyau.users({ userId }).$delete.mutationOptions({
       onSuccess: async () => {

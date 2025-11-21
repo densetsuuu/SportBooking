@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
 import User from '#users/models/user'
+import SocialAccount from '#users/models/social_account'
 import env from '#start/env'
 import { Delete, Get, Group, Middleware, Where } from '@adonisjs-community/girouette'
 import { middleware } from '#start/kernel'
@@ -46,7 +47,7 @@ export default class SocialController {
     }
 
     if (social.hasError()) {
-      session.flash('errors', 'auth.social.error.uknown')
+      session.flash('errors', 'auth.social.error.unknown')
 
       return response.redirect().toPath(`${env.get('FRONTEND_URL')}/register`)
     }
@@ -65,7 +66,14 @@ export default class SocialController {
       }
     )
 
-    await this.socialService.addSocialAccount(user, params.provider, socialUser)
+    const existingSocialAccount = await SocialAccount.query()
+      .where({ userId: user.id, providerName: params.provider })
+      .first()
+
+    if (!existingSocialAccount) {
+      await this.socialService.addSocialAccount(user, params.provider, socialUser)
+    }
+
     await auth.use('web').login(user)
 
     return response.redirect().toPath(`${env.get('FRONTEND_URL')}/users/${user.id}`)
