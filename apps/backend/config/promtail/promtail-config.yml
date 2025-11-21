@@ -17,3 +17,17 @@ scrape_configs:
         labels:
           job: logs
           __path__: /var/log/app/*.log
+    pipeline_stages:
+      - match:
+          selector: '{job="logs"} |= "request completed"'
+          stages:
+            - json:
+                expressions:
+                  method: method
+                  url: url
+                  status: status
+                  user_id: user_id
+            - labels:
+                method:
+                status:
+                user_id:

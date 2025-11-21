@@ -18,6 +18,8 @@ export default class RequestLoggerMiddleware {
         method: request.method(),
         url,
         status: response.getStatus(),
+        ip: request.ip(),
+        user_id: ctx.auth?.user?.id ?? 'anonymous',
       },
       'request completed'
     )
