@@ -15,7 +15,9 @@ import { Link } from '@tanstack/react-router'
 type User = {
   fullName: string
   email: string
-  avatarUrl?: string
+  avatar: {
+    url?: string
+  } | null
   id: string
 }
 
@@ -59,7 +61,7 @@ export function UserDropdown({ user }: { user: User }) {
           className="text-destructive"
           onClick={() => signOut()}
         >
-          <LogOutIcon className="h-4 w-4" /> Déconnexion
+          <LogOutIcon className="size-4" /> Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
