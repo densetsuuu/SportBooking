@@ -1,5 +1,6 @@
 import { CalendarEvent } from '~/components/ui/full-calendar'
 import { Reservation } from '~/lib/queries/reservations'
+import { match } from 'ts-pattern'
 
 export function reservationsAsCalendarEvents(
   reservations: Reservation[],
@@ -11,17 +12,11 @@ export function reservationsAsCalendarEvents(
     start: new Date(reservation.startDate),
     end: new Date(reservation.endDate),
     color: getColorByEventType(reservation, userId),
-  })) as CalendarEvent[]
+  }))
 }
 
-export function getColorByEventType(
-  reservation: Reservation,
-  userId: string
-): string {
-  // TODO: put red color if reservation is a closure by owner
-  if (reservation.user.id == userId) {
-    return 'green'
-  } else {
-    return 'default'
-  }
+export function getColorByEventType(reservation: Reservation, userId: string) {
+  return match(reservation)
+    .with({ user: { id: userId } }, () => 'green' as const)
+    .otherwise(() => 'default' as const)
 }
