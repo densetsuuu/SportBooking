@@ -19,11 +19,15 @@ import {
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { useRef } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { usersQueries } from '~/lib/queries/user'
 import { UserAvatarInput } from '~/components/user/user-avatar-input'
 import { Button } from '~/components/ui/button'
 import { AnimatePresence, motion } from 'motion/react'
+import Calendar from '~/components/Calendar'
+import { reservationsAsCalendarEvents } from '~/utils/calendar-mapping'
+import { toast } from 'sonner'
+import { getReservationsByUserQueryOptions } from '~/lib/queries/reservations'
 
 export function UserUpdateForm({ user }: { user: User }) {
   const updateForm = useForm<z.infer<typeof updateUserSchema>>({
@@ -41,6 +45,12 @@ export function UserUpdateForm({ user }: { user: User }) {
   const avatarFile = useWatch({ control: updateForm.control, name: 'avatar' })
   const isDirty = updateForm.formState.isDirty
 
+  const {
+    data: reservations,
+    isLoading: reservationsIsLoading,
+    error: reservationsError,
+  } = useQuery(getReservationsByUserQueryOptions(user.id))
+
   const onSubmit = (values: z.infer<typeof updateUserSchema>) => {
     void useUpdateUser.mutateAsync(
       {
@@ -51,6 +61,14 @@ export function UserUpdateForm({ user }: { user: User }) {
           updateForm.reset()
         },
       }
+    )
+  }
+
+  if (reservationsError) {
+    // Add toast
+    console.error(reservationsError)
+    toast.error(
+      'Une erreur est survenue lors de la récupérations des réservations.'
     )
   }
 
@@ -172,16 +190,23 @@ export function UserUpdateForm({ user }: { user: User }) {
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Calendrier</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground italic">
-            Cette section sera ajoutée ultérieurement.
-          </p>
-        </CardContent>
-      </Card>
+      {!reservationsIsLoading && !reservationsError ? (
+        <Card className="border shadow-sm">
+          <CardHeader>
+            <CardTitle>Calendrier</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Calendar
+              events={reservationsAsCalendarEvents(reservations ?? [], user.id)}
+              onEventClick={event => {
+                toast.message(`Réservation de ${event.title}`, {
+                  description: `Du ${event.start.toLocaleString()} au ${event.end.toLocaleString()}`,
+                })
+              }}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <div className="inline-flex w-full justify-end">
         <DeleteAccountButton user={user} />

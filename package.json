@@ -31,7 +31,7 @@
     "apps/frontend/**/*.{ts,tsx,js,jsx}": [
       "cd apps/frontend && pnpm format",
       "cd apps/frontend && pnpm lint:fix",
-      "pnpm --filter frontend lint"
+      "pnpm --filter frontend lint --no-warn-ignored"
     ]
   }
 }
