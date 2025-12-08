@@ -1,18 +1,18 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
+import { middleware } from '#start/kernel'
+import UserDto from '#users/dtos/user_dto'
+import User from '#users/models/user'
+import UserPolicy from '#users/policies/user_policy'
+import { UserService } from '#users/services/user_service'
+import { indexUsersValidator, updateUserValidator } from '#users/validators/user'
 import { Only, Resource, ResourceMiddleware } from '@adonisjs-community/girouette'
 import { inject } from '@adonisjs/core'
-import User from '#users/models/user'
-import UserDto from '#users/dtos/user_dto'
-import UserPolicy from '#users/policies/user_policy'
-import { updateUserValidator } from '#users/validators/user'
-import { UserService } from '#users/services/user_service'
-import { middleware } from '#start/kernel'
 
 @inject()
 @Resource({ name: 'users', params: { users: 'userId' } })
 @ResourceMiddleware(['update', 'destroy'], middleware.auth())
-@Only(['show', 'destroy', 'update'])
+@Only(['index', 'show', 'destroy', 'update'])
 export default class UserController {
   constructor(private userService: UserService) {}
 
@@ -43,5 +43,12 @@ export default class UserController {
 
     await this.userService.deleteUser(user)
     return response.noContent()
+  }
+
+  async index({ request, response }: HttpContext) {
+    const payload = await request.validateUsing(indexUsersValidator)
+
+    const users = await this.userService.searchUsers(payload)
+    return response.ok(users.map((user) => new UserDto(user)))
   }
 }

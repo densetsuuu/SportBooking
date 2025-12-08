@@ -7,7 +7,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class SportEquipmentsReservationsController {
   constructor(private reservationService: ReservationService) {}
 
-  @Get('/sport-equipments/:equip_numero/reservations', 'getByEquipment')
+  @Get('/sport_equipments/:equip_numero/reservations', 'getByEquipment')
   async getByEquipment({ params, response }: HttpContext) {
     const { equip_numero: equipNumero } = params
 

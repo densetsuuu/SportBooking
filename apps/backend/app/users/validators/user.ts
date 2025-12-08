@@ -12,3 +12,9 @@ export const updateUserValidator = vine.compile(
     email: vine.string().email().optional(),
   })
 )
+
+export const indexUsersValidator = vine.compile(
+  vine.object({
+    search: vine.string().optional(),
+  })
+)
