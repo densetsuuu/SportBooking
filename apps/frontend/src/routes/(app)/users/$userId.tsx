@@ -8,6 +8,10 @@ import { UserBanner } from '~/components/user/user-banner'
 import { useAuth } from '~/hooks/use-auth'
 import { UserUpdateForm } from '~/components/user/user-update-form'
 import { UserAvatar } from '~/components/user-avatar'
+import { getReservationsByUserQueryOptions } from '~/lib/queries/reservations'
+import { reservationsAsCalendarEvents } from '~/utils/calendar-mapping'
+import Calendar from '~/components/Calendar'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/(app)/users/$userId')({
   component: RouteComponent,
@@ -17,13 +21,23 @@ function RouteComponent() {
   const { userId } = Route.useParams()
   const { user: currentUser } = useAuth()
 
-  const { data: user, isLoading, error } = useQuery(usersQueries.get(userId))
+  const {
+    data: user,
+    isLoading: userIsLoading,
+    error: userError,
+  } = useQuery(usersQueries.get(userId))
+
+  const {
+    data: reservations,
+    isLoading: reservationsIsLoading,
+    error: reservationsError,
+  } = useQuery(getReservationsByUserQueryOptions(userId))
 
   if (currentUser?.id === userId) {
     return <UserUpdateForm user={currentUser} />
   }
 
-  if (isLoading) {
+  if (userIsLoading) {
     return (
       <div className="h-[calc(100vh-8rem)] flex flex-col gap-2 justify-center items-center overflow-hidden">
         <Icons.spinner size={30} />
@@ -32,11 +46,19 @@ function RouteComponent() {
     )
   }
 
-  if (error || !user) {
+  if (userError || !user) {
     return (
       <div className="text-center mt-10 text-destructive">
-        {error?.message ?? 'Aucun utilisateur trouvé.'}
+        {userError?.message ?? 'Aucun utilisateur trouvé.'}
       </div>
+    )
+  }
+
+  if (reservationsError) {
+    // Add toast
+    console.error(reservationsError)
+    toast.error(
+      'Une erreur est survenue lors de la récupérations des réservations.'
     )
   }
 
@@ -78,16 +100,23 @@ function RouteComponent() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Calendrier</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground italic">
-            Cette section sera ajoutée ultérieurement.
-          </p>
-        </CardContent>
-      </Card>
+      {!reservationsIsLoading && !reservationsError ? (
+        <Card className="border shadow-sm">
+          <CardHeader>
+            <CardTitle>Calendrier</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Calendar
+              events={reservationsAsCalendarEvents(reservations ?? [], user.id)}
+              onEventClick={event => {
+                toast.message(`Réservation de ${event.title}`, {
+                  description: `Du ${event.start.toLocaleString()} au ${event.end.toLocaleString()}`,
+                })
+              }}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   )
 }
