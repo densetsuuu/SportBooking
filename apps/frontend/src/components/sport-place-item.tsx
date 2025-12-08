@@ -27,9 +27,8 @@ import { reservationSchema } from '~/lib/schemas/common'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { DateTimeInput } from '~/components/datetime-input'
-import {DateTimePicker} from "~/components/datetime-picker";
-import {z} from "zod";
-import {loginFormSchema} from "~/lib/schemas/auth";
+import { DateTimePicker } from '~/components/datetime-picker'
+import { z } from 'zod'
 
 type SportPlaceItemProps = {
   equipment: SportEquipment
@@ -68,7 +67,6 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
 
   return (
     <Card className="overflow-hidden justify-items-start flex flex-col sm:flex-row shadow-sm hover:shadow-md transition">
-      {/* Image */}
       <div className="sm:w-1/3 relative">
         <img
           src={
@@ -83,7 +81,6 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
         </div>
       </div>
 
-      {/* Content */}
       <CardContent className="flex-1 flex flex-col justify-between p-6">
         <div className="flex flex-1 items-start flex-col">
           <CardHeader className="p-0 flex w-full mb-2">
@@ -107,7 +104,6 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
         <div className="border-t border-gray-200 my-4" />
 
         <div className="flex gap-3 mt-5">
-          {/* Voir détails */}
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Voir détails</Button>
@@ -133,7 +129,6 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
             </DialogContent>
           </Dialog>
 
-          {/* Réserver */}
           <Dialog>
             <DialogTrigger asChild>
               <Button className="bg-black hover:bg-gray-700">

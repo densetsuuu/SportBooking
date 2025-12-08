@@ -79,16 +79,29 @@ const segmentConfigs = [
   },
 ]
 
-const mergeRefs = (...refs: any) => {
-  return (node: any) => {
+const mergeRefs = <T,>(
+  ...refs: (
+    | React.MutableRefObject<T | null>
+    | React.LegacyRef<T>
+    | undefined
+    | null
+  )[]
+) => {
+  return (node: T | null) => {
     for (const ref of refs) {
-      if (ref) ref.current = node
+      if (ref) {
+        if (typeof ref === 'function') {
+          ref(node)
+        } else if (typeof ref === 'object' && 'current' in ref) {
+          ;(ref as React.MutableRefObject<T | null>).current = node
+        }
+      }
     }
   }
 }
 const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>(
   (options: DateTimeInputProps, ref) => {
-    const { format: formatProp, value: _value, timezone, ...rest } = options
+    const { format: formatProp, value: _value, timezone, onChange } = options
     const value = useMemo(
       () => (_value ? new TZDate(_value, timezone) : undefined),
       [_value, timezone]
@@ -109,7 +122,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>(
       if (form?.formState.isSubmitted) {
         setSegments(parseFormat(formatStr, value))
       }
-    }, [form?.formState.isSubmitted])
+    }, [form?.formState.isSubmitted, formatStr, value])
     useEffect(() => {
       // console.error('valueChanged', {formatStr, inputStr, value});
       setSegments(parseFormat(formatStr, value))
@@ -127,7 +140,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>(
     const setCurrentSegment = useCallback(
       (segment: Segment | undefined) => {
         const at = segments?.findIndex(s => s.index === segment?.index)
-        at !== -1 && setSelectedSegmentAt(at)
+        if (at !== -1) setSelectedSegmentAt(at)
       },
       [segments, setSelectedSegmentAt]
     )
@@ -161,14 +174,14 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>(
       if (isValid(date) && year > 1900 && year < 2100) {
         return date
       }
-    }, [validSegments, inputStr, formatStr])
+    }, [validSegments, inputStr, formatStr, timezone, value])
     useEffect(() => {
       if (!inputValue) return
       if (value?.getTime() !== inputValue.getTime()) {
         // console.log('inputValueChanged', {formatStr, inputStr, value, inputValue, });
-        options.onChange?.(inputValue)
+        onChange?.(inputValue)
       }
-    }, [inputValue])
+    }, [inputValue, value, onChange])
 
     const onClick = useEventCallback(
       (event: React.MouseEvent<HTMLInputElement>) => {
@@ -186,108 +199,99 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>(
               s.index <= selectionStart &&
               s.index + s.symbols.length >= selectionStart
           )
-          !segment &&
-            (segment = [...validSegments]
+          if (!segment)
+            segment = [...validSegments]
               .reverse()
-              .find(s => s.index <= selectionStart))
-          !segment &&
-            (segment = validSegments.find(s => s.index >= selectionStart))
+              .find(s => s.index <= selectionStart)
+          if (!segment)
+            segment = validSegments.find(s => s.index >= selectionStart)
           setCurrentSegment(segment)
           setSelection(inputRef, segment)
         }
-      },
-      [segments]
+      }
     )
 
-    const onSegmentChange = useEventCallback(
-      (direction: 'left' | 'right') => {
-        if (!curSegment) return
-        const validSegments = segments.filter(s => s.type !== 'space')
-        const segment =
-          direction === 'left'
-            ? [...validSegments].reverse().find(s => s.index < curSegment.index)
-            : validSegments.find(s => s.index > curSegment.index)
-        if (segment) {
-          setCurrentSegment(segment)
-          setSelection(inputRef, segment)
-        }
-      },
-      [segments, curSegment]
-    )
-
-    const onSegmentNumberValueChange = useEventCallback(
-      (num: string) => {
-        if (!curSegment) return
-        let segment = curSegment
-        let shouldNext = false
-        if (segment.type !== 'period') {
-          const length = segment.symbols.length
-          const rawValue = parseInt(segment.value).toString()
-          let newValue = rawValue.length < length ? rawValue + num : num
-          let parsedDate = parse(
-            newValue.padStart(length, '0'),
-            segment.symbols,
-            safeDate(timezone)
-          )
-          if (!isValid(parsedDate) && newValue.length > 1) {
-            newValue = num
-            parsedDate = parse(newValue, segment.symbols, safeDate(timezone))
-          }
-          const updatedSegments = segments.map(s =>
-            s.index === segment.index ? { ...segment, value: newValue } : s
-          )
-          setSegments(updatedSegments)
-          segment = updatedSegments.find(s => s.index === segment.index)!
-          shouldNext = newValue.length === length
-          if (!shouldNext) {
-            switch (segment.type) {
-              case 'month':
-                shouldNext = +newValue > 1
-                break
-              case 'date':
-                shouldNext = +newValue > 3
-                break
-              case 'hour':
-                shouldNext = +newValue > (segment.symbols.includes('H') ? 2 : 1)
-                break
-              case 'minute':
-              case 'second':
-                shouldNext = +newValue > 5
-                break
-              default:
-                break
-            }
-          }
-        }
-        shouldNext ? onSegmentChange('right') : setSelection(inputRef, segment)
-      },
-      [segments, curSegment]
-    )
-
-    const onSegmentPeriodValueChange = useEventCallback(
-      (key: string) => {
-        if (curSegment?.type !== 'period') return
-        let segment = curSegment
-        let ok = false
-        let newValue = ''
-        if (key?.toLowerCase() === 'a') {
-          newValue = 'AM'
-          ok = true
-        } else if (key?.toLowerCase() === 'p') {
-          newValue = 'PM'
-          ok = true
-        }
-        if (ok) {
-          const updatedSegments = segments.map(s =>
-            s.index === segment.index ? { ...segment, value: newValue } : s
-          )
-          setSegments(updatedSegments)
-          segment = updatedSegments.find(s => s.index === segment.index)!
-        }
+    const onSegmentChange = useEventCallback((direction: 'left' | 'right') => {
+      if (!curSegment) return
+      const validSegments = segments.filter(s => s.type !== 'space')
+      const segment =
+        direction === 'left'
+          ? [...validSegments].reverse().find(s => s.index < curSegment.index)
+          : validSegments.find(s => s.index > curSegment.index)
+      if (segment) {
+        setCurrentSegment(segment)
         setSelection(inputRef, segment)
-      },
-      [segments, curSegment]
-    )
+      }
+    })
+
+    const onSegmentNumberValueChange = useEventCallback((num: string) => {
+      if (!curSegment) return
+      let segment = curSegment
+      let shouldNext = false
+      if (segment.type !== 'period') {
+        const length = segment.symbols.length
+        const rawValue = parseInt(segment.value).toString()
+        let newValue = rawValue.length < length ? rawValue + num : num
+        let parsedDate = parse(
+          newValue.padStart(length, '0'),
+          segment.symbols,
+          safeDate(timezone)
+        )
+        if (!isValid(parsedDate) && newValue.length > 1) {
+          newValue = num
+          parsedDate = parse(newValue, segment.symbols, safeDate(timezone))
+        }
+        const updatedSegments = segments.map(s =>
+          s.index === segment.index ? { ...segment, value: newValue } : s
+        )
+        setSegments(updatedSegments)
+        segment = updatedSegments.find(s => s.index === segment.index)!
+        shouldNext = newValue.length === length
+        if (!shouldNext) {
+          switch (segment.type) {
+            case 'month':
+              shouldNext = +newValue > 1
+              break
+            case 'date':
+              shouldNext = +newValue > 3
+              break
+            case 'hour':
+              shouldNext = +newValue > (segment.symbols.includes('H') ? 2 : 1)
+              break
+            case 'minute':
+            case 'second':
+              shouldNext = +newValue > 5
+              break
+            default:
+              break
+          }
+        }
+      }
+      if (shouldNext) onSegmentChange('right')
+      else setSelection(inputRef, segment)
+    })
+
+    const onSegmentPeriodValueChange = useEventCallback((key: string) => {
+      if (curSegment?.type !== 'period') return
+      let segment = curSegment
+      let ok = false
+      let newValue = ''
+      if (key?.toLowerCase() === 'a') {
+        newValue = 'AM'
+        ok = true
+      } else if (key?.toLowerCase() === 'p') {
+        newValue = 'PM'
+        ok = true
+      }
+      if (ok) {
+        const updatedSegments = segments.map(s =>
+          s.index === segment.index ? { ...segment, value: newValue } : s
+        )
+        setSegments(updatedSegments)
+        segment = updatedSegments.find(s => s.index === segment.index)!
+      }
+      setSelection(inputRef, segment)
+    })
 
     const onSegmentValueRemove = useEventCallback(() => {
       if (!curSegment) return
@@ -301,7 +305,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>(
       } else {
         onSegmentChange('left')
       }
-    }, [segments, curSegment])
+    })
 
     const onKeyDown = useEventCallback(
       (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -333,8 +337,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>(
             event.preventDefault()
             break
         }
-      },
-      []
+      }
     )
 
     const [isFocused, setIsFocused] = useState(false)
@@ -412,7 +415,7 @@ interface Segment {
 }
 function parseFormat(formatStr: string, value?: Date) {
   const views: Segment[] = []
-  let lastPattern: any = ''
+  let lastPattern: SegmentType | '' = ''
   let symbols = ''
   let patternIndex = 0
   let index = 0
@@ -420,7 +423,7 @@ function parseFormat(formatStr: string, value?: Date) {
     const pattern = segmentConfigs.find(p => p.symbols.includes(c))!
     if (!pattern) continue
     if (pattern.type !== lastPattern) {
-      symbols &&
+      if (symbols)
         views.push({
           type: lastPattern,
           symbols,
@@ -435,7 +438,7 @@ function parseFormat(formatStr: string, value?: Date) {
     }
     index++
   }
-  symbols &&
+  if (symbols)
     views.push({
       type: lastPattern,
       symbols,
@@ -480,15 +483,17 @@ function safeSetSelection(
     }
   })
 }
-export function useEventCallback<T extends Function>(fn: T, deps: any[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function useEventCallback<T extends (...args: any[]) => any>(fn: T): T {
   const ref = useRef(fn)
   useIsomorphicLayoutEffect(() => {
     ref.current = fn
   })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return useCallback((...args: any[]) => {
     return ref.current?.(...args)
-  }, deps)
+  }, []) as T
 }
 
-export const useIsomorphicLayoutEffect =
+const useIsomorphicLayoutEffect =
   typeof document !== 'undefined' ? useLayoutEffect : useEffect

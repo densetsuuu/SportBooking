@@ -577,6 +577,7 @@ function TimePicker({
         ampm,
       })
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hour, minute, second, ampm, formatStr, use12HourFormat, onChange])
 
   const _hourIn24h = useMemo(() => {
