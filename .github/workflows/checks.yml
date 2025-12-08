@@ -7,6 +7,10 @@ on:
     types: [ opened, synchronize, reopened, ready_for_review ]
   merge_group:
 
+concurrency:
+  group: protected-topics-${{ inputs.pr_number }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
