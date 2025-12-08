@@ -2,3 +2,4 @@ name: sport_booking
 
 include:
   - ./apps/backend/docker-compose.yaml
+  - ./apps/frontend/docker-compose.yaml

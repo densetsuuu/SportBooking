@@ -1,0 +1,83 @@
+# Root .dockerignore to reduce build context
+
+# Node modules and pnpm store
+**/node_modules
+node_modules
+.pnpm-store
+.pnpm
+
+# Lockfiles and package manifests *should be included*, so don't ignore these
+!pnpm-lock.yaml
+!package.json
+!pnpm-workspace.yaml
+
+# Build outputs
+dist
+build
+**/dist
+**/build
+
+# Vite / caches
+.vite
+.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+
+# Editor settings
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# Logs and temp
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+tmp
+temp
+
+# Env files
+.env
+.env.*
+
+# Coverage
+coverage
+.nyc_output
+
+# Misc
+dist-ssr
+.sass-cache
+.cache-loader
+
+# Turbo / monorepo caches
+.turbo
+.tanstack
+
+# Dockerfiles (keep them when needed) - DO NOT ignore Dockerfile in repo root if you rely on it
+# but it's safe to ignore other Dockerfiles if you prefer
+# Dockerfile*
+
+# Keep source code (apps) but ignore their node_modules/build outputs
+!apps/
+apps/**/node_modules
+apps/**/dist
+
+# Keep frontend nginx.conf and docker-compose if present
+!apps/frontend/nginx.conf
+!apps/frontend/docker-compose.yaml
+
+# Keep backend docker-compose referenced
+!apps/backend/docker-compose.yaml
+
+# Keep scripts
+!scripts/
+
+# Optional: ignore large folders that are irrelevant
+.vagrant
