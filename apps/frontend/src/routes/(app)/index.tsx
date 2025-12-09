@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-// @ts-ignore
 import { useQuery } from '@tanstack/react-query'
 import CardWithClose from '~/components/easter-egg'
 import { ListView } from '~/components/list-view'
@@ -23,8 +22,6 @@ function App() {
       },
     })
   )
-
-  console.log(data?.data)
 
   const handleNextPage = () => {
     if (data && page < data.total) {

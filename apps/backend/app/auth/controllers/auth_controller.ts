@@ -8,7 +8,7 @@ import { inject } from '@adonisjs/core'
 import UserDto from '#users/dtos/user_dto'
 
 @inject()
-@Group({ name: 'auth', prefix: '' })
+@Group({ name: 'auth', prefix: '/auth' })
 export default class AuthController {
   @Post('/login', 'login')
   async login({ auth, request }: HttpContext) {
@@ -25,6 +25,9 @@ export default class AuthController {
   @Middleware([middleware.auth()])
   async me({ auth }: HttpContext) {
     const user = auth.getUserOrFail()
+    await User.preComputeUrls(user)
+    await user.load('socialAccounts')
+
     return new UserDto(user)
   }
 

@@ -1,6 +1,7 @@
 import { TriangleAlertIcon } from 'lucide-react'
+import { ReactNode } from 'react'
 
-export function NotFound({ children }: { children?: any }) {
+export function NotFound({ children }: { children?: ReactNode }) {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center gap-4 text-center max-w-md">

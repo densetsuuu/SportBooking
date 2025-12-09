@@ -8,7 +8,7 @@ import {
 import { useEffect } from 'react'
 import { router } from '~/lib/router'
 
-export type User = InferResponseType<typeof tuyau.me.$get>
+export type User = InferResponseType<typeof tuyau.auth.me.$get>
 
 type AuthUtils = {
   signOut: () => void

@@ -7,15 +7,15 @@
 import type { MakeTuyauRequest, MakeTuyauResponse } from '@tuyau/utils/types'
 import type { InferInput } from '@vinejs/vine/types'
 
-type LoginPost = {
+type AuthLoginPost = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/auth/validators/login.ts')['loginValidator']>>
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['login'], true>
 }
-type MeGet = {
+type AuthMeGet = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['me'], false>
 }
-type LogoutPost = {
+type AuthLogoutPost = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/auth_controller.ts').default['logout'], false>
 }
@@ -23,120 +23,176 @@ type AuthRegisterPost = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/auth/validators/register.ts')['registerValidator']>>
   response: MakeTuyauResponse<import('../app/auth/controllers/register_controller.ts').default['register'], true>
 }
-type UsersIdGet = {
+type AuthSocialIdRedirectGet = {
   request: unknown
-  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['show'], false>
+  response: MakeTuyauResponse<import('../app/auth/controllers/social_controller.ts').default['redirect'], false>
 }
-type SportEquipmentsGetHead = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/sport_equipment.ts')['indexSportEquipmentsValidator']>>
-  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['index'], true>
-}
-type SportequipmentsIdGetHead = {
+type AuthSocialIdCallbackGet = {
   request: unknown
-  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['show'], false>
+  response: MakeTuyauResponse<import('../app/auth/controllers/social_controller.ts').default['callback'], false>
 }
-type ReservationsIdDelete = {
+type AuthSocialIdDelete = {
   request: unknown
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['destroy'], false>
-}
-type ReservationsIdInvitationPatch = {
-  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateInvitationStatusValidator']>>
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['updateInvitationStatus'], true>
+  response: MakeTuyauResponse<import('../app/auth/controllers/social_controller.ts').default['disconnect'], false>
 }
 type ReservationsPost = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['createReservationValidator']>>
   response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['store'], true>
 }
-type ReservationsGetHead = {
+type ReservationsGet = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['indexReservationsValidator']>>
   response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['index'], true>
 }
-type ReservationsIdGetHead = {
+type ReservationsIdGet = {
   request: unknown
   response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['show'], false>
 }
-type SportequipmentsIdReservationsGetHead = {
+type ReservationsIdDelete = {
   request: unknown
-  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['getByEquipment'], false>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['destroy'], false>
 }
-type Patch = {
+type ReservationsUpdatestatusIdPatch = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateReservationStatusValidator']>>
   response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['updateStatus'], true>
 }
+type ReservationsCleanupstartedPatch = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['cleanupStartedReservations'], false>
+}
+type SportequipmentsIdReservationsGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/sport_equipments_reservations_controller.ts').default['getByEquipment'], false>
+}
+type ReservationsIdInvitationPatch = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['updateInvitationStatusValidator']>>
+  response: MakeTuyauResponse<import('../app/reservation/controllers/users_reservations_controller.ts').default['updateInvitationStatus'], true>
+}
+type UsersIdReservationsGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/reservation/controllers/users_reservations_controller.ts').default['getUserReservationsById'], false>
+}
+type SportEquipmentsGet = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/sport_equipment.ts')['indexSportEquipmentsValidator']>>
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['index'], true>
+}
+type SportequipmentsIdGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['show'], false>
+}
+type UsersIdGetHead = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['show'], false>
+}
+type UsersIdPutPatch = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/users/validators/user.ts')['updateUserValidator']>>
+  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['update'], true>
+}
+type UsersIdDelete = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/users/controllers/user_controller.ts').default['destroy'], false>
+}
 export interface ApiDefinition {
-  'login': {
-    '$url': {
-    };
-    '$post': LoginPost;
-  };
-  'me': {
-    '$url': {
-    };
-    '$get': MeGet;
-  };
-  'logout': {
-    '$url': {
-    };
-    '$post': LogoutPost;
-  };
-  'sport_equipments': {
-    '$url': {
-    };
-    '$get': SportEquipmentsGetHead;
-    '$head': SportEquipmentsGetHead;
-    ':equip_numero': {
+  'auth': {
+    'login': {
       '$url': {
       };
-      '$get': SportequipmentsIdGetHead;
-      '$head': SportequipmentsIdGetHead;
+      '$post': AuthLoginPost;
+    };
+    'me': {
+      '$url': {
+      };
+      '$get': AuthMeGet;
+    };
+    'logout': {
+      '$url': {
+      };
+      '$post': AuthLogoutPost;
+    };
+    'register': {
+      '$url': {
+      };
+      '$post': AuthRegisterPost;
+    };
+    'social': {
+      ':provider': {
+        'redirect': {
+          '$url': {
+          };
+          '$get': AuthSocialIdRedirectGet;
+        };
+        'callback': {
+          '$url': {
+          };
+          '$get': AuthSocialIdCallbackGet;
+        };
+        '$url': {
+        };
+        '$delete': AuthSocialIdDelete;
+      };
     };
   };
   'reservations': {
+    '$url': {
+    };
+    '$post': ReservationsPost;
+    '$get': ReservationsGet;
     ':id': {
       '$url': {
       };
+      '$get': ReservationsIdGet;
       '$delete': ReservationsIdDelete;
       'invitation': {
         '$url': {
         };
         '$patch': ReservationsIdInvitationPatch;
       };
-      '$get': ReservationsIdGetHead;
-      '$head': ReservationsIdGetHead;
     };
-    '$url': {
+    'update-status': {
+      ':id': {
+        '$url': {
+        };
+        '$patch': ReservationsUpdatestatusIdPatch;
+      };
     };
-    '$post': ReservationsPost;
-    '$get': ReservationsGetHead;
-    '$head': ReservationsGetHead;
+    'cleanup-started': {
+      '$url': {
+      };
+      '$patch': ReservationsCleanupstartedPatch;
+    };
   };
   'sport-equipments': {
     ':equip_numero': {
       'reservations': {
         '$url': {
         };
-        '$get': SportequipmentsIdReservationsGetHead;
-        '$head': SportequipmentsIdReservationsGetHead;
+        '$get': SportequipmentsIdReservationsGet;
       };
-    };
-  };
-  '  ': {
-    '$url': {
-    };
-    '$patch': Patch;
-  };
-  'auth': {
-    'register': {
-      '$url': {
-      };
-      '$post': AuthRegisterPost;
     };
   };
   'users': {
     ':userId': {
+      'reservations': {
+        '$url': {
+        };
+        '$get': UsersIdReservationsGet;
+      };
       '$url': {
       };
-      '$get': UsersIdGet;
+      '$get': UsersIdGetHead;
+      '$head': UsersIdGetHead;
+      '$put': UsersIdPutPatch;
+      '$patch': UsersIdPutPatch;
+      '$delete': UsersIdDelete;
+    };
+  };
+  'sport_equipments': {
+    '$url': {
+    };
+    '$get': SportEquipmentsGet;
+    ':equip_numero': {
+      '$url': {
+      };
+      '$get': SportequipmentsIdGet;
     };
   };
 }
@@ -144,23 +200,23 @@ const routes = [
   {
     params: [],
     name: 'auth.login',
-    path: '/login',
+    path: '/auth/login',
     method: ["POST"],
-    types: {} as LoginPost,
+    types: {} as AuthLoginPost,
   },
   {
     params: [],
     name: 'auth.me',
-    path: '/me',
+    path: '/auth/me',
     method: ["GET"],
-    types: {} as MeGet,
+    types: {} as AuthMeGet,
   },
   {
     params: [],
     name: 'auth.logout',
-    path: '/logout',
+    path: '/auth/logout',
     method: ["POST"],
-    types: {} as LogoutPost,
+    types: {} as AuthLogoutPost,
   },
   {
     params: [],
@@ -170,11 +226,130 @@ const routes = [
     types: {} as AuthRegisterPost,
   },
   {
+    params: ["provider"],
+    name: 'auth.social.create',
+    path: '/auth/social/:provider/redirect',
+    method: ["GET"],
+    types: {} as AuthSocialIdRedirectGet,
+  },
+  {
+    params: ["provider"],
+    name: 'auth.social.callback',
+    path: '/auth/social/:provider/callback',
+    method: ["GET"],
+    types: {} as AuthSocialIdCallbackGet,
+  },
+  {
+    params: ["provider"],
+    name: 'auth.social.disconnect',
+    path: '/auth/social/:provider',
+    method: ["DELETE"],
+    types: {} as AuthSocialIdDelete,
+  },
+  {
+    params: [],
+    name: 'reservations.store',
+    path: '/reservations',
+    method: ["POST"],
+    types: {} as ReservationsPost,
+  },
+  {
+    params: [],
+    name: 'reservations.index',
+    path: '/reservations',
+    method: ["GET"],
+    types: {} as ReservationsGet,
+  },
+  {
+    params: ["id"],
+    name: 'reservations.show',
+    path: '/reservations/:id',
+    method: ["GET"],
+    types: {} as ReservationsIdGet,
+  },
+  {
+    params: ["id"],
+    name: 'reservations.destroy',
+    path: '/reservations/:id',
+    method: ["DELETE"],
+    types: {} as ReservationsIdDelete,
+  },
+  {
+    params: ["id"],
+    name: 'reservations.updateStatus',
+    path: '/reservations/update-status/:id',
+    method: ["PATCH"],
+    types: {} as ReservationsUpdatestatusIdPatch,
+  },
+  {
+    params: [],
+    name: 'reservations.cleanupStartedReservations',
+    path: '/reservations/cleanup-started',
+    method: ["PATCH"],
+    types: {} as ReservationsCleanupstartedPatch,
+  },
+  {
+    params: ["equip_numero"],
+    name: 'getByEquipment',
+    path: '/sport-equipments/:equip_numero/reservations',
+    method: ["GET"],
+    types: {} as SportequipmentsIdReservationsGet,
+  },
+  {
+    params: ["id"],
+    name: 'invitation.update.status',
+    path: '/reservations/:id/invitation',
+    method: ["PATCH"],
+    types: {} as ReservationsIdInvitationPatch,
+  },
+  {
+    params: ["userId"],
+    name: 'getUserReservationsById',
+    path: '/users/:userId/reservations',
+    method: ["GET"],
+    types: {} as UsersIdReservationsGet,
+  },
+  {
+    params: [],
+    name: 'sport_equipments.index',
+    path: '/sport_equipments',
+    method: ["GET"],
+    types: {} as SportEquipmentsGet,
+  },
+  {
+    params: ["equip_numero"],
+    name: 'sport_equipments.show',
+    path: '/sport_equipments/:equip_numero',
+    method: ["GET"],
+    types: {} as SportequipmentsIdGet,
+  },
+  {
     params: ["userId"],
     name: 'users.show',
     path: '/users/:userId',
-    method: ["GET"],
-    types: {} as UsersIdGet,
+    method: ["GET","HEAD"],
+    types: {} as UsersIdGetHead,
+  },
+  {
+    params: ["userId"],
+    name: 'users.update',
+    path: '/users/:userId',
+    method: ["PUT","PATCH"],
+    types: {} as UsersIdPutPatch,
+  },
+  {
+    params: ["userId"],
+    name: 'users.destroy',
+    path: '/users/:userId',
+    method: ["DELETE"],
+    types: {} as UsersIdDelete,
+  },
+  {
+    params: ["key","name"],
+    name: 'attachments',
+    path: '/attachments/:key/:name?',
+    method: ["GET","HEAD"],
+    types: {} as unknown,
   },
 ] as const;
 export const api = {

@@ -1,7 +1,13 @@
+﻿import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { Calendar, Clock, Users } from 'lucide-react'
-import React, { useState } from 'react'
+import { Calendar as CalendarIcon, Clock, Users } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
 import { ClaimEstablishmentForm } from '~/components/claim-establishment-form'
+import { DateTimeInput } from '~/components/datetime-input'
+import { DateTimePicker } from '~/components/datetime-picker'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import {
@@ -13,53 +19,60 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select'
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/form'
+import { Input } from '~/components/ui/input'
 import { createReservationMutationOptions } from '~/lib/queries/reservation'
 import { SportEquipment } from '~/lib/queries/sport-equipments'
+import { reservationSchema } from '~/lib/schemas/common'
 
 type SportPlaceItemProps = {
   equipment: SportEquipment
 }
 
 export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
-  const [date, setDate] = useState<string>('')
-  const [timeSlot, setTimeSlot] = useState<string>('')
-  const [participants, setParticipants] = useState<number>(1)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [isClaimDialogOpen, setIsClaimDialogOpen] = useState<boolean>(false)
   const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isClaimDialogOpen, setIsClaimDialogOpen] = useState<boolean>(false)
+  const useReservation = useMutation(createReservationMutationOptions)
 
-  const mutation = useMutation(createReservationMutationOptions())
+  const form = useForm<z.infer<typeof reservationSchema>>({
+    resolver: zodResolver(reservationSchema),
+    defaultValues: {
+      startDate: undefined,
+      endDate: undefined,
+      participants: 1,
+    },
+  })
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
+  const handleSubmit = async (data: {
+    startDate: Date
+    endDate: Date
+    participants: number
+  }) => {
     setError(null)
     setSuccess(null)
-
     try {
-      await mutation.mutateAsync({
+      await useReservation.mutateAsync({
         payload: {
           sportEquipmentId: equipment.id!,
-          startDate: date,
-          endDate: date,
+          startDate: data.startDate.toISOString(),
+          endDate: data.endDate.toISOString(),
+          invitedUsers: Array.from(
+            { length: data.participants - 1 },
+            (_, i) => `user${i + 1}`
+          ),
         },
       })
-
       setSuccess('Réservation confirmée !')
     } catch (err: any) {
-      setError('Erreur lors de la réservation.' + (err.message || ''))
-    } finally {
-      setLoading(false)
+      setError('Erreur lors de la réservation. ' + (err.message || ''))
     }
   }
 
@@ -87,16 +100,16 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
             <CardTitle className="text-xl">{equipment.nom}</CardTitle>
           </CardHeader>
           <p className="text-sm text-muted-foreground mb-1">
-            📍 {equipment.address}
+            {equipment.address}
           </p>
           <p className="text-gray-700 text-sm mb-3">
             {equipment.description || 'Aucune description disponible.'}
           </p>
 
           <ul className="text-sm flex items-start gap-4 text-gray-600">
-            <li>👥 Capacité: {equipment.capacite ?? '?'}</li>
+            <li> Capacité: {equipment.capacite ?? '?'}</li>
             <li>
-              🏙️ {equipment.postalCode} {equipment.libBdv}
+              {equipment.postalCode} {equipment.libBdv}
             </li>
           </ul>
         </div>
@@ -122,24 +135,27 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
                 alt={equipment.nom}
                 className="w-full h-60 object-cover my-4 rounded"
               />
-              <p>📍 {equipment.address}</p>
+              <p> {equipment.address}</p>
               <p>
-                🏙️ {equipment.postalCode} {equipment.libBdv}
+                {equipment.postalCode} {equipment.libBdv}
               </p>
-              <p>👥 Capacité: {equipment.capacite ?? '?'}</p>
-              <DialogFooter className="mt-4">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setIsClaimDialogOpen(true)}
-                >
-                  Revendiquer cet établissement
-                </Button>
-              </DialogFooter>
+              <p> Capacité: {equipment.capacite ?? '?'}</p>
+
+              {!equipment.hasApprovedOwner && (
+                <DialogFooter className="mt-4">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setIsClaimDialogOpen(true)}
+                  >
+                    Revendiquer cet établissement
+                  </Button>
+                </DialogFooter>
+              )}
             </DialogContent>
           </Dialog>
 
-          {/* Revendiquer l'établissement */}
+          {/* Revendiquer l'établissement Dialog */}
           <Dialog open={isClaimDialogOpen} onOpenChange={setIsClaimDialogOpen}>
             <DialogContent className="max-w-2xl">
               <ClaimEstablishmentForm
@@ -167,69 +183,114 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
                   réservation.
                 </DialogDescription>
               </DialogHeader>
-              <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
-                <div className="grid gap-2">
-                  <div className="flex gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <Label htmlFor="date">Date</Label>
-                  </div>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={date}
-                    onChange={e => setDate(e.target.value)}
-                    required
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(handleSubmit)}
+                  className="space-y-4 mt-4"
+                >
+                  <FormField
+                    control={form.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem className="grid gap-2">
+                        <div className="flex gap-2">
+                          <CalendarIcon className="w-4 h-4" />
+                          <FormLabel>Date & heure de début</FormLabel>
+                        </div>
+                        <FormControl>
+                          <DateTimePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            timePicker={{ hour: true, minute: true }}
+                            renderTrigger={({ open, value, setOpen }) => (
+                              <DateTimeInput
+                                value={value}
+                                onChange={x => !open && field.onChange(x)}
+                                format="dd/MM/yyyy HH:mm"
+                                disabled={open}
+                                onCalendarClick={() => setOpen(!open)}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
 
-                <div className="grid gap-2">
-                  <div className="flex gap-2">
-                    <Clock className="w-4 h-4" />
-                    <Label htmlFor="time">Créneau horaire</Label>
-                  </div>
-                  <Select onValueChange={v => setTimeSlot(v)} value={timeSlot}>
-                    <SelectTrigger id="time">
-                      <SelectValue placeholder="Choisir un créneau" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="10h-12h">10h - 12h</SelectItem>
-                      <SelectItem value="12h-14h">12h - 14h</SelectItem>
-                      <SelectItem value="14h-16h">14h - 16h</SelectItem>
-                      <SelectItem value="16h-18h">16h - 18h</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid gap-2">
-                  <div className="flex gap-2">
-                    <Users className="w-4 h-4" />
-                    <Label htmlFor="participants">Nombre de participants</Label>
-                  </div>
-                  <Input
-                    id="participants"
-                    type="number"
-                    min={1}
-                    value={participants}
-                    onChange={e => setParticipants(Number(e.target.value))}
+                  <FormField
+                    control={form.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem className="grid gap-2">
+                        <div className="flex gap-2">
+                          <Clock className="w-4 h-4" />
+                          <FormLabel>Date & heure de fin</FormLabel>
+                        </div>
+                        <FormControl>
+                          <DateTimePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            timePicker={{ hour: true, minute: true }}
+                            renderTrigger={({ open, value, setOpen }) => (
+                              <DateTimeInput
+                                value={value}
+                                onChange={x => !open && field.onChange(x)}
+                                format="dd/MM/yyyy HH:mm"
+                                disabled={open}
+                                onCalendarClick={() => setOpen(!open)}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
 
-                {error && <p className="text-sm text-red-600">{error}</p>}
-                {success && <p className="text-sm text-green-600">{success}</p>}
+                  <FormField
+                    control={form.control}
+                    name="participants"
+                    render={({ field }) => (
+                      <FormItem className="grid gap-2">
+                        <div className="flex gap-2">
+                          <Users className="w-4 h-4" />
+                          <FormLabel>Nombre de participants</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={1}
+                            {...field}
+                            onChange={e =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <DialogFooter className="mt-6 flex justify-end gap-2">
-                  <DialogTrigger asChild>
-                    <Button variant="outline">Annuler</Button>
-                  </DialogTrigger>
-                  <Button
-                    type="submit"
-                    className="bg-black hover:bg-gray-700"
-                    disabled={loading}
-                  >
-                    {loading ? 'Envoi...' : 'Confirmer la réservation'}
-                  </Button>
-                </DialogFooter>
-              </form>
+                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  {success && (
+                    <p className="text-sm text-green-600">{success}</p>
+                  )}
+
+                  <DialogFooter className="mt-6 flex justify-end gap-2">
+                    <DialogTrigger asChild>
+                      <Button variant="outline">Annuler</Button>
+                    </DialogTrigger>
+                    <Button
+                      type="submit"
+                      className="bg-black hover:bg-gray-700"
+                      disabled={useReservation.isPending}
+                    >
+                      Confirmer la réservation
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
             </DialogContent>
           </Dialog>
         </div>
