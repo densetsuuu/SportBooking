@@ -1,28 +1,41 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import CardWithClose from '~/components/easter-egg'
 import { ListView } from '~/components/list-view'
 import { useEasterEgg } from '~/hooks/useEasterEgg'
 import { getSportEquipmentQueryOptions } from '~/lib/queries/sport-equipments'
+import { searchSchema } from '~/lib/schemas/common'
 import 'leaflet/dist/leaflet.css'
 
 export const Route = createFileRoute('/(app)/')({
+  validateSearch: searchSchema,
   component: App,
 })
 
 function App() {
   const [page, setPage] = useState(1)
   const { visible, close } = useEasterEgg()
+  const { name, city, sport } = Route.useSearch()
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1)
+  }, [name, city, sport])
 
   const { data } = useQuery(
     getSportEquipmentQueryOptions({
       payload: {
         page,
         limit: 5,
+        nom: name || undefined,
+        typeSport: sport || undefined,
+        ville: city || undefined,
       },
     })
   )
+
+  console.log(data?.data)
 
   const handleNextPage = () => {
     if (data && page < data.total) {

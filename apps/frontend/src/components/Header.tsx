@@ -1,15 +1,32 @@
-// import { Link } from '@tanstack/react-router'
-
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Home, MapPin, Menu, Search, User, X } from 'lucide-react'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { useAuth } from '~/hooks/use-auth'
 import { UserDropdown } from '~/components/user/user-dropdown'
 
 export default function Header() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const [filterType, setFilterType] = useState<'name' | 'sport' | 'city'>(
+    'name'
+  )
+  const search = useSearch({ strict: false })
+
+  const [inputValue, setInputValue] = useState(
+    search?.name || search?.sport || search?.city || ''
+  )
+  const navigate = useNavigate()
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      navigate({
+        to: '.',
+        search: { [filterType]: inputValue },
+        replace: true,
+      })
+    }
+  }
+
   const { user } = useAuth()
 
   return (
@@ -32,15 +49,31 @@ export default function Header() {
 
             {/* Search Bar */}
             <div className="hidden sm:block flex-1 max-w-2xl mx-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <div className="relative flex items-center border border-border rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-ring focus-within:border-primary">
+                <div className="bg-muted px-3 py-2 border-r">
+                  <select
+                    value={filterType}
+                    onChange={e =>
+                      setFilterType(e.target.value as 'name' | 'sport' | 'city')
+                    }
+                    className="bg-transparent text-sm font-medium outline-none cursor-pointer"
+                  >
+                    <option value="name">Nom</option>
+                    <option value="sport">Sport</option>
+                    <option value="city">Ville</option>
+                  </select>
+                </div>
                 <Input
                   type="search"
-                  placeholder="Rechercher un équipement, une ville, un sport..."
-                  // value={searchQuery}
-                  // onChange={(e) => onSearchChange(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full"
+                  placeholder={`Rechercher par ${filterType === 'city' ? 'ville' : filterType === 'sport' ? 'sport' : 'nom'}...`}
+                  defaultValue={''}
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="pr-10 py-2 w-full border-none shadow-none focus-visible:ring-0
+                  "
                 />
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               </div>
             </div>
 
