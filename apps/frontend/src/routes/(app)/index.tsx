@@ -7,6 +7,14 @@ import { useEasterEgg } from '~/hooks/useEasterEgg'
 import { getSportEquipmentQueryOptions } from '~/lib/queries/sport-equipments'
 import { searchSchema } from '~/lib/schemas/common'
 import 'leaflet/dist/leaflet.css'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '~/components/ui/pagination'
 
 export const Route = createFileRoute('/(app)/')({
   validateSearch: searchSchema,
@@ -54,26 +62,43 @@ function App() {
         {data?.data && (
           <>
             <ListView results={data?.data ?? []} />
-            {/* PAGINATION */}
-            <div className="flex gap-4 mt-6 items-center justify-center mb-3">
-              <button
-                onClick={handlePreviousPage}
-                disabled={page === 1}
-                className="px-4 py-2 bg-gray-700 rounded disabled:opacity-40"
-              >
-                ◀ Précédent
-              </button>
-              <span>
-                Page {page} / {(data && data.total) || 1}
-              </span>
-              <button
-                onClick={handleNextPage}
-                disabled={data && page === data.total}
-                className="px-4 py-2 bg-gray-700 rounded disabled:opacity-40"
-              >
-                Suivant ▶
-              </button>
-            </div>
+            <Pagination className={'pb-3'}>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    disabled={page === 1}
+                    onClick={handlePreviousPage}
+                  />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink
+                    disabled={page === 1}
+                    onClick={handlePreviousPage}
+                  >
+                    {page - 1}
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink isActive className={'text-primary'}>
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink
+                    disabled={data && page === Math.ceil(data.total / 5)}
+                    onClick={handleNextPage}
+                  >
+                    {page + 1}
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext
+                    disabled={data && page === Math.ceil(data.total / 5)}
+                    onClick={handleNextPage}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </>
         )}
       </header>
