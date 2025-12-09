@@ -11,6 +11,7 @@ import {
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { useAuth } from '~/hooks/use-auth'
+import { assignOwnerMutationOptions } from '~/lib/queries/sport-equipments'
 
 type ClaimEstablishmentFormProps = {
   equipmentId: string
@@ -32,33 +33,7 @@ export function ClaimEstablishmentForm({
   const { user } = useAuth()
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      if (!user) {
-        throw new Error(
-          'Vous devez être connecté pour revendiquer un établissement'
-        )
-      }
-
-      // Appel API pour assigner le propriétaire
-      const response = await fetch(
-        `/api/sport_equipments/${equipmentId}/owner`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: user.id,
-          }),
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la revendication')
-      }
-
-      return response.json()
-    },
+    ...assignOwnerMutationOptions,
     onSuccess: () => {
       setSuccess('Votre demande a été enregistrée avec succès !')
       setError(null)
@@ -77,6 +52,11 @@ export function ClaimEstablishmentForm({
     setError(null)
     setSuccess(null)
 
+    if (!user) {
+      setError('Vous devez être connecté pour revendiquer un établissement')
+      return
+    }
+
     if (!phoneNumber) {
       setError('Veuillez renseigner un numéro de téléphone')
       return
@@ -87,7 +67,14 @@ export function ClaimEstablishmentForm({
       return
     }
 
-    mutation.mutate()
+    mutation.mutate({
+      params: { equip_numero: equipmentId },
+      payload: {
+        userId: user.id,
+        file: files[0],
+        phoneNumber,
+      },
+    } as any)
   }
 
   return (

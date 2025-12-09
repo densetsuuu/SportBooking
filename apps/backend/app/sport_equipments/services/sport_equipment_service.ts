@@ -1,6 +1,8 @@
+import FileService from '#common/services/file_service'
 import OwnerSportEquipment from '#sport_equipments/models/owner_sport_equipment'
 import { indexSportEquipmentsValidator } from '#sport_equipments/validators/sport_equipment'
 import User from '#users/models/user'
+import { inject } from '@adonisjs/core'
 import { Exception } from '@adonisjs/core/exceptions'
 import { Infer } from '@vinejs/vine/types'
 
@@ -17,6 +19,10 @@ type SportEquipment = {
     lat: number
   }
   lib_bdv: string
+  owner?: {
+    status: 'approved' | 'refused' | 'waiting'
+    phoneNumber: string | null
+  } | null
 }
 
 type SportEquipmentResponse = {
@@ -24,7 +30,10 @@ type SportEquipmentResponse = {
   results: SportEquipment[]
 }
 
+@inject()
 export class SportEquipmentService {
+  constructor(private fileService: FileService) {}
+
   /**
    * Maps raw API data to SportEquipment type
    */
@@ -51,7 +60,21 @@ export class SportEquipmentService {
       throw new Exception('Failed to fetch sport equipment by id', { status: 500 })
     }
     const data = (await response.json()) as SportEquipmentResponse
-    return this.mapToSportEquipment(data.results[0])
+    const equipment = this.mapToSportEquipment(data.results[0])
+
+    const owner = await OwnerSportEquipment.query()
+      .where('sportEquipmentId', equip_numero)
+      .where('status', 'approved')
+      .first()
+
+    if (owner) {
+      equipment.owner = {
+        status: owner.status,
+        phoneNumber: owner.phoneNumber,
+      }
+    }
+
+    return equipment
   }
 
   async getSportsEquipments({
@@ -75,16 +98,39 @@ export class SportEquipmentService {
       throw new Error('Failed to fetch sport equipments by type and city')
     }
     const data = (await response.json()) as SportEquipmentResponse
+
+    const results = data.results.map((item) => this.mapToSportEquipment(item))
+
+    const equipIds = results.map((r) => r.equip_numero)
+    const owners = await OwnerSportEquipment.query()
+      .whereIn('sportEquipmentId', equipIds)
+      .where('status', 'approved')
+
+    results.forEach((equipment) => {
+      const owner = owners.find((o) => o.sportEquipmentId === equipment.equip_numero)
+      if (owner) {
+        equipment.owner = {
+          status: owner.status,
+          phoneNumber: owner.phoneNumber,
+        }
+      }
+    })
+
     return {
       total_count: data.total_count,
-      results: data.results.map((item) => this.mapToSportEquipment(item)),
+      results,
     }
   }
 
   /**
    * Assign an owner to a sport equipment
    */
-  async assignOwner(sportEquipmentId: string, userId: string): Promise<OwnerSportEquipment> {
+  async assignOwner(
+    sportEquipmentId: string,
+    userId: string,
+    file: any,
+    phoneNumber: string
+  ): Promise<OwnerSportEquipment> {
     // Verify user exists
     const user = await User.find(userId)
     if (!user) {
@@ -107,10 +153,17 @@ export class SportEquipmentService {
     }
 
     // Create ownership
-    const ownership = await OwnerSportEquipment.create({
-      ownerId: userId,
-      sportEquipmentId,
-    })
+    const ownership = new OwnerSportEquipment()
+    ownership.ownerId = userId
+    ownership.sportEquipmentId = sportEquipmentId
+    ownership.status = 'waiting'
+    ownership.phoneNumber = phoneNumber
+
+    if (file) {
+      ownership.fileIdentification = await this.fileService.uploadFile(file)
+    }
+
+    await ownership.save()
 
     await ownership.load('owner')
     return ownership

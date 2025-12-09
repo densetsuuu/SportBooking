@@ -4,6 +4,8 @@ import User from '#users/models/user'
 import { compose } from '@adonisjs/core/helpers'
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { attachment } from '@jrmc/adonis-attachment'
+import type { Attachment } from '@jrmc/adonis-attachment/types/attachment'
 
 export default class OwnerSportEquipment extends compose(BaseModel, withUUID(), withTimestamps()) {
   static table = 'owner_sport_equipment'
@@ -13,6 +15,15 @@ export default class OwnerSportEquipment extends compose(BaseModel, withUUID(), 
 
   @column()
   declare sportEquipmentId: string
+
+  @column()
+  declare phoneNumber: string | null
+
+  @column()
+  declare status: 'approved' | 'refused' | 'waiting'
+
+  @attachment({ preComputeUrl: true })
+  declare fileIdentification: Attachment | null
 
   @belongsTo(() => User, {
     foreignKey: 'ownerId',

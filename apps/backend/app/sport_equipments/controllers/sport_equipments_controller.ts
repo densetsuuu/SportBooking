@@ -1,12 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
+import SportEquipmentDto from '#sport_equipments/dtos/sport_equipment_dto'
 import { SportEquipmentService } from '#sport_equipments/services/sport_equipment_service'
 import { assignOwnerValidator, updateOwnerValidator } from '#sport_equipments/validators/owner'
 import { indexSportEquipmentsValidator } from '#sport_equipments/validators/sport_equipment'
 import { middleware } from '#start/kernel'
 import { Delete, Get, Group, Middleware, Patch, Post } from '@adonisjs-community/girouette'
 import { inject } from '@adonisjs/core'
-import SportEquipmentDto from '#sport_equipments/dtos/sport_equipment_dto'
 
 @inject()
 @Group({ prefix: '/sport_equipments', name: 'sport_equipments' })
@@ -57,9 +57,14 @@ export default class SportEquipmentsController {
   @Middleware(middleware.auth())
   public async assignOwner({ params, request, response }: HttpContext) {
     const { equip_numero: equipNumero } = params
-    const { userId } = await request.validateUsing(assignOwnerValidator)
+    const { userId, file, phoneNumber } = await request.validateUsing(assignOwnerValidator)
 
-    const ownership = await this.sportEquipmentService.assignOwner(equipNumero, userId)
+    const ownership = await this.sportEquipmentService.assignOwner(
+      equipNumero,
+      userId,
+      file,
+      phoneNumber
+    )
 
     return response.created(ownership)
   }

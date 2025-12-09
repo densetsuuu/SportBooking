@@ -6,6 +6,11 @@ import vine from '@vinejs/vine'
 export const assignOwnerValidator = vine.compile(
   vine.object({
     userId: vine.string().uuid(),
+    phoneNumber: vine.string(),
+    file: vine.file({
+      size: '10mb',
+      extnames: ['jpg', 'png', 'pdf', 'jpeg'],
+    }),
   })
 )
 

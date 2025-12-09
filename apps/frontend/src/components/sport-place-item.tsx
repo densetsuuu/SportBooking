@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
+import { useAuth } from '~/hooks/use-auth'
 import { createReservationMutationOptions } from '~/lib/queries/reservation'
 import { SportEquipment } from '~/lib/queries/sport-equipments'
 import { reservationSchema } from '~/lib/schemas/common'
@@ -41,6 +42,8 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
   const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const useReservation = useMutation(createReservationMutationOptions)
+  const auth = useAuth()
+  console.log('equipment', equipment)
 
   const form = useForm<z.infer<typeof reservationSchema>>({
     resolver: zodResolver(reservationSchema),
@@ -141,16 +144,24 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
               </p>
               <p> Capacité: {equipment.capacite ?? '?'}</p>
 
-              {!equipment.hasApprovedOwner && (
+              {equipment.owner?.status === 'approved' ? (
                 <DialogFooter className="mt-4">
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => setIsClaimDialogOpen(true)}
-                  >
-                    Revendiquer cet établissement
+                  <Button variant="outline" className="w-full" disabled>
+                    Contacter le propriétaire : {equipment.owner.phoneNumber}
                   </Button>
                 </DialogFooter>
+              ) : (
+                auth.user && (
+                  <DialogFooter className="mt-4">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setIsClaimDialogOpen(true)}
+                    >
+                      Revendiquer cet établissement
+                    </Button>
+                  </DialogFooter>
+                )
               )}
             </DialogContent>
           </Dialog>
@@ -168,131 +179,133 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
           </Dialog>
 
           {/* Réserver */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-black hover:bg-gray-700">
-                Réserver maintenant
-              </Button>
-            </DialogTrigger>
+          {auth.user && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="bg-black hover:bg-gray-700">
+                  Réserver maintenant
+                </Button>
+              </DialogTrigger>
 
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Réserver {equipment.nom}</DialogTitle>
-                <DialogDescription>
-                  Complétez les informations ci-dessous pour finaliser votre
-                  réservation.
-                </DialogDescription>
-              </DialogHeader>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(handleSubmit)}
-                  className="space-y-4 mt-4"
-                >
-                  <FormField
-                    control={form.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem className="grid gap-2">
-                        <div className="flex gap-2">
-                          <CalendarIcon className="w-4 h-4" />
-                          <FormLabel>Date & heure de début</FormLabel>
-                        </div>
-                        <FormControl>
-                          <DateTimePicker
-                            value={field.value}
-                            onChange={field.onChange}
-                            timePicker={{ hour: true, minute: true }}
-                            renderTrigger={({ open, value, setOpen }) => (
-                              <DateTimeInput
-                                value={value}
-                                onChange={x => !open && field.onChange(x)}
-                                format="dd/MM/yyyy HH:mm"
-                                disabled={open}
-                                onCalendarClick={() => setOpen(!open)}
-                              />
-                            )}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Réserver {equipment.nom}</DialogTitle>
+                  <DialogDescription>
+                    Complétez les informations ci-dessous pour finaliser votre
+                    réservation.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(handleSubmit)}
+                    className="space-y-4 mt-4"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem className="grid gap-2">
+                          <div className="flex gap-2">
+                            <CalendarIcon className="w-4 h-4" />
+                            <FormLabel>Date & heure de début</FormLabel>
+                          </div>
+                          <FormControl>
+                            <DateTimePicker
+                              value={field.value}
+                              onChange={field.onChange}
+                              timePicker={{ hour: true, minute: true }}
+                              renderTrigger={({ open, value, setOpen }) => (
+                                <DateTimeInput
+                                  value={value}
+                                  onChange={x => !open && field.onChange(x)}
+                                  format="dd/MM/yyyy HH:mm"
+                                  disabled={open}
+                                  onCalendarClick={() => setOpen(!open)}
+                                />
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="endDate"
+                      render={({ field }) => (
+                        <FormItem className="grid gap-2">
+                          <div className="flex gap-2">
+                            <Clock className="w-4 h-4" />
+                            <FormLabel>Date & heure de fin</FormLabel>
+                          </div>
+                          <FormControl>
+                            <DateTimePicker
+                              value={field.value}
+                              onChange={field.onChange}
+                              timePicker={{ hour: true, minute: true }}
+                              renderTrigger={({ open, value, setOpen }) => (
+                                <DateTimeInput
+                                  value={value}
+                                  onChange={x => !open && field.onChange(x)}
+                                  format="dd/MM/yyyy HH:mm"
+                                  disabled={open}
+                                  onCalendarClick={() => setOpen(!open)}
+                                />
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="participants"
+                      render={({ field }) => (
+                        <FormItem className="grid gap-2">
+                          <div className="flex gap-2">
+                            <Users className="w-4 h-4" />
+                            <FormLabel>Nombre de participants</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={1}
+                              {...field}
+                              onChange={e =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    {success && (
+                      <p className="text-sm text-green-600">{success}</p>
                     )}
-                  />
 
-                  <FormField
-                    control={form.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem className="grid gap-2">
-                        <div className="flex gap-2">
-                          <Clock className="w-4 h-4" />
-                          <FormLabel>Date & heure de fin</FormLabel>
-                        </div>
-                        <FormControl>
-                          <DateTimePicker
-                            value={field.value}
-                            onChange={field.onChange}
-                            timePicker={{ hour: true, minute: true }}
-                            renderTrigger={({ open, value, setOpen }) => (
-                              <DateTimeInput
-                                value={value}
-                                onChange={x => !open && field.onChange(x)}
-                                format="dd/MM/yyyy HH:mm"
-                                disabled={open}
-                                onCalendarClick={() => setOpen(!open)}
-                              />
-                            )}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="participants"
-                    render={({ field }) => (
-                      <FormItem className="grid gap-2">
-                        <div className="flex gap-2">
-                          <Users className="w-4 h-4" />
-                          <FormLabel>Nombre de participants</FormLabel>
-                        </div>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min={1}
-                            {...field}
-                            onChange={e =>
-                              field.onChange(Number(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {error && <p className="text-sm text-red-600">{error}</p>}
-                  {success && (
-                    <p className="text-sm text-green-600">{success}</p>
-                  )}
-
-                  <DialogFooter className="mt-6 flex justify-end gap-2">
-                    <DialogTrigger asChild>
-                      <Button variant="outline">Annuler</Button>
-                    </DialogTrigger>
-                    <Button
-                      type="submit"
-                      className="bg-black hover:bg-gray-700"
-                      disabled={useReservation.isPending}
-                    >
-                      Confirmer la réservation
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+                    <DialogFooter className="mt-6 flex justify-end gap-2">
+                      <DialogTrigger asChild>
+                        <Button variant="outline">Annuler</Button>
+                      </DialogTrigger>
+                      <Button
+                        type="submit"
+                        className="bg-black hover:bg-gray-700"
+                        disabled={useReservation.isPending}
+                      >
+                        Confirmer la réservation
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </CardContent>
     </Card>
