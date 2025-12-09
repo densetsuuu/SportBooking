@@ -5,7 +5,7 @@ import CardWithClose from '~/components/easter-egg'
 import { ListView } from '~/components/list-view'
 import { useEasterEgg } from '~/hooks/useEasterEgg'
 import { getSportEquipmentQueryOptions } from '~/lib/queries/sport-equipments'
-import "leaflet/dist/leaflet.css";
+import 'leaflet/dist/leaflet.css'
 
 export const Route = createFileRoute('/(app)/')({
   component: App,

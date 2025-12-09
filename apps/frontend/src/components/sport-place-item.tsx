@@ -29,7 +29,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { DateTimeInput } from '~/components/datetime-input'
 import { DateTimePicker } from '~/components/datetime-picker'
 import { z } from 'zod'
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
 type SportPlaceItemProps = {
   equipment: SportEquipment
@@ -66,30 +65,37 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
     })
   }
 
-  const coordUrl = equipment.coordonnees?.lat && equipment.coordonnees?.lon
-    ? `https://maps.google.com/maps?q=${equipment.coordonnees.lat},${equipment.coordonnees.lon}&hl=fr&z=14&output=embed`
-    : equipment.address && equipment.libBdv && `https://maps.google.com/maps?q=${encodeURIComponent(equipment.address + equipment.libBdv + equipment.postalCode)}&hl=fr&z=14&output=embed`;
+  const coordUrl =
+    equipment.coordonnees?.lat && equipment.coordonnees?.lon
+      ? `https://maps.google.com/maps?q=${equipment.coordonnees.lat},${equipment.coordonnees.lon}&hl=fr&z=14&output=embed`
+      : equipment.address &&
+        equipment.libBdv &&
+        `https://maps.google.com/maps?q=${encodeURIComponent(equipment.address + equipment.libBdv + equipment.postalCode)}&hl=fr&z=14&output=embed`
 
   return (
     <Card className="overflow-hidden justify-items-start flex flex-col sm:flex-row shadow-sm hover:shadow-md transition min-h-80">
       <div className="sm:w-2/3 relative">
-        {coordUrl ? (<div className="pl-5 w-full h-48 sm:h-full">
-          <iframe
-            src={coordUrl}
-            width="150"
-            height="100"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="w-full h-full"
-          ></iframe>
-        </div>) : (<img
-          src={
-            equipment.image ||
-            'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=60'
-          }
-          alt={equipment.nom}
-          className="object-cover h-48 sm:h-full w-full"
-        />)}
+        {coordUrl ? (
+          <div className="pl-5 w-full h-48 sm:h-full">
+            <iframe
+              src={coordUrl}
+              width="150"
+              height="100"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        ) : (
+          <img
+            src={
+              equipment.image ||
+              'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=60'
+            }
+            alt={equipment.nom}
+            className="object-cover h-48 sm:h-full w-full"
+          />
+        )}
 
         <div className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm text-gray-900 font-semibold px-3 py-1 rounded-lg shadow-sm text-sm">
           {equipment.type}
