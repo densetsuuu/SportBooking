@@ -91,4 +91,24 @@ export default class SportEquipmentsController {
 
     return response.ok(ownership)
   }
+
+  @Patch('/ownership/:ownershipId/approve', 'owner.approve')
+  @Middleware(middleware.auth())
+  public async approveOwnership({ params, response }: HttpContext) {
+    const { ownershipId } = params
+
+    const ownership = await this.sportEquipmentService.approveOwnership(ownershipId)
+
+    return response.ok(ownership)
+  }
+
+  @Patch('/ownership/:ownershipId/refuse', 'owner.refuse')
+  @Middleware(middleware.auth())
+  public async refuseOwnership({ params, response }: HttpContext) {
+    const { ownershipId } = params
+
+    const ownership = await this.sportEquipmentService.refuseOwnership(ownershipId)
+
+    return response.ok(ownership)
+  }
 }
