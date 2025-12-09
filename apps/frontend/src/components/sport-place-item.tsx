@@ -59,19 +59,25 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
     endDate: Date
     participants: number
   }) => {
-    console.log(data)
-    await useReservation.mutateAsync({
-      payload: {
-        sportEquipmentId: equipment.id,
-        startDate: data.startDate.toISOString(),
-        endDate: data.endDate.toISOString(),
-        invitedUsers: Array.from(
-          { length: data.participants - 1 },
-          (_, i) => `user${i + 1}`
-        ),
-      },
-    })
-    setIsReservationOpen(false)
+    setError(null)
+    setSuccess(null)
+    try {
+      await useReservation.mutateAsync({
+        payload: {
+          sportEquipmentId: equipment.id,
+          startDate: data.startDate.toISOString(),
+          endDate: data.endDate.toISOString(),
+          invitedUsers: Array.from(
+            { length: data.participants - 1 },
+            (_, i) => `user${i + 1}`
+          ),
+        },
+      })
+      setSuccess('Réservation effectuée avec succès !')
+      setTimeout(() => setIsReservationOpen(false), 2000)
+    } catch {
+      setError('Une erreur est survenue lors de la réservation.')
+    }
   }
 
   const coordUrl =
@@ -196,7 +202,10 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
 
           {/* Réserver */}
           {auth.user && (
-            <Dialog>
+            <Dialog
+              open={isReservationOpen}
+              onOpenChange={setIsReservationOpen}
+            >
               <DialogTrigger asChild>
                 <Button className="bg-black hover:bg-gray-700">
                   Réserver maintenant

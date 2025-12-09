@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import FileUpload from '~/components/file-upload'
 import { Button } from '~/components/ui/button'
 import {
@@ -41,7 +41,7 @@ export function ClaimEstablishmentForm({
         onSuccess?.()
       }, 1500)
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       setError(err.message || 'Une erreur est survenue')
       setSuccess(null)
     },
@@ -74,6 +74,7 @@ export function ClaimEstablishmentForm({
         file: files[0],
         phoneNumber,
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any)
   }
 
@@ -83,7 +84,7 @@ export function ClaimEstablishmentForm({
         <DialogTitle>Revendiquer {equipmentName}</DialogTitle>
         <DialogDescription>
           Pour revendiquer cet établissement, veuillez fournir un justificatif
-          prouvant que vous êtes bien le propriétaire ainsi qu'un numéro de
+          prouvant que vous êtes bien le propriétaire ainsi qu&apos;un numéro de
           téléphone de contact.
         </DialogDescription>
       </DialogHeader>
@@ -91,7 +92,7 @@ export function ClaimEstablishmentForm({
       <form className="space-y-6 mt-4" onSubmit={handleSubmit}>
         <div className="grid gap-2">
           <Label htmlFor="phone">
-            Numéro de téléphone de l'établissement *
+            Numéro de téléphone de l&apos;établissement *
           </Label>
           <Input
             id="phone"

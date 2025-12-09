@@ -1,6 +1,6 @@
-import { Button } from "~/components/ui/button";
-import { Label } from "~/components/ui/label";
-import { FileSpreadsheet, Upload, X } from "lucide-react";
+import { Button } from '~/components/ui/button'
+import { Label } from '~/components/ui/label'
+import { FileSpreadsheet, Upload, X } from 'lucide-react'
 
 export default function FileUpload05() {
   return (
@@ -82,5 +82,5 @@ export default function FileUpload05() {
         </div>
       </form>
     </div>
-  );
+  )
 }
