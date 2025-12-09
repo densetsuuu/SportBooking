@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import {
@@ -36,6 +36,7 @@ type SportPlaceItemProps = {
 
 export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
   const useReservation = useMutation(createReservationMutationOptions)
+  const [isReservationOpen, setIsReservationOpen] = useState(false)
 
   const form = useForm<z.infer<typeof reservationSchema>>({
     resolver: zodResolver(reservationSchema),
@@ -46,13 +47,13 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
     },
   })
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     startDate: Date
     endDate: Date
     participants: number
   }) => {
     console.log(data)
-    void useReservation.mutateAsync({
+    await useReservation.mutateAsync({
       payload: {
         sportEquipmentId: equipment.id,
         startDate: data.startDate.toISOString(),
@@ -63,6 +64,7 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
         ),
       },
     })
+    setIsReservationOpen(false)
   }
 
   const coordUrl =
@@ -109,6 +111,8 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
           </CardHeader>
           <p className="text-sm text-muted-foreground mb-1">
             📍 {equipment.address}
+            📍 {equipment.coordonnees?.lat}
+            📍 {equipment.coordonnees?.lon}
           </p>
           <p className="text-gray-700 text-sm mb-3">
             {equipment.description || 'Aucune description disponible.'}
@@ -150,7 +154,7 @@ export function SportPlaceItem({ equipment }: SportPlaceItemProps) {
             </DialogContent>
           </Dialog>
 
-          <Dialog>
+          <Dialog open={isReservationOpen} onOpenChange={setIsReservationOpen}>
             <DialogTrigger asChild>
               <Button className="bg-black hover:bg-gray-700">
                 Réserver maintenant
