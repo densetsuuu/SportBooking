@@ -15,6 +15,7 @@ import { Route as appIndexRouteImport } from './routes/(app)/index'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as appUsersUserIdRouteImport } from './routes/(app)/users/$userId'
+import { Route as appEquipmentEquipmentIdRouteImport } from './routes/(app)/equipment/$equipmentId'
 
 const authRouteRoute = authRouteRouteImport.update({
   id: '/(auth)',
@@ -44,17 +45,24 @@ const appUsersUserIdRoute = appUsersUserIdRouteImport.update({
   path: '/users/$userId',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appEquipmentEquipmentIdRoute = appEquipmentEquipmentIdRouteImport.update({
+  id: '/equipment/$equipmentId',
+  path: '/equipment/$equipmentId',
+  getParentRoute: () => appRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof appIndexRoute
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
+  '/equipment/$equipmentId': typeof appEquipmentEquipmentIdRoute
   '/users/$userId': typeof appUsersUserIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof appIndexRoute
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
+  '/equipment/$equipmentId': typeof appEquipmentEquipmentIdRoute
   '/users/$userId': typeof appUsersUserIdRoute
 }
 export interface FileRoutesById {
@@ -64,13 +72,24 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(app)/': typeof appIndexRoute
+  '/(app)/equipment/$equipmentId': typeof appEquipmentEquipmentIdRoute
   '/(app)/users/$userId': typeof appUsersUserIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/users/$userId'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/equipment/$equipmentId'
+    | '/users/$userId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/users/$userId'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/equipment/$equipmentId'
+    | '/users/$userId'
   id:
     | '__root__'
     | '/(app)'
@@ -78,6 +97,7 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/register'
     | '/(app)/'
+    | '/(app)/equipment/$equipmentId'
     | '/(app)/users/$userId'
   fileRoutesById: FileRoutesById
 }
@@ -130,16 +150,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appUsersUserIdRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/equipment/$equipmentId': {
+      id: '/(app)/equipment/$equipmentId'
+      path: '/equipment/$equipmentId'
+      fullPath: '/equipment/$equipmentId'
+      preLoaderRoute: typeof appEquipmentEquipmentIdRouteImport
+      parentRoute: typeof appRouteRoute
+    }
   }
 }
 
 interface appRouteRouteChildren {
   appIndexRoute: typeof appIndexRoute
+  appEquipmentEquipmentIdRoute: typeof appEquipmentEquipmentIdRoute
   appUsersUserIdRoute: typeof appUsersUserIdRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appIndexRoute: appIndexRoute,
+  appEquipmentEquipmentIdRoute: appEquipmentEquipmentIdRoute,
   appUsersUserIdRoute: appUsersUserIdRoute,
 }
 
