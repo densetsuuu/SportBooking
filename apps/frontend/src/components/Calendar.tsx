@@ -41,12 +41,6 @@ export default function Calendar({ events, onEventClick }: CalendarProps) {
           >
             Mois
           </CalendarViewTrigger>
-          {/*<CalendarViewTrigger*/}
-          {/*  view="year"*/}
-          {/*  className="aria-[current=true]:bg-accent"*/}
-          {/*>*/}
-          {/*  Année*/}
-          {/*</CalendarViewTrigger>*/}
 
           <span className="flex-1" />
 
@@ -69,7 +63,6 @@ export default function Calendar({ events, onEventClick }: CalendarProps) {
           <CalendarDayView />
           <CalendarWeekView />
           <CalendarMonthView />
-          {/*<CalendarYearView />*/}
         </div>
       </div>
     </FullCalendar>
