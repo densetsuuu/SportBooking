@@ -5,6 +5,7 @@ import CardWithClose from '~/components/easter-egg'
 import { ListView } from '~/components/list-view'
 import { useEasterEgg } from '~/hooks/useEasterEgg'
 import { getSportEquipmentQueryOptions } from '~/lib/queries/sport-equipments'
+import 'leaflet/dist/leaflet.css'
 
 export const Route = createFileRoute('/(app)/')({
   component: App,
@@ -41,7 +42,7 @@ function App() {
           <>
             <ListView results={data?.data ?? []} />
             {/* PAGINATION */}
-            <div className="flex gap-4 mt-6 items-center justify-center">
+            <div className="flex gap-4 mt-6 items-center justify-center mb-3">
               <button
                 onClick={handlePreviousPage}
                 disabled={page === 1}
