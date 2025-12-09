@@ -1,5 +1,5 @@
-import { tuyau } from '~/lib/tuyau'
 import { InferResponseType } from '@tuyau/react-query'
+import { tuyau } from '~/lib/tuyau'
 
 export type SportEquipment = InferResponseType<
   typeof tuyau.sport_equipments.$get
@@ -16,3 +16,6 @@ export const equipmentQueries = {
       },
     }),
 }
+export const assignOwnerMutationOptions = tuyau.sport_equipments[
+  ':equip_numero'
+].owner.$post.mutationOptions({})

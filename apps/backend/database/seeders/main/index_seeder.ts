@@ -1,5 +1,5 @@
-import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import app from '@adonisjs/core/services/app'
+import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class IndexSeeder extends BaseSeeder {
   async run() {
