@@ -4,7 +4,7 @@ import { SportEquipment } from '~/lib/queries/sport-equipments'
 
 export function ListView({ results }: { results: SportEquipment[] }) {
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6 mt-3 w-3/5">
       {results.map((equipment, index) => (
         <SportPlaceItem key={index} equipment={equipment} />
       ))}
