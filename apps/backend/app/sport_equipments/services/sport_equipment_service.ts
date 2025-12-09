@@ -129,6 +129,8 @@ export class SportEquipmentService {
 
   /**
    * Assign an owner to a sport equipment
+   * Multiple requests can be made for the same equipment while no request is approved.
+   * Once a request is approved, no more requests can be made.
    */
   async assignOwner(
     sportEquipmentId: string,
@@ -148,16 +150,17 @@ export class SportEquipmentService {
       throw new Exception('Sport equipment not found', { status: 404 })
     }
 
-    // Check if ownership already exists
-    const existingOwnership = await OwnerSportEquipment.query()
+    // Check if an approved ownership already exists - block new requests
+    const approvedOwnership = await OwnerSportEquipment.query()
       .where('sportEquipmentId', sportEquipmentId)
+      .where('status', 'approved')
       .first()
 
-    if (existingOwnership) {
-      throw new Exception('This sport equipment already has an owner', { status: 409 })
+    if (approvedOwnership) {
+      throw new Exception('This sport equipment already has an approved owner', { status: 409 })
     }
 
-    // Create ownership
+    // Create ownership request (multiple waiting requests are allowed)
     const ownership = new OwnerSportEquipment()
     ownership.ownerId = userId
     ownership.sportEquipmentId = sportEquipmentId
@@ -168,6 +171,67 @@ export class SportEquipmentService {
       ownership.fileIdentification = await this.fileService.uploadFile(file)
     }
 
+    await ownership.save()
+
+    await ownership.load('owner')
+    return ownership
+  }
+
+  /**
+   * Approve an ownership request
+   * When a request is approved, all other pending requests for the same equipment are refused.
+   */
+  async approveOwnership(ownershipId: string): Promise<OwnerSportEquipment> {
+    const ownership = await OwnerSportEquipment.find(ownershipId)
+
+    if (!ownership) {
+      throw new Exception('Ownership request not found', { status: 404 })
+    }
+
+    if (ownership.status !== 'waiting') {
+      throw new Exception('Only waiting requests can be approved', { status: 400 })
+    }
+
+    // Check if another ownership is already approved for this equipment
+    const existingApproved = await OwnerSportEquipment.query()
+      .where('sportEquipmentId', ownership.sportEquipmentId)
+      .where('status', 'approved')
+      .first()
+
+    if (existingApproved) {
+      throw new Exception('This sport equipment already has an approved owner', { status: 409 })
+    }
+
+    // Approve this request
+    ownership.status = 'approved'
+    await ownership.save()
+
+    // Refuse all other pending requests for the same equipment
+    await OwnerSportEquipment.query()
+      .where('sportEquipmentId', ownership.sportEquipmentId)
+      .where('status', 'waiting')
+      .whereNot('id', ownershipId)
+      .update({ status: 'refused' })
+
+    await ownership.load('owner')
+    return ownership
+  }
+
+  /**
+   * Refuse an ownership request
+   */
+  async refuseOwnership(ownershipId: string): Promise<OwnerSportEquipment> {
+    const ownership = await OwnerSportEquipment.find(ownershipId)
+
+    if (!ownership) {
+      throw new Exception('Ownership request not found', { status: 404 })
+    }
+
+    if (ownership.status !== 'waiting') {
+      throw new Exception('Only waiting requests can be refused', { status: 400 })
+    }
+
+    ownership.status = 'refused'
     await ownership.save()
 
     await ownership.load('owner')
