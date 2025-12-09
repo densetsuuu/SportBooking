@@ -1,7 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
 import { useEffect, useState } from 'react'
-// @ts-ignore
 import { useQuery } from '@tanstack/react-query'
 import CardWithClose from '~/components/easter-egg'
 import { ListView } from '~/components/list-view'
