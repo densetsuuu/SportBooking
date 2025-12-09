@@ -329,7 +329,7 @@ const CalendarWeekView = () => {
 }
 
 const CalendarMonthView = () => {
-  const { date, view, events, locale } = useCalendar()
+  const { date, view, events, locale, onEventClick } = useCalendar()
 
   const monthDates = useMemo(() => getDaysInMonth(date), [date])
   const weekDays = useMemo(() => generateWeekdays(locale), [locale])
@@ -378,7 +378,11 @@ const CalendarMonthView = () => {
                 return (
                   <div
                     key={event.id}
-                    className="px-1 rounded text-sm flex items-center gap-1"
+                    className={cn(
+                      'px-1 rounded text-sm flex items-center gap-1',
+                      onEventClick ? 'cursor-pointer hover:bg-muted/50' : ''
+                    )}
+                    onClick={() => (onEventClick ? onEventClick(event) : undefined)}
                   >
                     <div
                       className={cn(

@@ -11,7 +11,8 @@ import { UserAvatar } from '~/components/user-avatar'
 import { getReservationsByUserQueryOptions } from '~/lib/queries/reservations'
 import { reservationsAsCalendarEvents } from '~/utils/calendar-mapping'
 import Calendar from '~/components/Calendar'
-import { toast } from 'sonner'
+import { ReservationDetailsModal } from '~/components/reservation-details-modal'
+import { useState } from 'react'
 
 export const Route = createFileRoute('/(app)/users/$userId')({
   component: RouteComponent,
@@ -20,6 +21,10 @@ export const Route = createFileRoute('/(app)/users/$userId')({
 function RouteComponent() {
   const { userId } = Route.useParams()
   const { user: currentUser } = useAuth()
+  const [selectedReservationId, setSelectedReservationId] = useState<
+    string | null
+  >(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const {
     data: user,
@@ -55,11 +60,7 @@ function RouteComponent() {
   }
 
   if (reservationsError) {
-    // Add toast
     console.error(reservationsError)
-    toast.error(
-      'Une erreur est survenue lors de la récupérations des réservations.'
-    )
   }
 
   return (
@@ -100,7 +101,7 @@ function RouteComponent() {
         </div>
       </div>
 
-      {!reservationsIsLoading && !reservationsError ? (
+      {currentUser && !reservationsIsLoading && !reservationsError ? (
         <Card className="border shadow-sm">
           <CardHeader>
             <CardTitle>Calendrier</CardTitle>
@@ -109,14 +110,19 @@ function RouteComponent() {
             <Calendar
               events={reservationsAsCalendarEvents(reservations ?? [], user.id)}
               onEventClick={event => {
-                toast.message(`Réservation de ${event.title}`, {
-                  description: `Du ${event.start.toLocaleString()} au ${event.end.toLocaleString()}`,
-                })
+                setSelectedReservationId(event.id)
+                setIsModalOpen(true)
               }}
             />
           </CardContent>
         </Card>
       ) : null}
+
+      <ReservationDetailsModal
+        reservationId={selectedReservationId}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   )
 }
