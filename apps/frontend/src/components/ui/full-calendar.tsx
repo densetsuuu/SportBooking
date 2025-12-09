@@ -382,7 +382,9 @@ const CalendarMonthView = () => {
                       'px-1 rounded text-sm flex items-center gap-1',
                       onEventClick ? 'cursor-pointer hover:bg-muted/50' : ''
                     )}
-                    onClick={() => (onEventClick ? onEventClick(event) : undefined)}
+                    onClick={() =>
+                      onEventClick ? onEventClick(event) : undefined
+                    }
                   >
                     <div
                       className={cn(

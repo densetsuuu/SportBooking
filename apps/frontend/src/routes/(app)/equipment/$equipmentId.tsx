@@ -10,6 +10,8 @@ import { MapPinIcon } from 'lucide-react'
 import { ReservationDetailsModal } from '~/components/reservation-details-modal'
 import { useState } from 'react'
 import { useAuth } from '~/hooks/use-auth'
+import { BookButton } from '~/components/bookButton'
+import { OwnerButton } from '~/components/ownerButton'
 
 export const Route = createFileRoute('/(app)/equipment/$equipmentId')({
   component: RouteComponent,
@@ -101,6 +103,19 @@ function RouteComponent() {
           </div>
         </div>
       </div>
+
+      <BookButton
+        equipment={{ id: equipment.equip_numero, nom: equipment.equip_nom }}
+      />
+
+      <OwnerButton
+        equipment={{
+          id: equipment.equip_numero,
+          nom: equipment.equip_nom,
+          ownerStatus: equipment.owner?.status,
+          phoneNumber: equipment.owner?.phoneNumber,
+        }}
+      />
 
       {user && !reservationsIsLoading && !reservationsError ? (
         <Card className="border shadow-sm">
