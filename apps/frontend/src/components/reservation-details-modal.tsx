@@ -226,6 +226,13 @@ export function ReservationDetailsModal({
                         {sportEquipment.lib_bdv &&
                           `, ${sportEquipment.lib_bdv}`}
                       </p>
+                      <Link
+                        to="/equipment/$equipmentId"
+                        params={{ equipmentId: reservation.sportEquipmentId }}
+                        className="text-xs text-primary hover:underline mt-2 inline-block"
+                      >
+                        Voir les détails →
+                      </Link>
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground font-mono">

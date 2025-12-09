@@ -3,11 +3,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { equipmentQueries } from '~/lib/queries/sport-equipments'
 import { getReservationsByEquipmentQueryOptions } from '~/lib/queries/reservations'
 import { Icons } from '~/components/icons'
-import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { reservationsAsCalendarEvents } from '~/utils/calendar-mapping'
 import Calendar from '~/components/Calendar'
 import { MapPinIcon } from 'lucide-react'
+import { ReservationDetailsModal } from '~/components/reservation-details-modal'
+import { useState } from 'react'
+import { useAuth } from '~/hooks/use-auth'
 
 export const Route = createFileRoute('/(app)/equipment/$equipmentId')({
   component: RouteComponent,
@@ -15,6 +17,11 @@ export const Route = createFileRoute('/(app)/equipment/$equipmentId')({
 
 function RouteComponent() {
   const { equipmentId } = Route.useParams()
+  const { user } = useAuth()
+  const [selectedReservationId, setSelectedReservationId] = useState<
+    string | null
+  >(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const {
     data: equipment,
@@ -46,11 +53,7 @@ function RouteComponent() {
   }
 
   if (reservationsError) {
-    // Add toast
     console.error(reservationsError)
-    toast.error(
-      'Une erreur est survenue lors de la récupérations des réservations.'
-    )
   }
 
   const coordUrl =
@@ -99,7 +102,7 @@ function RouteComponent() {
         </div>
       </div>
 
-      {!reservationsIsLoading && !reservationsError ? (
+      {user && !reservationsIsLoading && !reservationsError ? (
         <Card className="border shadow-sm">
           <CardHeader>
             <CardTitle>Calendrier</CardTitle>
@@ -108,17 +111,22 @@ function RouteComponent() {
             <Calendar
               events={reservationsAsCalendarEvents(
                 reservations ?? [],
-                equipment.equip_numero
+                user?.id
               )}
               onEventClick={event => {
-                toast.message(`Réservation de ${event.title}`, {
-                  description: `Du ${event.start.toLocaleString()} au ${event.end.toLocaleString()}`,
-                })
+                setSelectedReservationId(event.id)
+                setIsModalOpen(true)
               }}
             />
           </CardContent>
         </Card>
       ) : null}
+
+      <ReservationDetailsModal
+        reservationId={selectedReservationId}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   )
 }

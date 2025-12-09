@@ -101,7 +101,7 @@ function RouteComponent() {
         </div>
       </div>
 
-      {!reservationsIsLoading && !reservationsError ? (
+      {currentUser && !reservationsIsLoading && !reservationsError ? (
         <Card className="border shadow-sm">
           <CardHeader>
             <CardTitle>Calendrier</CardTitle>
