@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { usersQueries } from '~/lib/queries/user'
 import { UserAvatarInput } from '~/components/user/user-avatar-input'
@@ -26,8 +26,8 @@ import { Button } from '~/components/ui/button'
 import { AnimatePresence, motion } from 'motion/react'
 import Calendar from '~/components/Calendar'
 import { reservationsAsCalendarEvents } from '~/utils/calendar-mapping'
-import { toast } from 'sonner'
 import { getReservationsByUserQueryOptions } from '~/lib/queries/reservations'
+import { ReservationDetailsModal } from '~/components/reservation-details-modal'
 
 export function UserUpdateForm({ user }: { user: User }) {
   const updateForm = useForm<z.infer<typeof updateUserSchema>>({
@@ -41,6 +41,10 @@ export function UserUpdateForm({ user }: { user: User }) {
   })
   const inputRef = useRef<HTMLInputElement>(null)
   const useUpdateUser = useMutation(usersQueries.update(user.id))
+  const [selectedReservationId, setSelectedReservationId] = useState<
+    string | null
+  >(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const avatarFile = useWatch({ control: updateForm.control, name: 'avatar' })
   const isDirty = updateForm.formState.isDirty
@@ -65,11 +69,7 @@ export function UserUpdateForm({ user }: { user: User }) {
   }
 
   if (reservationsError) {
-    // Add toast
     console.error(reservationsError)
-    toast.error(
-      'Une erreur est survenue lors de la récupérations des réservations.'
-    )
   }
 
   return (
@@ -199,14 +199,19 @@ export function UserUpdateForm({ user }: { user: User }) {
             <Calendar
               events={reservationsAsCalendarEvents(reservations ?? [], user.id)}
               onEventClick={event => {
-                toast.message(`Réservation de ${event.title}`, {
-                  description: `Du ${event.start.toLocaleString()} au ${event.end.toLocaleString()}`,
-                })
+                setSelectedReservationId(event.id)
+                setIsModalOpen(true)
               }}
             />
           </CardContent>
         </Card>
       ) : null}
+
+      <ReservationDetailsModal
+        reservationId={selectedReservationId}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
 
       <div className="inline-flex w-full justify-end">
         <DeleteAccountButton user={user} />

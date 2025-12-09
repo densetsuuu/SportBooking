@@ -9,7 +9,6 @@ import {
   CalendarTodayTrigger,
   CalendarViewTrigger,
   CalendarWeekView,
-  CalendarYearView,
 } from '~/components/ui/full-calendar'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { fr } from 'date-fns/locale'
@@ -42,12 +41,12 @@ export default function Calendar({ events, onEventClick }: CalendarProps) {
           >
             Mois
           </CalendarViewTrigger>
-          <CalendarViewTrigger
-            view="year"
-            className="aria-[current=true]:bg-accent"
-          >
-            Année
-          </CalendarViewTrigger>
+          {/*<CalendarViewTrigger*/}
+          {/*  view="year"*/}
+          {/*  className="aria-[current=true]:bg-accent"*/}
+          {/*>*/}
+          {/*  Année*/}
+          {/*</CalendarViewTrigger>*/}
 
           <span className="flex-1" />
 
@@ -70,7 +69,7 @@ export default function Calendar({ events, onEventClick }: CalendarProps) {
           <CalendarDayView />
           <CalendarWeekView />
           <CalendarMonthView />
-          <CalendarYearView />
+          {/*<CalendarYearView />*/}
         </div>
       </div>
     </FullCalendar>
