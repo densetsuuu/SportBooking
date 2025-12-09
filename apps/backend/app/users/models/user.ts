@@ -1,13 +1,14 @@
-import hash from '@adonisjs/core/services/hash'
-import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
-import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
-import { withUUID } from '#common/mixins/with_uuid'
 import { withTimestamps } from '#common/mixins/with_timestamps'
+import { withUUID } from '#common/mixins/with_uuid'
+import OwnerSportEquipment from '#sport_equipments/models/owner_sport_equipment'
+import SocialAccount from '#users/models/social_account'
+import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+import { compose } from '@adonisjs/core/helpers'
+import hash from '@adonisjs/core/services/hash'
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import { type HasMany } from '@adonisjs/lucid/types/relations'
 import { attachment, attachmentManager } from '@jrmc/adonis-attachment'
 import { Attachment } from '@jrmc/adonis-attachment/types/attachment'
-import SocialAccount from '#users/models/social_account'
-import { type HasMany } from '@adonisjs/lucid/types/relations'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -32,6 +33,11 @@ export default class User extends compose(BaseModel, AuthFinder, withUUID(), wit
 
   @hasMany(() => SocialAccount)
   declare socialAccounts: HasMany<typeof SocialAccount>
+
+  @hasMany(() => OwnerSportEquipment, {
+    foreignKey: 'ownerId',
+  })
+  declare ownedSportEquipments: HasMany<typeof OwnerSportEquipment>
 
   static async preComputeUrls(models: User | User[]) {
     if (Array.isArray(models)) {

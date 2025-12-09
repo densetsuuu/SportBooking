@@ -11,6 +11,11 @@ export type SportEquipment = {
   image?: string
   description?: string
   capacite?: number
+  hasApprovedOwner?: boolean
+  owner?: {
+    status: 'approved' | 'refused' | 'waiting'
+    phoneNumber: string | null
+  } | null
 }
 
 export default class SportEquipmentDto extends BaseModelDto {
@@ -24,6 +29,11 @@ export default class SportEquipmentDto extends BaseModelDto {
   declare image?: string
   declare description?: string
   declare capacite?: number
+  declare hasApprovedOwner?: boolean
+  declare owner?: {
+    status: 'approved' | 'refused' | 'waiting'
+    phoneNumber: string | null
+  } | null
 
   constructor(input: SportEquipment) {
     super()
@@ -39,5 +49,7 @@ export default class SportEquipmentDto extends BaseModelDto {
     this.image = input.image
     this.description = input.description
     this.capacite = input.capacite
+    this.hasApprovedOwner = input.hasApprovedOwner
+    this.owner = input.owner
   }
 }

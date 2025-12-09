@@ -8,3 +8,6 @@ export type Reservation = InferResponseType<
 
 export const getReservationsByUserQueryOptions = (userId: string) =>
   tuyau.users({ userId }).reservations.$get.queryOptions()
+
+export const getReservationsByEquipmentQueryOptions = (equip_numero: string) =>
+  tuyau['sport-equipments']({ equip_numero }).reservations.$get.queryOptions()
