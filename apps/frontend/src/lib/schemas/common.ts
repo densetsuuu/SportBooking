@@ -10,6 +10,12 @@ export const passwordSchema = z
       'Le mot de passe doit contenir au moins 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial',
   })
 
+export const searchSchema = z.object({
+  name: z.string().optional().catch(''),
+  sport: z.string().optional().catch(''),
+  city: z.string().optional().catch(''),
+})
+
 export const reservationSchema = z.object({
   startDate: z.date({
     message: 'Date invalide',
