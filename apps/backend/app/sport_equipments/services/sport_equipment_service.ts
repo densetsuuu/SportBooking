@@ -88,15 +88,16 @@ export class SportEquipmentService {
     let offset = page && limit ? (page - 1) * limit : 0
 
     if (typeSport) {
-      whereClauses.push(`equip_type_name LIKE '%${typeSport}%'`)
+      whereClauses.push(`search(equip_type_name, "${typeSport}")`)
     }
     if (ville) {
-      whereClauses.push(`lib_bdv LIKE '%${ville}%'`)
+      whereClauses.push(`search(lib_bdv, "${ville}")`)
     }
     if (nom) {
-      whereClauses.push(`equip_nom LIKE '%${nom}%'`)
+      whereClauses.push(`search(equip_nom, "${nom}")`)
     }
-    const whereQuery = whereClauses.length > 0 ? `&where=${whereClauses.join(' AND ')}` : ''
+    const whereQuery =
+      whereClauses.length > 0 ? `&where=${encodeURIComponent(whereClauses.join(' AND '))}` : ''
     const response = await fetch(this.url + whereQuery + `&limit=${limit}&offset=${offset}`)
     if (!response.ok) {
       throw new Error('Failed to fetch sport equipments by type and city')

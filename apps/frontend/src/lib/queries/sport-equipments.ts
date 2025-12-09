@@ -8,6 +8,14 @@ export type SportEquipment = InferResponseType<
 export const getSportEquipmentQueryOptions =
   tuyau.sport_equipments.$get.queryOptions
 
+const _getSportEquipmentById = tuyau.sport_equipments({ equip_numero: '' }).$get
+export type SportEquipmentDetails = InferResponseType<
+  typeof _getSportEquipmentById
+>
+
+export const getSportEquipmentByIdQueryOptions = (equipNumero: string) =>
+  tuyau.sport_equipments({ equip_numero: equipNumero }).$get.queryOptions()
+
 export const equipmentQueries = {
   get: (equip_numero: string) =>
     tuyau['sport_equipments']({ equip_numero }).$get.queryOptions({
