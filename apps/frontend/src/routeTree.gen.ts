@@ -14,8 +14,10 @@ import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as appIndexRouteImport } from './routes/(app)/index'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as appAdminRouteRouteImport } from './routes/(app)/admin/route'
 import { Route as appUsersUserIdRouteImport } from './routes/(app)/users/$userId'
 import { Route as appEquipmentEquipmentIdRouteImport } from './routes/(app)/equipment/$equipmentId'
+import { Route as appAdminGestionProprietairesRouteImport } from './routes/(app)/admin/gestionProprietaires'
 
 const authRouteRoute = authRouteRouteImport.update({
   id: '/(auth)',
@@ -40,6 +42,11 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => authRouteRoute,
 } as any)
+const appAdminRouteRoute = appAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appUsersUserIdRoute = appUsersUserIdRouteImport.update({
   id: '/users/$userId',
   path: '/users/$userId',
@@ -50,18 +57,28 @@ const appEquipmentEquipmentIdRoute = appEquipmentEquipmentIdRouteImport.update({
   path: '/equipment/$equipmentId',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appAdminGestionProprietairesRoute =
+  appAdminGestionProprietairesRouteImport.update({
+    id: '/gestionProprietaires',
+    path: '/gestionProprietaires',
+    getParentRoute: () => appAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof appIndexRoute
+  '/admin': typeof appAdminRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
+  '/admin/gestionProprietaires': typeof appAdminGestionProprietairesRoute
   '/equipment/$equipmentId': typeof appEquipmentEquipmentIdRoute
   '/users/$userId': typeof appUsersUserIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof appIndexRoute
+  '/admin': typeof appAdminRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
+  '/admin/gestionProprietaires': typeof appAdminGestionProprietairesRoute
   '/equipment/$equipmentId': typeof appEquipmentEquipmentIdRoute
   '/users/$userId': typeof appUsersUserIdRoute
 }
@@ -69,9 +86,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(app)': typeof appRouteRouteWithChildren
   '/(auth)': typeof authRouteRouteWithChildren
+  '/(app)/admin': typeof appAdminRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(app)/': typeof appIndexRoute
+  '/(app)/admin/gestionProprietaires': typeof appAdminGestionProprietairesRoute
   '/(app)/equipment/$equipmentId': typeof appEquipmentEquipmentIdRoute
   '/(app)/users/$userId': typeof appUsersUserIdRoute
 }
@@ -79,24 +98,30 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/login'
     | '/register'
+    | '/admin/gestionProprietaires'
     | '/equipment/$equipmentId'
     | '/users/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/login'
     | '/register'
+    | '/admin/gestionProprietaires'
     | '/equipment/$equipmentId'
     | '/users/$userId'
   id:
     | '__root__'
     | '/(app)'
     | '/(auth)'
+    | '/(app)/admin'
     | '/(auth)/login'
     | '/(auth)/register'
     | '/(app)/'
+    | '/(app)/admin/gestionProprietaires'
     | '/(app)/equipment/$equipmentId'
     | '/(app)/users/$userId'
   fileRoutesById: FileRoutesById
@@ -143,6 +168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof authRouteRoute
     }
+    '/(app)/admin': {
+      id: '/(app)/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof appAdminRouteRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/users/$userId': {
       id: '/(app)/users/$userId'
       path: '/users/$userId'
@@ -157,16 +189,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appEquipmentEquipmentIdRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/admin/gestionProprietaires': {
+      id: '/(app)/admin/gestionProprietaires'
+      path: '/gestionProprietaires'
+      fullPath: '/admin/gestionProprietaires'
+      preLoaderRoute: typeof appAdminGestionProprietairesRouteImport
+      parentRoute: typeof appAdminRouteRoute
+    }
   }
 }
 
+interface appAdminRouteRouteChildren {
+  appAdminGestionProprietairesRoute: typeof appAdminGestionProprietairesRoute
+}
+
+const appAdminRouteRouteChildren: appAdminRouteRouteChildren = {
+  appAdminGestionProprietairesRoute: appAdminGestionProprietairesRoute,
+}
+
+const appAdminRouteRouteWithChildren = appAdminRouteRoute._addFileChildren(
+  appAdminRouteRouteChildren,
+)
+
 interface appRouteRouteChildren {
+  appAdminRouteRoute: typeof appAdminRouteRouteWithChildren
   appIndexRoute: typeof appIndexRoute
   appEquipmentEquipmentIdRoute: typeof appEquipmentEquipmentIdRoute
   appUsersUserIdRoute: typeof appUsersUserIdRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appAdminRouteRoute: appAdminRouteRouteWithChildren,
   appIndexRoute: appIndexRoute,
   appEquipmentEquipmentIdRoute: appEquipmentEquipmentIdRoute,
   appUsersUserIdRoute: appUsersUserIdRoute,

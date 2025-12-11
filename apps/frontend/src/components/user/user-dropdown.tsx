@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router'
+import { LogOutIcon, ShieldIcon, UserIcon } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,10 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import { LogOutIcon, UserIcon } from 'lucide-react'
 import { UserAvatar } from '~/components/user-avatar'
 import { useAuth } from '~/hooks/use-auth'
-import { Link } from '@tanstack/react-router'
 
 type User = {
   fullName: string
@@ -19,11 +19,12 @@ type User = {
     url?: string
   } | null
   id: string
+  type: 'admin' | 'classic'
 }
 
 export function UserDropdown({ user }: { user: User }) {
   const { signOut } = useAuth()
-
+  console.log('User type in UserDropdown:', user)
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-full">
@@ -55,6 +56,14 @@ export function UserDropdown({ user }: { user: User }) {
               Profil
             </Link>
           </DropdownMenuItem>
+          {user.type === 'admin' && (
+            <DropdownMenuItem asChild>
+              <Link to="/admin/gestionProprietaires">
+                <ShieldIcon />
+                Gestion Propriétaires
+              </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem

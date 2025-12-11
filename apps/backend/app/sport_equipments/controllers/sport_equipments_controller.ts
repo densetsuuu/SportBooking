@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
+import OwnershipRequestDto from '#sport_equipments/dtos/ownership_request_dto'
 import SportEquipmentDto from '#sport_equipments/dtos/sport_equipment_dto'
 import { SportEquipmentService } from '#sport_equipments/services/sport_equipment_service'
 import { assignOwnerValidator, updateOwnerValidator } from '#sport_equipments/validators/owner'
@@ -90,5 +91,33 @@ export default class SportEquipmentsController {
     const ownership = await this.sportEquipmentService.updateOwner(equipNumero, userId, user.id)
 
     return response.ok(ownership)
+  }
+
+  @Patch('/ownership/:ownershipId/approve', 'owner.approve')
+  @Middleware([middleware.auth(), middleware.admin()])
+  public async approveOwnership({ params, response }: HttpContext) {
+    const { ownershipId } = params
+
+    const ownership = await this.sportEquipmentService.approveOwnership(ownershipId)
+
+    return response.ok(ownership)
+  }
+
+  @Patch('/ownership/:ownershipId/refuse', 'owner.refuse')
+  @Middleware([middleware.auth(), middleware.admin()])
+  public async refuseOwnership({ params, response }: HttpContext) {
+    const { ownershipId } = params
+
+    const ownership = await this.sportEquipmentService.refuseOwnership(ownershipId)
+
+    return response.ok(ownership)
+  }
+
+  @Get('/ownership/pending', 'owner.pending')
+  @Middleware([middleware.auth(), middleware.admin()])
+  public async getPendingOwnershipRequests({ response }: HttpContext) {
+    const { requests, namesMap } = await this.sportEquipmentService.getPendingOwnershipRequests()
+
+    return response.ok(OwnershipRequestDto.fromArrayWithNames(requests, namesMap))
   }
 }

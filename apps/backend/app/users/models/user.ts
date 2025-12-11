@@ -31,6 +31,9 @@ export default class User extends compose(BaseModel, AuthFinder, withUUID(), wit
   @column({ serializeAs: null })
   declare password: string
 
+  @column()
+  declare type: 'admin' | 'classic'
+
   @hasMany(() => SocialAccount)
   declare socialAccounts: HasMany<typeof SocialAccount>
 
