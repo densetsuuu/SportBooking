@@ -27,12 +27,14 @@ COPY --from=builder /app/out/full .
 RUN pnpm turbo build --filter=@sport-booking/backend...
 
 FROM base AS runner
-WORKDIR /app
+WORKDIR /app/apps/backend
 ENV NODE_ENV=production
 RUN mkdir /app/tmp
 
-COPY --from=installer /app/node_modules ./node_modules
-COPY --from=installer /app/apps/backend/node_modules ./build/node_modules
+# Copy ALL node_modules from root
+COPY --from=installer /app/node_modules /app/node_modules
+
+# Copy backend build (will be at /app/apps/backend/build)
 COPY --from=installer /app/apps/backend/build ./build
 
 EXPOSE 3333
