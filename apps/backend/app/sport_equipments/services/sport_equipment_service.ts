@@ -14,9 +14,6 @@ export class SportEquipmentService {
     private equipmentsClient: GovEquipments
   ) {}
 
-  private url =
-    'https://equipements.sports.gouv.fr/api/explore/v2.1/catalog/datasets/data-es/records?refine=inst_part_type_filter%3A%22Complexe%20sportif%22'
-
   async getSportEquipmentById(equipmentId: string) {
     const data = await this.equipmentsClient.getEquipmentOrFail(equipmentId)
     const owner = await OwnerSportEquipment.query()
@@ -41,25 +38,15 @@ export class SportEquipmentService {
     limit = 20,
     nom,
   }: Infer<typeof indexSportEquipmentsValidator>) {
-    let whereClauses: string[] = []
     let offset = page && limit ? (page - 1) * limit : 0
 
-    if (typeSport) {
-      whereClauses.push(`search(equip_type_name, "${typeSport}")`)
-    }
-    if (ville) {
-      whereClauses.push(`search(lib_bdv, "${ville}")`)
-    }
-    if (nom) {
-      whereClauses.push(`search(equip_nom, "${nom}")`)
-    }
-    const whereQuery =
-      whereClauses.length > 0 ? `&where=${encodeURIComponent(whereClauses.join(' AND '))}` : ''
-    const response = await fetch(this.url + whereQuery + `&limit=${limit}&offset=${offset}`)
-    if (!response.ok) {
-      throw new Error('Failed to fetch sport equipments by type and city')
-    }
-    const data = await this.equipmentsClient.getEquipments({ limit, offset })
+    const data = await this.equipmentsClient.getEquipments({
+      limit,
+      offset,
+      type: typeSport,
+      location: ville,
+      name: nom,
+    })
 
     const equipIds = data.results.map((r) => r.equip_numero)
     const owners = await OwnerSportEquipment.query()

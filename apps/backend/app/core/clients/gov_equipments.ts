@@ -44,12 +44,18 @@ export class GovEquipments {
   }
 
   async getEquipments(data: SportEquipmentsRequest) {
+    const filters = [
+      data.type ? `equip_type_name="${data.type}"` : null,
+      data.location ? `inst_cp="${data.location}"` : null,
+      data.name ? `equip_nom LIKE "%${data.name}%"` : null,
+    ]
+
     return (await this.#ky
       .get('', {
         searchParams: {
           limit: data.limit,
           offset: data.offset,
-          where: `equip_type_name="${data.type}" AND inst_cp="${data.location}" AND equip_nom LIKE "%${data.name}%"`,
+          where: filters.filter(Boolean).join(' AND '),
         },
       })
       .json()) as SportEquipmentResponse
