@@ -17,9 +17,7 @@ export default class ReservationsController {
   @Post('/', 'store')
   @Middleware(middleware.auth())
   async store({ request, response, auth }: HttpContext) {
-    await auth.check()
-    const user = auth.user!
-
+    const user = auth.getUserOrFail()
     const payload = await request.validateUsing(createReservationValidator)
 
     const reservation = await this.reservationService.createReservation(user.id, payload)
@@ -50,7 +48,6 @@ export default class ReservationsController {
   @Delete('/:id', 'destroy')
   @Middleware(middleware.auth())
   async destroy({ params, response, auth }: HttpContext) {
-    await auth.check()
     const user = auth.user!
     const { id } = params
 

@@ -12,8 +12,7 @@ export default class SportEquipmentsReservationsController {
   @Patch('/reservations/:id/invitation', 'invitation.update.status')
   @Middleware(middleware.auth())
   async updateInvitationStatus({ params, request, response, auth }: HttpContext) {
-    await auth.check()
-    const user = auth.user!
+    const user = auth.getUserOrFail()
     const { id: reservationId } = params
     const { status } = await request.validateUsing(updateInvitationStatusValidator)
 

@@ -11,8 +11,9 @@ export default class extends BaseSchema {
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
 
-      // Ensure a proprietaire can't be assigned to the same terrain multiple times
-      table.unique(['owner_id', 'sport_equipment_id'])
+      table.json('file_identification').nullable()
+      table.enum('status', ['approved', 'refused', 'waiting']).defaultTo('waiting').notNullable()
+      table.string('phone_number').nullable()
     })
   }
 

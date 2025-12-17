@@ -11,7 +11,9 @@ export default class extends BaseSchema {
       table.enum('status', ['waiting', 'confirmed', 'cancelled']).notNullable().defaultTo('waiting')
       table.string('sport_equipment_id').notNullable()
       table.uuid('user_id').references('id').inTable('users').onDelete('CASCADE')
+
       table.timestamp('created_at').notNullable()
+      table.timestamp('updated_at').nullable()
     })
   }
 
