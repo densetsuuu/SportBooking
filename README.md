@@ -272,7 +272,7 @@ VITE_API_URL=http://localhost:3333
 
 ## Développement
 
-### Workflow recommandé
+### Workflow
 
 1. Lancer l'environnement complet : `pnpm dev`
 2. Le backend sera accessible sur http://localhost:3333
@@ -330,14 +330,6 @@ Les tests s'exécutent dans un environnement GitHub Actions avec :
 - **Redis** : redis:latest
 - **Node.js** : 20.14.0+
 - **pnpm** : Version latest via corepack
-
-### Badges de Statut
-
-Vous pouvez ajouter ces badges à votre README pour afficher le statut des workflows :
-
-```markdown
-![Checks](https://github.com/VOTRE-USERNAME/sport-booking/actions/workflows/checks.yml/badge.svg)
-```
 
 ### Déploiement (À venir)
 
