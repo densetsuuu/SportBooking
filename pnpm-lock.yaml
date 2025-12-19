@@ -4739,10 +4739,6 @@ packages:
   knitwork@1.2.0:
     resolution: {integrity: sha512-xYSH7AvuQ6nXkq42x0v5S8/Iry+cfulBz/DJQzhIyESdLD7425jXsPy4vn5cCXU+HhRN2kVw51Vd1K6/By4BQg==}
 
-  ky@1.11.0:
-    resolution: {integrity: sha512-NEyo0ICpS0cqSuyoJFMCnHOZJILqXsKhIZlHJGDYaH8OB5IFrGzuBpEwyoMZG6gUKMPrazH30Ax5XKaujvD8ag==}
-    engines: {node: '>=18'}
-
   ky@1.14.1:
     resolution: {integrity: sha512-hYje4L9JCmpEQBtudo+v52X5X8tgWXUYyPcxKSuxQNboqufecl9VMWjGiucAFH060AwPXHZuH+WB2rrqfkmafw==}
     engines: {node: '>=18'}
@@ -9699,7 +9695,7 @@ snapshots:
   '@tuyau/client@0.2.11-next.2':
     dependencies:
       '@tuyau/utils': 0.0.9
-      ky: 1.11.0
+      ky: 1.14.1
       object-to-formdata: 4.5.1
 
   '@tuyau/core@0.4.2(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(typescript@5.8.3))(@vinejs/vine@3.0.1))':
@@ -11770,8 +11766,6 @@ snapshots:
       - supports-color
 
   knitwork@1.2.0: {}
-
-  ky@1.11.0: {}
 
   ky@1.14.1: {}
 
