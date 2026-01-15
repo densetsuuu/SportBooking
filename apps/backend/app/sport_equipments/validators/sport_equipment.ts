@@ -7,5 +7,10 @@ export const indexSportEquipmentsValidator = vine.compile(
     page: vine.number().optional(),
     limit: vine.number().optional(),
     nom: vine.string().optional(),
+    // Geographic bounds for map-based search
+    minLat: vine.number().optional(),
+    maxLat: vine.number().optional(),
+    minLon: vine.number().optional(),
+    maxLon: vine.number().optional(),
   })
 )

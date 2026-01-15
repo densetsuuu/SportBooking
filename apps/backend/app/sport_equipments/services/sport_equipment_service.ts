@@ -37,8 +37,18 @@ export class SportEquipmentService {
     page,
     limit = 20,
     nom,
+    minLat,
+    maxLat,
+    minLon,
+    maxLon,
   }: Infer<typeof indexSportEquipmentsValidator>) {
     let offset = page && limit ? (page - 1) * limit : 0
+
+    // Build bounds object if all coordinates are provided
+    const bounds =
+      minLat !== undefined && maxLat !== undefined && minLon !== undefined && maxLon !== undefined
+        ? { minLat, maxLat, minLon, maxLon }
+        : undefined
 
     const data = await this.equipmentsClient.getEquipments({
       limit,
@@ -46,6 +56,7 @@ export class SportEquipmentService {
       type: typeSport,
       location: ville,
       name: nom,
+      bounds,
     })
 
     const equipIds = data.results.map((r) => r.equip_numero)

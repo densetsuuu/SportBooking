@@ -9,6 +9,12 @@ type SportEquipmentsRequest = {
   type?: string
   location?: string
   name?: string
+  bounds?: {
+    minLat: number
+    maxLat: number
+    minLon: number
+    maxLon: number
+  }
 }
 
 type SportEquipmentResponse = {
@@ -48,14 +54,19 @@ export class GovEquipments {
       data.type ? `equip_type_name="${data.type}"` : null,
       data.location ? `inst_cp="${data.location}"` : null,
       data.name ? `equip_nom LIKE "%${data.name}%"` : null,
+      data.bounds
+        ? `within_bbox(equip_coordonnees, ${data.bounds.minLon}, ${data.bounds.minLat}, ${data.bounds.maxLon}, ${data.bounds.maxLat})`
+        : null,
     ]
+
+    const whereClause = filters.filter(Boolean).join(' AND ')
 
     return (await this.#ky
       .get('', {
         searchParams: {
           limit: data.limit,
           offset: data.offset,
-          where: filters.filter(Boolean).join(' AND '),
+          ...(whereClause ? { where: whereClause } : {}),
         },
       })
       .json()) as SportEquipmentResponse

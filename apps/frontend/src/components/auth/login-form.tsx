@@ -17,6 +17,7 @@ import { Link } from '@tanstack/react-router'
 import { PasswordField } from '~/components/ui/password-field'
 import { useMutation } from '@tanstack/react-query'
 import { loginMutationOptions } from '~/lib/queries/auth'
+import { motion } from 'motion/react'
 
 export function LoginForm() {
   const useLogin = useMutation(loginMutationOptions())
@@ -38,17 +39,23 @@ export function LoginForm() {
   return (
     <div className="space-y-6">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Adresse email</FormLabel>
+                <FormLabel
+                  className="text-sm font-medium"
+                  style={{ fontFamily: 'Outfit, sans-serif' }}
+                >
+                  Adresse email
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     placeholder="exemple@email.com"
+                    autoComplete="email"
                     {...field}
                   />
                 </FormControl>
@@ -62,7 +69,12 @@ export function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mot de passe</FormLabel>
+                <FormLabel
+                  className="text-sm font-medium"
+                  style={{ fontFamily: 'Outfit, sans-serif' }}
+                >
+                  Mot de passe
+                </FormLabel>
                 <FormControl>
                   <PasswordField {...field} />
                 </FormControl>
@@ -74,7 +86,7 @@ export function LoginForm() {
           <div className="flex justify-end w-full">
             <Link
               to="/"
-              className="text-xs text-muted-foreground underline underline-offset-4 hover:text-primary"
+              className="text-xs text-muted-foreground hover:text-secondary transition-colors"
             >
               Mot de passe oublié ?
             </Link>
@@ -82,45 +94,51 @@ export function LoginForm() {
 
           <Button
             type="submit"
-            className="w-full active:scale-98 transition-transform duration-75"
+            className="w-full h-12"
             loading={useLogin.isPending}
           >
-            Se connecter
+            <span style={{ fontFamily: 'Outfit, sans-serif' }}>
+              Se connecter
+            </span>
           </Button>
         </form>
       </Form>
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <span className="w-full border-t border-border/50" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
+          <span className="bg-background px-3 text-muted-foreground">
             Ou continuer avec
           </span>
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" asChild>
-        <a href={`${import.meta.env.VITE_API_URL}/auth/social/google/redirect`}>
-          <Icons.google className="mr-2 h-4 w-4" />
-          Google
-        </a>
-      </Button>
+      <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+        <Button variant="outline" className="w-full h-12 gap-3" asChild>
+          <a
+            href={`${import.meta.env.VITE_API_URL}/auth/social/google/redirect`}
+          >
+            <Icons.google className="h-5 w-5" />
+            <span style={{ fontFamily: 'Outfit, sans-serif' }}>Google</span>
+          </a>
+        </Button>
+      </motion.div>
 
-      <div className="space-y-2 text-center">
-        <p className="text-xs text-muted-foreground">
+      <div className="space-y-3 text-center pt-2">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           En vous connectant, vous acceptez nos{' '}
           <a
             href="#"
-            className="underline underline-offset-4 hover:text-primary"
+            className="text-secondary hover:underline underline-offset-2"
           >
             Conditions d&apos;utilisation
           </a>{' '}
           et notre{' '}
           <a
             href="#"
-            className="underline underline-offset-4 hover:text-primary"
+            className="text-secondary hover:underline underline-offset-2"
           >
             Politique de confidentialité
           </a>
@@ -130,7 +148,7 @@ export function LoginForm() {
           Vous n&apos;avez pas de compte ?{' '}
           <Link
             to="/register"
-            className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+            className="font-semibold text-secondary hover:underline underline-offset-2"
           >
             Créer un compte
           </Link>

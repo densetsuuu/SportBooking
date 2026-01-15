@@ -14,6 +14,11 @@ export const searchSchema = z.object({
   name: z.string().optional().catch(''),
   sport: z.string().optional().catch(''),
   city: z.string().optional().catch(''),
+  view: z.enum(['list', 'map']).optional().catch('list'),
+  minLat: z.number().optional(),
+  maxLat: z.number().optional(),
+  minLon: z.number().optional(),
+  maxLon: z.number().optional(),
 })
 
 export const reservationSchema = z.object({
