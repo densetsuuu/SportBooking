@@ -5,9 +5,7 @@
     "vite-env.d.ts"
   ],
   "exclude": [
-    "node_modules",
-    "../backend",
-    "../backend/**/*"
+    "node_modules"
   ],
   "compilerOptions": {
     "strict": true,

@@ -4,5 +4,6 @@
     "rootDir": "./",
     "outDir": "./build"
   },
-  "include": ["./.adonisjs/**/*"]
+  "include": ["./**/*", "./.adonisjs/**/*"],
+  "exclude": ["node_modules", "build"]
 }

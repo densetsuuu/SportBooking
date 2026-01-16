@@ -219,7 +219,7 @@ export function BookButton({
                       className="flex items-center gap-2 p-3 rounded-xl bg-destructive/10 text-destructive text-sm"
                     >
                       <AlertCircle className="w-4 h-4" />
-                      {useReservation.isError}
+                      Une erreur est survenue lors de la réservation.
                     </motion.div>
                   )}
                   {useReservation.isSuccess && (
@@ -230,7 +230,7 @@ export function BookButton({
                       className="flex items-center gap-2 p-3 rounded-xl bg-sport-energy/10 text-sport-field text-sm"
                     >
                       <CheckCircle className="w-4 h-4" />
-                      {useReservation.isSuccess}
+                      Réservation confirmée avec succès !
                     </motion.div>
                   )}
                 </AnimatePresence>
