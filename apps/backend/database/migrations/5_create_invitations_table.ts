@@ -15,6 +15,7 @@ export default class extends BaseSchema {
         .inTable('reservations')
         .onDelete('CASCADE')
       table.timestamp('created_at').notNullable()
+      table.timestamp('updated_at').nullable()
     })
   }
 
