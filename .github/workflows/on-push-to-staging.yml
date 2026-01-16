@@ -1,14 +1,16 @@
-name: Main
+name: Staging
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ staging ]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  #### Checks jobs/Lint, typecheck, test
   checks:
     name: Checks
     uses: ./.github/workflows/checks.yml
@@ -71,7 +73,7 @@ jobs:
             -H 'accept: application/json' \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${{ secrets.DOKPLOY_AUTH_TOKEN }}" \
-            -d "{\"json\": {\"applicationId\": \"${{ secrets.DOKPLOY_APPLICATION_ID }}\"}}" \
+            -d "{\"json\": {\"applicationId\": \"${{ secrets.DOKPLOY_STAGING_APPLICATION_ID }}\"}}" \
             -w "%{http_code}" \
             -o /dev/null \
             -s

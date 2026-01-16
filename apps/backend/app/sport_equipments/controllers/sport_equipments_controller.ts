@@ -34,10 +34,6 @@ export default class SportEquipmentsController {
 
     const data = await this.sportEquipmentService.getSportEquipmentById(equipNumero)
 
-    if (data === undefined) {
-      return response.notFound({ message: 'Sport equipment not found' })
-    }
-
     return response.ok(data)
   }
 

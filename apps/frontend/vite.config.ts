@@ -21,5 +21,14 @@ export default defineConfig({
     alias: {
       '~': resolve(__dirname, './src'),
     },
+    dedupe: [
+      'react',
+      'react-dom',
+      'react/jsx-runtime',
+      'react/jsx-dev-runtime',
+    ],
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-leaflet', 'leaflet'],
   },
 })

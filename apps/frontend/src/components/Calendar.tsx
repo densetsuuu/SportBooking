@@ -21,7 +21,7 @@ type CalendarProps = {
 export default function Calendar({ events, onEventClick }: CalendarProps) {
   return (
     <FullCalendar events={events} onEventClick={onEventClick} locale={fr}>
-      <div className="h-dvh py-6 flex flex-col">
+      <div className="h-[500px] py-4 flex flex-col">
         <div className="flex px-6 items-center gap-2 mb-6">
           <CalendarViewTrigger
             className="aria-[current=true]:bg-accent"

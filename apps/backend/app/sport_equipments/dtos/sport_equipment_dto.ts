@@ -1,9 +1,10 @@
 import { BaseModelDto } from '@adocasts.com/dto/base'
+import { Position } from '#common/types/geographic'
 
 export type SportEquipment = {
   equip_numero: string
   equip_nom: string
-  equip_coordonnees: { lon: number; lat: number }
+  equip_coordonnees: Position
   equip_type_name: string
   inst_cp: string
   inst_adresse: string
@@ -21,7 +22,7 @@ export type SportEquipment = {
 export default class SportEquipmentDto extends BaseModelDto {
   declare id: string
   declare nom: string
-  declare coordonnees?: { lon: number; lat: number }
+  declare coordonnees?: Position
   declare type?: string
   declare postalCode?: string
   declare address?: string
