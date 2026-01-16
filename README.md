@@ -11,7 +11,7 @@ sportives en France.
 
 | Statements                                                                        | Branches                                                                          | Functions                                                                       | Lines                                                                   |
 |-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| ![Statements](https://img.shields.io/badge/statements-76.76%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-88.77%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-71.56%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-76.76%25-red.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-77.33%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-89.26%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-67%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-77.33%25-red.svg?style=flat) |
 
 ## Sommaire
 
