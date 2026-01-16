@@ -1,3 +1,4 @@
+/* global process */
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
@@ -24,4 +25,3 @@ export default defineConfig({
   // 2. Terminal 2: cd apps/frontend && pnpm dev
   // 3. Terminal 3: cd apps/frontend && pnpm test:e2e
 })
-

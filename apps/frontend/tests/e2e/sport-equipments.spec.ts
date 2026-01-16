@@ -21,7 +21,7 @@ test.describe('Sport Equipments - Home Page', () => {
 
     // Wait for the equipment list to load
     await page.waitForResponse(
-      (response) =>
+      response =>
         response.url().includes('/sport_equipments') &&
         response.status() === 200
     )
@@ -68,7 +68,7 @@ test.describe('Sport Equipments - Home Page', () => {
 
     // Wait for data to load
     await page.waitForResponse(
-      (response) =>
+      response =>
         response.url().includes('/sport_equipments') &&
         response.status() === 200
     )
@@ -90,7 +90,7 @@ test.describe('Sport Equipments - Search & Filters', () => {
 
     // Wait for filtered results
     await page.waitForResponse(
-      (response) =>
+      response =>
         response.url().includes('/sport_equipments') &&
         response.status() === 200
     )
@@ -106,7 +106,7 @@ test.describe('Sport Equipments - Search & Filters', () => {
 
     // Wait for filtered results
     await page.waitForResponse(
-      (response) =>
+      response =>
         response.url().includes('/sport_equipments') &&
         response.status() === 200
     )
@@ -120,7 +120,7 @@ test.describe('Sport Equipments - Search & Filters', () => {
 
     // Wait for filtered results
     await page.waitForResponse(
-      (response) =>
+      response =>
         response.url().includes('/sport_equipments') &&
         response.status() === 200
     )
@@ -134,7 +134,7 @@ test.describe('Sport Equipments - Search & Filters', () => {
 
     // Wait for filtered results
     await page.waitForResponse(
-      (response) =>
+      response =>
         response.url().includes('/sport_equipments') &&
         response.status() === 200
     )
@@ -162,7 +162,7 @@ test.describe('Sport Equipments - Map View', () => {
 
     // Wait for data to load
     await page.waitForResponse(
-      (response) =>
+      response =>
         response.url().includes('/sport_equipments') &&
         response.status() === 200
     )
