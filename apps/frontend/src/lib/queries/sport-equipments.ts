@@ -24,6 +24,5 @@ export const equipmentQueries = {
       },
     }),
 }
-export const assignOwnerMutationOptions = tuyau.sport_equipments[
-  ':equip_numero'
-].owner.$post.mutationOptions({})
+export const assignOwnerMutationOptions = (equip_numero: string) =>
+  tuyau.sport_equipments({ equip_numero }).owner.$post.mutationOptions({})

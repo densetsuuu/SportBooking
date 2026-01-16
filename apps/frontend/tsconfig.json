@@ -4,6 +4,11 @@
     "**/*.tsx",
     "vite-env.d.ts"
   ],
+  "exclude": [
+    "node_modules",
+    "../backend",
+    "../backend/**/*"
+  ],
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,

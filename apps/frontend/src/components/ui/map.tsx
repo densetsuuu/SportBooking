@@ -555,7 +555,7 @@ function MapMarkerInner({
   icon = <MapPinIcon className="size-6" />,
   iconAnchor = [12, 12],
   bgPos,
-  popupAnchor,
+  popupAnchor = [0, -10],
   tooltipAnchor,
   ...props
 }: Omit<MarkerProps, 'icon'> &
@@ -567,15 +567,17 @@ function MapMarkerInner({
   }) {
   const RL = useReactLeaflet()
   const { L } = useLeaflet()
+
   if (!L || !RL) return null
 
   return (
     <RL.Marker
       icon={L.divIcon({
         html: renderToString(icon),
+        className: 'leaflet-marker-icon-custom',
         iconAnchor,
+        popupAnchor,
         ...(bgPos ? { bgPos } : {}),
-        ...(popupAnchor ? { popupAnchor } : {}),
         ...(tooltipAnchor ? { tooltipAnchor } : {}),
       })}
       riseOnHover
@@ -722,22 +724,42 @@ function MapRectangle(props: RectangleProps) {
   return <MapRectangleInner {...props} />
 }
 
-function MapPopupInner({ className, ...props }: Omit<PopupProps, 'content'>) {
+function MapPopupInner({
+  className,
+  closeButton = false,
+  eventHandlers,
+  ...props
+}: Omit<PopupProps, 'content'> & {
+  eventHandlers?: {
+    add?: () => void
+    remove?: () => void
+  }
+}) {
   const RL = useReactLeaflet()
   if (!RL) return null
 
   return (
     <RL.Popup
       className={cn(
-        'bg-popover text-popover-foreground animate-in fade-out-0 fade-in-0 zoom-out-95 zoom-in-95 slide-in-from-bottom-2 z-50 w-72 rounded-md border p-4 font-sans shadow-md outline-hidden',
+        '[&_.leaflet-popup-content-wrapper]:bg-transparent [&_.leaflet-popup-content-wrapper]:shadow-none [&_.leaflet-popup-content-wrapper]:rounded-none [&_.leaflet-popup-content-wrapper]:p-0 [&_.leaflet-popup-content]:m-0 [&_.leaflet-popup-content]:p-0 [&_.leaflet-popup-tip-container]:hidden',
+        'font-sans',
         className
       )}
+      closeButton={closeButton}
+      eventHandlers={eventHandlers}
       {...props}
     />
   )
 }
 
-function MapPopup(props: Omit<PopupProps, 'content'>) {
+function MapPopup(
+  props: Omit<PopupProps, 'content'> & {
+    eventHandlers?: {
+      add?: () => void
+      remove?: () => void
+    }
+  }
+) {
   return <MapPopupInner {...props} />
 }
 

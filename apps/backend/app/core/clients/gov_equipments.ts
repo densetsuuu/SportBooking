@@ -55,7 +55,7 @@ export class GovEquipments {
       data.location ? `inst_cp="${data.location}"` : null,
       data.name ? `equip_nom LIKE "%${data.name}%"` : null,
       data.bounds
-        ? `within_bbox(equip_coordonnees, ${data.bounds.minLon}, ${data.bounds.minLat}, ${data.bounds.maxLon}, ${data.bounds.maxLat})`
+        ? `in_bbox(equip_coordonnees, ${data.bounds.minLat}, ${data.bounds.minLon}, ${data.bounds.maxLat}, ${data.bounds.maxLon})`
         : null,
     ]
 

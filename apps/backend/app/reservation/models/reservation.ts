@@ -6,6 +6,7 @@ import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import { withStatuses } from '#common/mixins/with_status'
+import { withTimestamps } from '#common/mixins/with_timestamps'
 
 export const reservationStatuses = ['waiting', 'confirmed', 'cancelled'] as const
 export type ReservationStatus = (typeof reservationStatuses)[number]
@@ -13,7 +14,8 @@ export type ReservationStatus = (typeof reservationStatuses)[number]
 export default class Reservation extends compose(
   BaseModel,
   withUUID(),
-  withStatuses(reservationStatuses)
+  withStatuses(reservationStatuses),
+  withTimestamps()
 ) {
   @column.dateTime()
   declare startDate: DateTime

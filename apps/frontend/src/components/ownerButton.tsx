@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useAuth } from '~/hooks/use-auth'
-import { Dialog, DialogContent, DialogFooter } from '~/components/ui/dialog'
+import { Dialog, DialogContent } from '~/components/ui/dialog'
 import { Button } from '~/components/ui/button'
 import { ClaimEstablishmentForm } from '~/components/claim-establishment-form'
+import { Phone, Building } from 'lucide-react'
 
 export function OwnerButton({
   equipment,
@@ -20,22 +21,24 @@ export function OwnerButton({
   return (
     <>
       {equipment.ownerStatus === 'approved' ? (
-        <DialogFooter className="mt-4">
-          <Button variant="outline" className="w-full" disabled>
-            Contacter le propriétaire : {equipment.phoneNumber}
-          </Button>
-        </DialogFooter>
+        <Button variant="outline" disabled className="gap-2">
+          <Phone className="w-4 h-4" />
+          <span style={{ fontFamily: 'Outfit, sans-serif' }}>
+            {equipment.phoneNumber}
+          </span>
+        </Button>
       ) : (
         auth.user && (
-          <DialogFooter className="mt-4">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => setIsClaimDialogOpen(true)}
-            >
-              Revendiquer cet établissement
-            </Button>
-          </DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => setIsClaimDialogOpen(true)}
+            className="gap-2"
+          >
+            <Building className="w-4 h-4" />
+            <span style={{ fontFamily: 'Outfit, sans-serif' }}>
+              Revendiquer
+            </span>
+          </Button>
         )
       )}
 

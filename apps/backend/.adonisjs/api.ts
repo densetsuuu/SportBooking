@@ -35,6 +35,10 @@ type AuthSocialIdDelete = {
   request: unknown
   response: MakeTuyauResponse<import('../app/auth/controllers/social_controller.ts').default['disconnect'], false>
 }
+type HealthGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/core/controllers/health_checks_controller.ts').default['handle'], false>
+}
 type ReservationsPost = {
   request: MakeTuyauRequest<InferInput<typeof import('../app/reservation/validators/reservation.ts')['createReservationValidator']>>
   response: MakeTuyauResponse<import('../app/reservation/controllers/reservations_controller.ts').default['store'], true>
@@ -78,6 +82,30 @@ type SportEquipmentsGet = {
 type SportequipmentsIdGet = {
   request: unknown
   response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['show'], false>
+}
+type SportequipmentsIdOwnerGet = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['showOwner'], false>
+}
+type SportequipmentsIdOwnerPost = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/owner.ts')['assignOwnerValidator']>>
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['assignOwner'], true>
+}
+type SportequipmentsIdOwnerDelete = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['removeOwner'], false>
+}
+type SportequipmentsIdOwnerPatch = {
+  request: MakeTuyauRequest<InferInput<typeof import('../app/sport_equipments/validators/owner.ts')['updateOwnerValidator']>>
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['updateOwner'], true>
+}
+type SportequipmentsOwnershipIdApprovePatch = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['approveOwnership'], false>
+}
+type SportequipmentsOwnershipIdRefusePatch = {
+  request: unknown
+  response: MakeTuyauResponse<import('../app/sport_equipments/controllers/sport_equipments_controller.ts').default['refuseOwnership'], false>
 }
 type UsersIdGetHead = {
   request: unknown
@@ -130,6 +158,11 @@ export interface ApiDefinition {
         '$delete': AuthSocialIdDelete;
       };
     };
+  };
+  'health': {
+    '$url': {
+    };
+    '$get': HealthGet;
   };
   'reservations': {
     '$url': {
@@ -193,6 +226,28 @@ export interface ApiDefinition {
       '$url': {
       };
       '$get': SportequipmentsIdGet;
+      'owner': {
+        '$url': {
+        };
+        '$get': SportequipmentsIdOwnerGet;
+        '$post': SportequipmentsIdOwnerPost;
+        '$delete': SportequipmentsIdOwnerDelete;
+        '$patch': SportequipmentsIdOwnerPatch;
+      };
+    };
+    'ownership': {
+      ':ownershipId': {
+        'approve': {
+          '$url': {
+          };
+          '$patch': SportequipmentsOwnershipIdApprovePatch;
+        };
+        'refuse': {
+          '$url': {
+          };
+          '$patch': SportequipmentsOwnershipIdRefusePatch;
+        };
+      };
     };
   };
 }
@@ -324,6 +379,48 @@ const routes = [
     types: {} as SportequipmentsIdGet,
   },
   {
+    params: ["equip_numero"],
+    name: 'sport_equipments.owner.show',
+    path: '/sport_equipments/:equip_numero/owner',
+    method: ["GET"],
+    types: {} as SportequipmentsIdOwnerGet,
+  },
+  {
+    params: ["equip_numero"],
+    name: 'sport_equipments.owner.store',
+    path: '/sport_equipments/:equip_numero/owner',
+    method: ["POST"],
+    types: {} as SportequipmentsIdOwnerPost,
+  },
+  {
+    params: ["equip_numero"],
+    name: 'sport_equipments.owner.destroy',
+    path: '/sport_equipments/:equip_numero/owner',
+    method: ["DELETE"],
+    types: {} as SportequipmentsIdOwnerDelete,
+  },
+  {
+    params: ["equip_numero"],
+    name: 'sport_equipments.owner.update',
+    path: '/sport_equipments/:equip_numero/owner',
+    method: ["PATCH"],
+    types: {} as SportequipmentsIdOwnerPatch,
+  },
+  {
+    params: ["ownershipId"],
+    name: 'sport_equipments.owner.approve',
+    path: '/sport_equipments/ownership/:ownershipId/approve',
+    method: ["PATCH"],
+    types: {} as SportequipmentsOwnershipIdApprovePatch,
+  },
+  {
+    params: ["ownershipId"],
+    name: 'sport_equipments.owner.refuse',
+    path: '/sport_equipments/ownership/:ownershipId/refuse',
+    method: ["PATCH"],
+    types: {} as SportequipmentsOwnershipIdRefusePatch,
+  },
+  {
     params: ["userId"],
     name: 'users.show',
     path: '/users/:userId',
@@ -343,13 +440,6 @@ const routes = [
     path: '/users/:userId',
     method: ["DELETE"],
     types: {} as UsersIdDelete,
-  },
-  {
-    params: ["key","name"],
-    name: 'attachments',
-    path: '/attachments/:key/:name?',
-    method: ["GET","HEAD"],
-    types: {} as unknown,
   },
 ] as const;
 export const api = {

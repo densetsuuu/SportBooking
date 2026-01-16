@@ -50,11 +50,8 @@ export default function Header() {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className={`sticky top-0 z-40 transition-all duration-300 ${
+      <header
+        className={`sticky top-0 z-[100] transition-all duration-300 ${
           isScrolled
             ? 'bg-background/80 backdrop-blur-xl shadow-md border-b border-border/50'
             : 'bg-background border-b border-border'
@@ -237,7 +234,7 @@ export default function Header() {
             </div>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Mobile Navigation Sidebar */}
       <AnimatePresence>

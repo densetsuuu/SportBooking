@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 import { AnimatePresence, motion } from 'motion/react'
 import { Link } from '@tanstack/react-router'
-import { ChevronRight, Loader2, MapPinIcon, X } from 'lucide-react'
+import { ChevronRight, Loader2, MapPinIcon } from 'lucide-react'
 import {
   Map,
   type MapBounds,
@@ -19,7 +19,6 @@ import { MapSkeleton } from '~/components/skeletons/map-skeleton'
 import { BookButton } from '~/components/bookButton'
 import { SportEquipment } from '~/lib/queries/sport-equipments'
 import type { LatLngExpression } from 'leaflet'
-import { cn } from '~/lib/utils'
 
 type MapSearchViewProps = {
   equipments: SportEquipment[]
@@ -36,9 +35,6 @@ export function MapSearchView({
   onBoundsChange,
   initialCenter = [46.603354, 1.888334], // Center of France
 }: MapSearchViewProps) {
-  const [selectedEquipment, setSelectedEquipment] =
-    useState<SportEquipment | null>(null)
-
   // Use ref to keep callback stable
   const onBoundsChangeRef = useRef(onBoundsChange)
   useEffect(() => {
@@ -48,7 +44,7 @@ export function MapSearchView({
   // Debounce bounds change to avoid too many API calls
   const debouncedBoundsChange = useDebouncedCallback((bounds: MapBounds) => {
     onBoundsChangeRef.current(bounds)
-  }, 500)
+  }, 1000)
 
   // Stable callback that won't change reference
   const handleBoundsChange = useCallback(
@@ -75,7 +71,7 @@ export function MapSearchView({
   )
 
   return (
-    <div className="relative w-full h-[calc(100vh-180px)] min-h-[500px] rounded-2xl overflow-hidden border border-border/40 shadow-xl">
+    <div className="relative w-full h-[calc(100vh-180px)] min-h-[500px] rounded-2xl overflow-hidden border border-border/40 shadow-xl isolate">
       {/* Loading overlay */}
       <AnimatePresence>
         {isLoading && (
@@ -143,73 +139,31 @@ export function MapSearchView({
                 equipment.coordonnees!.lat,
                 equipment.coordonnees!.lon,
               ]}
-              eventHandlers={{
-                click: () => setSelectedEquipment(equipment),
-              }}
               icon={
-                <div
-                  className={cn(
-                    'flex items-center justify-center w-10 h-10 rounded-full shadow-lg border-3 border-white transition-all duration-200',
-                    selectedEquipment?.id === equipment.id
-                      ? 'bg-sport-energy scale-110'
-                      : 'bg-secondary hover:scale-110'
-                  )}
-                >
+                <div className="flex items-center justify-center w-10 h-10 rounded-full shadow-lg border-3 border-white bg-secondary hover:scale-110 transition-transform duration-200">
                   <MapPinIcon className="w-5 h-5 text-white" />
                 </div>
               }
               iconAnchor={[20, 20]}
             >
-              <MapPopup className="w-80 p-0 border-0 shadow-2xl rounded-xl overflow-hidden">
-                <EquipmentPopupCard
-                  equipment={equipment}
-                  onClose={() => setSelectedEquipment(null)}
-                />
+              <MapPopup>
+                <div className="w-80 bg-card rounded-xl shadow-2xl border border-border/50 overflow-hidden">
+                  <EquipmentPopupCard equipment={equipment} />
+                </div>
               </MapPopup>
             </MapMarker>
           ))}
         </MapMarkerClusterGroup>
       </Map>
-
-      {/* Mobile selected equipment card */}
-      <AnimatePresence>
-        {selectedEquipment && (
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="absolute bottom-4 left-4 right-4 z-[1001] lg:hidden"
-          >
-            <MobileEquipmentCard
-              equipment={selectedEquipment}
-              onClose={() => setSelectedEquipment(null)}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }
 
-function EquipmentPopupCard({
-  equipment,
-  onClose,
-}: {
-  equipment: SportEquipment
-  onClose: () => void
-}) {
+function EquipmentPopupCard({ equipment }: { equipment: SportEquipment }) {
   return (
     <div className="bg-card">
-      {/* Header with close button */}
+      {/* Header */}
       <div className="relative p-4 pb-2">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 p-1 rounded-full hover:bg-muted transition-colors"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
         {/* Type badge */}
         <span
           className="inline-block text-[10px] font-bold tracking-[0.15em] uppercase text-secondary mb-2"
@@ -227,9 +181,11 @@ function EquipmentPopupCard({
         </h3>
 
         {/* Location */}
-        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-          <MapPinIcon className="w-3 h-3" />
-          {equipment.address}, {equipment.postalCode} {equipment.libBdv}
+        <p className="text-xs text-muted-foreground mt-1 flex items-start gap-1">
+          <MapPinIcon className="w-3 h-3 flex-shrink-0 mt-0.5" />
+          <span className="line-clamp-2">
+            {equipment.address}, {equipment.postalCode} {equipment.libBdv}
+          </span>
         </p>
       </div>
 
@@ -238,82 +194,24 @@ function EquipmentPopupCard({
         <Link
           to="/equipment/$equipmentId"
           params={{ equipmentId: equipment.id }}
-          className="flex-1"
+          className="flex-1 min-w-0"
         >
           <Button
             variant="outline"
             size="sm"
             className="w-full rounded-full text-xs"
           >
-            Voir détails
+            Détails
             <ChevronRight className="w-3 h-3 ml-1" />
           </Button>
         </Link>
-        <div className="flex-1">
-          <BookButton equipment={{ id: equipment.id, nom: equipment.nom }} />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function MobileEquipmentCard({
-  equipment,
-  onClose,
-}: {
-  equipment: SportEquipment
-  onClose: () => void
-}) {
-  return (
-    <div className="bg-card rounded-2xl shadow-2xl border border-border/50 overflow-hidden">
-      {/* Header */}
-      <div className="relative p-4 pb-3">
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 p-2 rounded-full bg-muted/80 hover:bg-muted transition-colors"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        {/* Type badge */}
-        <span
-          className="inline-block text-[10px] font-bold tracking-[0.15em] uppercase text-secondary mb-1"
-          style={{ fontFamily: 'Outfit, sans-serif' }}
-        >
-          {equipment.type}
-        </span>
-
-        {/* Title */}
-        <h3
-          className="text-xl font-bold leading-tight pr-10 line-clamp-2"
-          style={{ fontFamily: 'Outfit, sans-serif' }}
-        >
-          {equipment.nom}
-        </h3>
-
-        {/* Location */}
-        <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1.5">
-          <MapPinIcon className="w-4 h-4 flex-shrink-0" />
-          <span className="line-clamp-1">
-            {equipment.address}, {equipment.postalCode} {equipment.libBdv}
-          </span>
-        </p>
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center gap-3 p-4 pt-0">
-        <Link
-          to="/equipment/$equipmentId"
-          params={{ equipmentId: equipment.id }}
-          className="flex-1"
-        >
-          <Button variant="outline" className="w-full rounded-full">
-            Voir détails
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <BookButton equipment={{ id: equipment.id, nom: equipment.nom }} />
+        <div className="flex-1 min-w-0">
+          <BookButton
+            equipment={{ id: equipment.id, nom: equipment.nom }}
+            size="sm"
+            className="w-full rounded-full text-xs"
+            label="Réserver"
+          />
         </div>
       </div>
     </div>

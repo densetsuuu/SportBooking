@@ -130,7 +130,7 @@ export function SportPlaceItem({ equipment, index = 0 }: SportPlaceItemProps) {
             <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
 
             {/* Map Container with Unique Shape */}
-            <div className="relative h-48 lg:h-full lg:min-h-[280px] overflow-hidden">
+            <div className="relative h-48 lg:h-full lg:min-h-[280px] overflow-hidden isolate">
               {/* Decorative Corner Element */}
               <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-secondary/10 to-transparent z-10 hidden lg:block" />
 

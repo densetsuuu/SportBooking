@@ -111,7 +111,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>(
       () => formatProp || 'dd/MM/yyyy-hh:mm aa',
       [formatProp]
     )
-    const inputRef = useRef<HTMLInputElement>()
+    const inputRef = useRef<HTMLInputElement>(null)
 
     const [segments, setSegments] = useState<Segment[]>([])
     const [selectedSegmentAt, setSelectedSegmentAt] = useState<
@@ -423,7 +423,7 @@ function parseFormat(formatStr: string, value?: Date) {
     const pattern = segmentConfigs.find(p => p.symbols.includes(c))!
     if (!pattern) continue
     if (pattern.type !== lastPattern) {
-      if (symbols)
+      if (symbols && lastPattern)
         views.push({
           type: lastPattern,
           symbols,
@@ -438,7 +438,7 @@ function parseFormat(formatStr: string, value?: Date) {
     }
     index++
   }
-  if (symbols)
+  if (symbols && lastPattern)
     views.push({
       type: lastPattern,
       symbols,
@@ -455,7 +455,7 @@ const safeDate = (timezone?: string) => {
 const isAndroid = () => /Android/i.test(navigator.userAgent)
 
 function setSelection(
-  ref: React.MutableRefObject<HTMLInputElement | undefined>,
+  ref: React.RefObject<HTMLInputElement | null>,
   segment?: Segment
 ) {
   if (!ref.current || !segment) return

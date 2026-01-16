@@ -7,6 +7,7 @@ export default class extends BaseSeeder {
     const user = await UserFactory.merge({
       email: 'john.doe@example.com',
       fullName: 'John Doe',
+      password: '123',
     }).create()
 
     // Assign the user as owner of a sample sport equipment

@@ -7,6 +7,7 @@ import {
 import { Exception } from '@adonisjs/core/exceptions'
 import { Infer } from '@vinejs/vine/types'
 import { DateTime } from 'luxon'
+import User from '#users/models/user'
 
 export class ReservationService {
   /**
@@ -115,11 +116,9 @@ export class ReservationService {
       .preload('invitations', (invitationQuery) => {
         invitationQuery.preload('user')
       })
-      .first()
+      .firstOrFail()
 
-    if (!reservation) {
-      throw new Exception('Reservation not found', { status: 404 })
-    }
+    await User.preComputeUrls(reservation.user)
 
     return reservation
   }

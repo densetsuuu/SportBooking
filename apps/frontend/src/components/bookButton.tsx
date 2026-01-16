@@ -25,26 +25,30 @@ import { reservationSchema } from '~/lib/schemas/common'
 import { useMutation } from '@tanstack/react-query'
 import { createReservationMutationOptions } from '~/lib/queries/reservation'
 import {
+  AlertCircle,
   Calendar as CalendarIcon,
+  CheckCircle,
   Clock,
   Users,
-  CheckCircle,
-  AlertCircle,
 } from 'lucide-react'
 import { DateTimeInput } from '~/components/datetime-input'
 import { DateTimePicker } from '~/components/datetime-picker'
 import { Input } from '~/components/ui/input'
-import { motion, AnimatePresence } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 
 export function BookButton({
   equipment,
+  size = 'default',
+  className,
+  label = 'Réserver maintenant',
 }: {
   equipment: { id: string; nom: string }
+  size?: 'default' | 'sm' | 'lg' | 'icon'
+  className?: string
+  label?: string
 }) {
   const auth = useAuth()
   const [isReservationOpen, setIsReservationOpen] = useState(false)
-  const [success, setSuccess] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
   const useReservation = useMutation(createReservationMutationOptions)
 
   const form = useForm<z.infer<typeof reservationSchema>>({
@@ -61,25 +65,17 @@ export function BookButton({
     endDate: Date
     participants: number
   }) => {
-    setError(null)
-    setSuccess(null)
-    try {
-      await useReservation.mutateAsync({
-        payload: {
-          sportEquipmentId: equipment.id,
-          startDate: data.startDate.toISOString(),
-          endDate: data.endDate.toISOString(),
-          invitedUsers: Array.from(
-            { length: data.participants - 1 },
-            (_, i) => `user${i + 1}`
-          ),
-        },
-      })
-      setSuccess('Réservation effectuée avec succès !')
-      setTimeout(() => setIsReservationOpen(false), 2000)
-    } catch {
-      setError('Une erreur est survenue lors de la réservation.')
-    }
+    void useReservation.mutateAsync({
+      payload: {
+        sportEquipmentId: equipment.id,
+        startDate: data.startDate.toISOString(),
+        endDate: data.endDate.toISOString(),
+        invitedUsers: Array.from(
+          { length: data.participants - 1 },
+          (_, i) => `user${i + 1}`
+        ),
+      },
+    })
   }
 
   return (
@@ -87,11 +83,9 @@ export function BookButton({
       {auth.user && (
         <Dialog open={isReservationOpen} onOpenChange={setIsReservationOpen}>
           <DialogTrigger asChild>
-            <Button variant="secondary" className="gap-2">
+            <Button variant="secondary" size={size} className={className}>
               <CalendarIcon className="w-4 h-4" />
-              <span style={{ fontFamily: 'Outfit, sans-serif' }}>
-                Réserver maintenant
-              </span>
+              <span style={{ fontFamily: 'Outfit, sans-serif' }}>{label}</span>
             </Button>
           </DialogTrigger>
 
@@ -217,7 +211,7 @@ export function BookButton({
                 />
 
                 <AnimatePresence>
-                  {error && (
+                  {useReservation.isError && (
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -225,10 +219,10 @@ export function BookButton({
                       className="flex items-center gap-2 p-3 rounded-xl bg-destructive/10 text-destructive text-sm"
                     >
                       <AlertCircle className="w-4 h-4" />
-                      {error}
+                      {useReservation.isError}
                     </motion.div>
                   )}
-                  {success && (
+                  {useReservation.isSuccess && (
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -236,7 +230,7 @@ export function BookButton({
                       className="flex items-center gap-2 p-3 rounded-xl bg-sport-energy/10 text-sport-field text-sm"
                     >
                       <CheckCircle className="w-4 h-4" />
-                      {success}
+                      {useReservation.isSuccess}
                     </motion.div>
                   )}
                 </AnimatePresence>

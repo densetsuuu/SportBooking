@@ -1,4 +1,4 @@
-import { Button } from '@tatoo/design-system/components/ui/button'
+import { Button } from '~/components/ui/button'
 import { TriangleAlertIcon } from 'lucide-react'
 
 interface ErrorDisplayProps {

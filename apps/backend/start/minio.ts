@@ -37,9 +37,10 @@ async function initializeMinioBucket() {
   try {
     await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
     logger.info(`Bucket "${bucketName}" already exists`)
-  } catch (error) {
+  } catch (error: unknown) {
     // If bucket doesn't exist (404), create it
-    if (error.$metadata?.httpStatusCode === 404) {
+    const s3Error = error as { $metadata?: { httpStatusCode?: number } }
+    if (s3Error.$metadata?.httpStatusCode === 404) {
       try {
         await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
         logger.info(`Bucket "${bucketName}" created successfully`)

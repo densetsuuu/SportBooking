@@ -1,10 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { LoginForm } from '~/components/auth/login-form'
-import { UserCheck, MapPin, ArrowRight } from 'lucide-react'
+import { ArrowRight, MapPin, UserCheck } from 'lucide-react'
 import DottedGlowBackground from '~/components/ui/dotted-glow-background'
 import { PointerHighlight } from '~/components/ui/pointer-highlight'
 import { motion } from 'motion/react'
-import { Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,
@@ -123,7 +122,7 @@ function RouteComponent() {
             >
               <span className="px-2">l&apos;action</span>
             </PointerHighlight>
-            <span className="text-sport-energy">?</span>
+            ?
           </motion.h2>
 
           <motion.p
