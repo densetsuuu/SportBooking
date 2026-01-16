@@ -9,10 +9,7 @@ test.group('Fuzzy Search - similarity function', () => {
 
   test('should generate GREATEST expression for multiple columns', ({ assert }) => {
     const result = similarity(['name', 'description'], 'test')
-    assert.equal(
-      result,
-      "GREATEST(similarity(name, 'test'), similarity(description, 'test'))"
-    )
+    assert.equal(result, "GREATEST(similarity(name, 'test'), similarity(description, 'test'))")
   })
 
   test('should sanitize single quotes in the search term', ({ assert }) => {
@@ -29,11 +26,17 @@ test.group('Fuzzy Search - similarity function', () => {
   })
 
   test('should throw error when columns array is empty', ({ assert }) => {
-    assert.throws(() => similarity([], 'test'), 'Both columns and term are required for similarity search')
+    assert.throws(
+      () => similarity([], 'test'),
+      'Both columns and term are required for similarity search'
+    )
   })
 
   test('should throw error when term is empty', ({ assert }) => {
-    assert.throws(() => similarity(['name'], ''), 'Both columns and term are required for similarity search')
+    assert.throws(
+      () => similarity(['name'], ''),
+      'Both columns and term are required for similarity search'
+    )
   })
 
   test('should handle special characters in term', ({ assert }) => {

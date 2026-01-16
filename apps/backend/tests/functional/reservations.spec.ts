@@ -51,9 +51,7 @@ test.group('Reservations - Create', (group) => {
     assert.equal(response.body().invitations[0].status, 'waiting')
   })
 
-  test('should fail to create reservation with end date before start date', async ({
-    client,
-  }) => {
+  test('should fail to create reservation with end date before start date', async ({ client }) => {
     const user = await UserFactory.create()
     const startDate = DateTime.now().plus({ days: 2 })
     const endDate = DateTime.now().plus({ days: 1 })
@@ -162,9 +160,7 @@ test.group('Reservations - List', (group) => {
       status: 'confirmed',
     })
 
-    const response = await client
-      .get('/reservations?sportEquipmentId=EQUIP-FILTER-A')
-      .loginAs(user)
+    const response = await client.get('/reservations?sportEquipmentId=EQUIP-FILTER-A').loginAs(user)
 
     response.assertStatus(200)
     assert.isArray(response.body())
@@ -320,12 +316,12 @@ test.group('Reservations - Invitations', (group) => {
       .loginAs(invitedUser)
 
     response.assertStatus(200)
-    
+
     const updatedInvitation = await Invitation.query()
       .where('reservationId', reservation.id)
       .where('userId', invitedUser.id)
       .firstOrFail()
-    
+
     assert.equal(updatedInvitation.status, 'confirmed')
   })
 
@@ -354,12 +350,12 @@ test.group('Reservations - Invitations', (group) => {
       .loginAs(invitedUser)
 
     response.assertStatus(200)
-    
+
     const updatedInvitation = await Invitation.query()
       .where('reservationId', reservation.id)
       .where('userId', invitedUser.id)
       .firstOrFail()
-    
+
     assert.equal(updatedInvitation.status, 'refused')
   })
 

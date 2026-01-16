@@ -191,9 +191,7 @@ test.group('Sport Equipments - Ownership Management', (group) => {
     })
 
     // Approve first request
-    await client
-      .patch(`/sport_equipments/ownership/${ownership1.id}/approve`)
-      .loginAs(user1)
+    await client.patch(`/sport_equipments/ownership/${ownership1.id}/approve`).loginAs(user1)
 
     // Check that second request was refused
     const pendingRequests = await OwnerSportEquipment.query()
@@ -217,9 +215,7 @@ test.group('Sport Equipments - Remove Owner', (group) => {
       phoneNumber: '+33612345678',
     })
 
-    const response = await client
-      .delete('/sport_equipments/EQUIP-REMOVE-OWNER/owner')
-      .loginAs(user)
+    const response = await client.delete('/sport_equipments/EQUIP-REMOVE-OWNER/owner').loginAs(user)
 
     response.assertStatus(204)
   })
@@ -245,9 +241,7 @@ test.group('Sport Equipments - Remove Owner', (group) => {
   test('should fail to remove owner when no owner exists', async ({ client }) => {
     const user = await UserFactory.create()
 
-    const response = await client
-      .delete('/sport_equipments/EQUIP-NO-OWNER/owner')
-      .loginAs(user)
+    const response = await client.delete('/sport_equipments/EQUIP-NO-OWNER/owner').loginAs(user)
 
     response.assertStatus(404)
   })
